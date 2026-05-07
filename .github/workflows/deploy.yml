@@ -25,6 +25,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p 21 -H ${{ env.HOST }} >> ~/.ssh/known_hosts
 
+      - name: Prepare Directories
+        run: |
+          echo "📂 Ensuring project directory exists on VPS: ${{ env.PROJECT_PATH }}"
+          ssh -o StrictHostKeyChecking=no -p 21 ${{ env.USER }}@${{ env.HOST }} "mkdir -p ${{ env.PROJECT_PATH }}"
+
       - name: Deploy to VPS
         run: |
           echo "🚀 Deploying Desktop Terminal to VPS..."
