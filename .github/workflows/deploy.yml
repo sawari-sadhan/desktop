@@ -15,38 +15,45 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Execute Remote Deployment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.HOST }}
-          username: ${{ env.USER }}
-          key: ${{ env.SSH_KEY }}
-          port: 21 # Custom SSH port as per VPS configuration
-          script: |
-            echo "🚀 Starting Deployment for Sawari Sadhan Desktop..."
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ env.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p 21 -H ${{ env.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        run: |
+          echo "🚀 Deploying Desktop Terminal to VPS..."
+          
+          # 1. Sync source code (Port 21)
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.next' \
+            -e "ssh -p 21 -o StrictHostKeyChecking=no" \
+            ./ ${{ env.USER }}@${{ env.HOST }}:${{ env.PROJECT_PATH }}
+
+          # 2. Execute remote orchestration
+          ssh -o StrictHostKeyChecking=no -p 21 ${{ env.USER }}@${{ env.HOST }} "
+            echo '📦 Starting remote orchestration...'
+            cd ${{ env.PROJECT_PATH }} || { echo '❌ Directory not found'; exit 1; }
             
-            # 1. Navigate to project root
-            cd ${{ env.PROJECT_PATH }} || { echo "❌ Directory not found at ${{ env.PROJECT_PATH }}"; exit 1; }
-            
-            # 2. Pull latest changes
-            echo "📥 Pulling latest changes from main..."
-            git pull origin main
-            
-            # 3. Infrastructure Check: Ensure ss-network exists
-            echo "🌐 Checking network infrastructure..."
+            echo '🌐 Checking network infrastructure...'
             docker network inspect ss-network >/dev/null 2>&1 || \
-              (echo "Creating ss-network..." && docker network create ss-network)
-            
-            # 4. Firewall Check: Ensure Port 5110 is open
-            echo "🛡️ Configuring firewall for Port 5110..."
+              (echo 'Creating ss-network...' && docker network create ss-network)
+
+            echo '🛡️ Configuring firewall for Port 5110...'
             sudo ufw allow 5110/tcp
             
-            # 5. Orchestration: Rebuild and restart container
-            echo "🏗️ Rebuilding and starting container..."
+            echo '🏗️ Rebuilding and starting Desktop container...'
             docker compose up -d --build
             
-            # 6. Maintenance: Cleanup dangling images
-            echo "🧹 Cleaning up legacy images..."
+            echo '🧹 Cleaning up legacy images...'
             docker image prune -f
             
-            echo "✅ Deployment Successful: Terminal reachable on Port 5110"
+            echo '✅ Deployment Successful: Terminal reachable on Port 5110'
+          "
