@@ -1,0 +1,57 @@
+{
+  "nodes": [
+    { "id": 1, "label": "Toyota Hilux", "group": "model", "title": "Root Model Node" },
+    { "id": 2, "label": "Hilux GR-S", "group": "variant", "title": "Trim Level" },
+    { "id": 3, "label": "Hilux G", "group": "variant", "title": "Trim Level" },
+    { "id": 4, "label": "Hilux GR-S 2024", "group": "vehicle", "title": "Year Version" },
+    { "id": 5, "label": "2.4 D-4D", "group": "engine", "title": "Powertrain" },
+    { "id": 6, "label": "ZF 8HP", "group": "transmission", "title": "8-Speed Automatic" },
+    { "id": 7, "label": "Safety Sense 3.0", "group": "tech", "title": "ADAS Suite" },
+    { "id": 8, "label": "Toyota", "group": "brand", "title": "Manufacturer" },
+    
+    { "id": 9, "label": "Ford Ranger", "group": "model", "title": "Root Model Node" },
+    { "id": 10, "label": "Ranger Raptor", "group": "variant", "title": "Performance Trim" },
+    { "id": 11, "label": "Ranger Wildtrak", "group": "variant", "title": "Luxury Trim" },
+    { "id": 12, "label": "Ranger Raptor 2024", "group": "vehicle", "title": "Year Version" },
+    { "id": 13, "label": "3.0L V6 EcoBoost", "group": "engine", "title": "Twin-Turbo V6" },
+    { "id": 14, "label": "Ford", "group": "brand", "title": "Manufacturer" },
+    
+    { "id": 15, "label": "Isuzu D-Max", "group": "model", "title": "Root Model Node" },
+    { "id": 16, "label": "D-Max V-Cross", "group": "variant", "title": "Top Trim" },
+    { "id": 17, "label": "3.0 Ddi BluePower", "group": "engine", "title": "Turbo Diesel" },
+    { "id": 18, "label": "Isuzu", "group": "brand", "title": "Manufacturer" },
+    
+    { "id": 19, "label": "Fox Live Valve", "group": "tech", "title": "Active Suspension" },
+    { "id": 20, "label": "Brembo Performance", "group": "tech", "title": "Braking System" },
+    { "id": 21, "label": "Sony Premium Audio", "group": "tech", "title": "Sound System" }
+  ],
+  "edges": [
+    { "from": 2, "to": 1, "label": "VARIANT_OF", "arrows": "to" },
+    { "from": 3, "to": 1, "label": "VARIANT_OF", "arrows": "to" },
+    { "from": 4, "to": 2, "label": "VERSION_OF", "arrows": "to" },
+    { "from": 4, "to": 5, "label": "POWERED_BY", "arrows": "to" },
+    { "from": 4, "to": 6, "label": "USES_TRANSMISSION", "arrows": "to" },
+    { "from": 4, "to": 7, "label": "EQUIPPED_WITH", "arrows": "to" },
+    { "from": 1, "to": 8, "label": "MANUFACTURED_BY", "arrows": "to" },
+    
+    { "from": 10, "to": 9, "label": "VARIANT_OF", "arrows": "to" },
+    { "from": 11, "to": 9, "label": "VARIANT_OF", "arrows": "to" },
+    { "from": 12, "to": 10, "label": "VERSION_OF", "arrows": "to" },
+    { "from": 12, "to": 13, "label": "POWERED_BY", "arrows": "to" },
+    { "from": 12, "to": 6, "label": "USES_TRANSMISSION", "arrows": "to" },
+    { "from": 12, "to": 19, "label": "EQUIPPED_WITH", "arrows": "to" },
+    { "from": 12, "to": 21, "label": "EQUIPPED_WITH", "arrows": "to" },
+    { "from": 9, "to": 14, "label": "MANUFACTURED_BY", "arrows": "to" },
+    
+    { "from": 16, "to": 15, "label": "VARIANT_OF", "arrows": "to" },
+    { "from": 16, "to": 17, "label": "POWERED_BY", "arrows": "to" },
+    { "from": 15, "to": 18, "label": "MANUFACTURED_BY", "arrows": "to" },
+    
+    { "from": 4, "to": 20, "label": "EQUIPPED_WITH", "arrows": "to" },
+    { "from": 12, "to": 20, "label": "EQUIPPED_WITH", "arrows": "to" },
+    
+    { "from": 1, "to": 9, "label": "COMPETES_WITH", "arrows": "to", "dashes": true },
+    { "from": 9, "to": 15, "label": "COMPETES_WITH", "arrows": "to", "dashes": true },
+    { "from": 15, "to": 1, "label": "COMPETES_WITH", "arrows": "to", "dashes": true }
+  ]
+}

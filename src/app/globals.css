@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/* Exact copy of github/esona/web/app/theme/styles/globals.css */
+
+/* Base typography improvements */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  background-color: #121218;
+  position: relative;
+}
+
+html {
+  background-color: #121218;
+}
+
+/* Remove tap highlight and selection visual on inputs */
+input,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+  caret-color: rgba(255, 255, 255, 0.8);
+}
+
+input::selection,
+textarea::selection {
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+}
+
+input::-moz-selection,
+textarea::-moz-selection {
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+*:focus-visible:not(input):not(textarea) {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
