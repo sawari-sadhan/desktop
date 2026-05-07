@@ -1,73 +1,75 @@
 import { Options } from "vis-network/standalone";
 
 export const nodeGroups: Options["groups"] = {
-  brand: { 
+  model: { 
     shape: "dot",
     size: 10,
     borderWidth: 2,
-    color: { background: "#141817", border: "#D1E8E2", highlight: { background: "#D1E8E2", border: "#FFFFFF" } },
-    font: { color: "#D1E8E2", size: 16, face: "Outfit", weight: "800", align: "top" },
-    shadow: { enabled: true, color: "rgba(209, 232, 226, 0.3)", size: 8 }
-  },
-  model: { 
-    shape: "dot",
-    size: 8,
-    borderWidth: 2,
-    color: { background: "#141817", border: "#116466", highlight: { background: "#116466", border: "#116466" } },
-    font: { color: "#116466", size: 14, face: "Outfit", weight: "700", align: "top" },
-    shadow: { enabled: true, color: "rgba(17, 100, 102, 0.2)", size: 6 }
+    color: { 
+      background: "#0a0e14", 
+      border: "#5EEAD4", 
+      highlight: { background: "#0a0e14", border: "#5EEAD4" },
+      hover: { background: "#116466", border: "#FFFFFF" }
+    },
+    font: { color: "#5EEAD4", size: 10, face: "JetBrains Mono, monospace", align: "right", hadjust: 10 },
+    shadow: { enabled: true, color: "rgba(94, 234, 212, 0.2)", size: 15, x: 0, y: 0 }
   },
   variant: { 
     shape: "dot",
     size: 7,
     borderWidth: 1.5,
-    color: { background: "#141817", border: "#116466", highlight: { background: "#116466", border: "#116466" } },
-    font: { color: "#116466", size: 12, face: "Outfit", weight: "600", align: "top" }
+    color: { 
+      background: "#0a0e14", 
+      border: "#D9B08C", 
+      highlight: { background: "#0a0e14", border: "#D9B08C" },
+      hover: { background: "#141817", border: "#FFCB9A" }
+    },
+    font: { color: "#D9B08C", size: 9, face: "JetBrains Mono, monospace", align: "right", hadjust: 8 },
+    shadow: { enabled: true, color: "rgba(217, 176, 140, 0.2)", size: 10, x: 0, y: 0 }
   },
   vehicle: { 
     shape: "dot",
-    size: 6,
+    size: 5,
     borderWidth: 1,
-    color: { background: "#141817", border: "#116466", highlight: { background: "#116466", border: "#116466" } },
-    font: { color: "#116466", size: 11, face: "Outfit", weight: "500", align: "top" }
+    color: { 
+      background: "#0a0e14", 
+      border: "#D1E8E2",
+      highlight: { background: "#0a0e14", border: "#D1E8E2" },
+      hover: { background: "#116466", border: "#FFFFFF" }
+    },
+    font: { color: "#D1E8E2", size: 8, face: "JetBrains Mono, monospace", align: "right", hadjust: 6 }
   },
   engine: { 
-    shape: "dot",
-    size: 5,
-    borderWidth: 1,
-    color: { background: "#141817", border: "#D1E8E2" },
-    font: { color: "#D1E8E2", size: 10, face: "Outfit", align: "bottom" }
+    shape: "dot", size: 5, borderWidth: 1,
+    color: { background: "#0a0e14", border: "#5EEAD4" },
+    font: { color: "#5EEAD4", size: 8, face: "JetBrains Mono, monospace", align: "right", hadjust: 6 }
   },
   transmission: { 
-    shape: "dot",
-    size: 5,
-    borderWidth: 1,
-    color: { background: "#141817", border: "#D1E8E2" },
-    font: { color: "#D1E8E2", size: 10, face: "Outfit", align: "bottom" }
+    shape: "dot", size: 5, borderWidth: 1,
+    color: { background: "#0a0e14", border: "#FFCB9A" },
+    font: { color: "#FFCB9A", size: 8, face: "JetBrains Mono, monospace", align: "right", hadjust: 6 }
   },
   tech: { 
-    shape: "dot",
-    size: 5,
-    borderWidth: 1,
-    color: { background: "#141817", border: "#D1E8E2" },
-    font: { color: "#D1E8E2", size: 10, face: "Outfit", align: "bottom" }
+    shape: "dot", size: 5, borderWidth: 1,
+    color: { background: "#0a0e14", border: "#D9B08C" },
+    font: { color: "#D9B08C", size: 8, face: "JetBrains Mono, monospace", align: "right", hadjust: 6 }
   }
 };
 
 export const defaultNodeOptions: Options["nodes"] = {
   shape: "dot",
-  size: 25,
+  size: 5,
   font: {
-    size: 14,
-    color: "#ffffff",
-    face: "Inter, sans-serif"
+    size: 9,
+    color: "#D1E8E2",
+    face: "JetBrains Mono, monospace"
   },
   borderWidth: 2,
   shadow: {
     enabled: true,
-    color: "rgba(0,0,0,0.5)",
+    color: "rgba(94, 234, 212, 0.15)",
     size: 10,
-    x: 5,
-    y: 5
+    x: 0,
+    y: 0
   }
 };

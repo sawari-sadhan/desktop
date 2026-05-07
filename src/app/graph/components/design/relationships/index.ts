@@ -1,27 +1,40 @@
 import { Options } from "vis-network/standalone";
 
 export const edgeOptions: Options["edges"] = {
-  width: 1,
+  width: 0.5,
+  hoverWidth: 3,
+  selectionWidth: 3,
   color: {
-    color: "rgba(17, 100, 102, 0.4)",
-    highlight: "rgba(209, 232, 226, 0.8)",
-    hover: "rgba(209, 232, 226, 0.6)"
-  },
-  font: {
-    size: 0
+    color: "rgba(94, 234, 212, 0)",
+    highlight: "rgba(94, 234, 212, 0)",
+    hover: "rgba(94, 234, 212, 0)"
   },
   arrows: {
-    to: { enabled: false }
+    to: { enabled: true, scaleFactor: 0.2, type: "arrow" }
   },
   smooth: {
     enabled: true,
     type: "cubicBezier",
-    forceDirection: "horizontal",
-    roundness: 0.5
+    roundness: 0.8
+  },
+  font: {
+    size: 7,
+    color: "rgba(209, 232, 226, 0.4)",
+    face: "JetBrains Mono, monospace",
+    align: "middle",
+    strokeWidth: 0,
+    background: "transparent"
   }
 };
 
-// Standard Relationship Types (Matching guideline.yml)
+export const relationshipStyles: Record<string, any> = {
+  MANUFACTURED_BY: { dashes: false, width: 0.8, color: "rgba(209, 232, 226, 0.2)" },
+  VARIANT_OF: { dashes: [2, 2], width: 0.5 },
+  EQUIPPED_WITH: { dashes: [4, 4], width: 0.5 },
+  POWERED_BY: { dashes: [4, 4], width: 0.5 },
+  COMPETES_WITH: { dashes: [8, 8], width: 0.5, color: "rgba(244, 63, 94, 0.1)" }
+};
+
 export const RELATIONSHIP_TYPES = {
   VARIANT_OF: "VARIANT_OF",
   VERSION_OF: "VERSION_OF",
