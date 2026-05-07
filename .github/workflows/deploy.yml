@@ -7,6 +7,9 @@ on:
 
 env:
   PROJECT_PATH: projects/sawarisadhan/desktop
+  USER: ${{ secrets.USER }}
+  HOST: ${{ secrets.HOST }}
+  SSH_KEY: ${{ secrets.SSH_KEY }}
 
 jobs:
   deploy:
@@ -15,9 +18,9 @@ jobs:
       - name: Execute Remote Deployment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          host: ${{ env.HOST }}
+          username: ${{ env.USER }}
+          key: ${{ env.SSH_KEY }}
           port: 21 # Custom SSH port as per VPS configuration
           script: |
             echo "🚀 Starting Deployment for Sawari Sadhan Desktop..."
