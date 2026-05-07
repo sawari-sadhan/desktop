@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  desktop:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ss-desktop
+    restart: always
+    ports:
+      - "5110:5110"
+    environment:
+      - NODE_ENV=production
+      - PORT=5110
+    networks:
+      - ss-network
+
+networks:
+  ss-network:
+    external: true
