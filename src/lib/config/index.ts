@@ -19,6 +19,13 @@ export const CONFIG = {
       ? "https://llm.sawarisadhan.com"
       : "http://localhost:5121",
   },
+  GRAPH: {
+    NAME: "Knowledge Graph",
+    API_URL: IS_PRODUCTION
+      ? "https://graph.sawarisadhan.com"
+      : "http://localhost:5122",
+    VERSION: "v1",
+  },
   APP: {
     NAME: "Sawari Sadhan Desktop",
     VERSION: "0.1.0-alpha",
@@ -26,3 +33,4 @@ export const CONFIG = {
 };
 
 export const AGENT_API = `${CONFIG.AGENT.API_URL}/${CONFIG.AGENT.VERSION}`;
+export const GRAPH_API = `${CONFIG.GRAPH.API_URL}/${CONFIG.GRAPH.VERSION}`;

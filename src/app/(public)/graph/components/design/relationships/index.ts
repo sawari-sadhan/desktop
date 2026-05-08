@@ -28,18 +28,17 @@ export const edgeOptions: Options["edges"] = {
 };
 
 export const relationshipStyles: Record<string, any> = {
-  MANUFACTURED_BY: { dashes: false, width: 0.8, color: "rgba(209, 232, 226, 0.2)" },
-  VARIANT_OF: { dashes: [2, 2], width: 0.5 },
-  EQUIPPED_WITH: { dashes: [4, 4], width: 0.5 },
-  POWERED_BY: { dashes: [4, 4], width: 0.5 },
+  MADE_BY: { dashes: false, width: 0.8, color: "rgba(94, 234, 212, 0.2)" },
+  VARIANT_OF: { dashes: [4, 2], width: 0.6, color: "rgba(245, 158, 11, 0.2)" },
+  VERSION_OF: { dashes: [2, 2], width: 0.5, color: "rgba(236, 72, 153, 0.2)" },
+  SUBSCRIBED_TO: { dashes: [10, 5], width: 0.4, color: "rgba(148, 163, 184, 0.15)" },
   COMPETES_WITH: { dashes: [8, 8], width: 0.5, color: "rgba(244, 63, 94, 0.1)" }
 };
 
 export const RELATIONSHIP_TYPES = {
+  MADE_BY: "MADE_BY",
   VARIANT_OF: "VARIANT_OF",
   VERSION_OF: "VERSION_OF",
-  POWERED_BY: "POWERED_BY",
-  USES_TRANSMISSION: "USES_TRANSMISSION",
-  EQUIPPED_WITH: "EQUIPPED_WITH",
-  MANUFACTURED_BY: "MANUFACTURED_BY"
+  SUBSCRIBED_TO: "SUBSCRIBED_TO",
+  COMPETES_WITH: "COMPETES_WITH"
 };

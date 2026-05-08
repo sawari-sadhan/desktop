@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function GraphPage() {
   return (
-    <main className="fixed inset-0 bg-[#121218] overflow-hidden z-[100]">
+    <main className="flex-1 relative bg-[#121218] overflow-hidden">
       <div className="w-full h-full">
         <KnowledgeGraph />
       </div>
