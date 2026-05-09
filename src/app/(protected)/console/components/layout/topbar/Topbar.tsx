@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import { 
   ChevronRight, 
   Bell, 
-  User 
+  LogOut 
 } from "lucide-react";
+import { logoutAction } from "@/app/(public)/console-login/actions";
 
 export const Topbar = () => {
   const pathname = usePathname();
@@ -32,13 +33,19 @@ export const Topbar = () => {
 
         <div className="w-[1px] h-8 bg-white/[0.05]" />
 
-        {/* Quick User Context */}
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.05]">
-          <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/10">
-            <User className="w-4 h-4 text-slate-400" />
+        {/* Logout Action */}
+        <button 
+          onClick={async () => {
+            await logoutAction();
+            window.location.href = "/console-login";
+          }}
+          className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-rose-500/5 border border-rose-500/10 hover:bg-rose-500/10 transition-all group"
+        >
+          <div className="w-8 h-8 rounded-full bg-rose-500/10 flex items-center justify-center border border-rose-500/10 group-hover:bg-rose-500 group-hover:text-white transition-all">
+            <LogOut className="w-4 h-4 text-rose-400 group-hover:text-white transition-colors" />
           </div>
-          <span className="text-[10px] font-black text-slate-100 uppercase tracking-widest">Admin</span>
-        </div>
+          <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest group-hover:text-rose-300 transition-colors">Logout</span>
+        </button>
       </div>
     </header>
   );

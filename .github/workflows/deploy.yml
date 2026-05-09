@@ -1,4 +1,4 @@
-name: Deploy Desktop Terminal
+name: Deploy Sawari Sadhan Desktop to VPS
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
       - 'v*'
 
 env:
-  PROJECT_PATH: projects/sawarisadhan/desktop
   USER: ${{ secrets.USER }}
   HOST: ${{ secrets.HOST }}
   SSH_KEY: ${{ secrets.SSH_KEY }}
+  PROJECT_PATH: projects/sawarisadhan/desktop
 
 jobs:
   deploy:
@@ -17,48 +17,48 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup SSH
+      - name: Get tag name
+        id: tag
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ env.SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 21 -H ${{ env.HOST }} >> ~/.ssh/known_hosts
-
-      - name: Prepare Directories
-        run: |
-          echo "📂 Ensuring project directory exists on VPS: ${{ env.PROJECT_PATH }}"
-          ssh -o StrictHostKeyChecking=no -p 21 ${{ env.USER }}@${{ env.HOST }} "mkdir -p ${{ env.PROJECT_PATH }}"
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "Tag pushed: $TAG_NAME - deploying Sawari Sadhan Desktop"
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Deploy to VPS
         run: |
-          echo "🚀 Deploying Desktop Terminal to VPS..."
+          echo "Deploying Sawari Sadhan Desktop to VPS..."
           
-          # 1. Sync source code (Port 21)
+          mkdir -p ~/.ssh
+          echo "${{ env.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ env.HOST }} >> ~/.ssh/known_hosts
+          
+          SOURCE_PATH="./"
+          
+          ssh -o StrictHostKeyChecking=no ${{ env.USER }}@${{ env.HOST }} "mkdir -p ${{ env.PROJECT_PATH }}"
+          
           rsync -avz --delete \
             --exclude='.git' \
+            --exclude='.env' \
+            --exclude='.env.*' \
             --exclude='node_modules' \
             --exclude='.next' \
-            -e "ssh -p 21 -o StrictHostKeyChecking=no" \
-            ./ ${{ env.USER }}@${{ env.HOST }}:${{ env.PROJECT_PATH }}
-
-          # 2. Execute remote orchestration
-          ssh -o StrictHostKeyChecking=no -p 21 ${{ env.USER }}@${{ env.HOST }} "
-            echo '📦 Starting remote orchestration...'
-            cd ${{ env.PROJECT_PATH }} || { echo '❌ Directory not found'; exit 1; }
-            
-            echo '🌐 Checking network infrastructure...'
-            docker network inspect ss-network >/dev/null 2>&1 || \
-              (echo 'Creating ss-network...' && docker network create ss-network)
-
-            echo '🛡️ Configuring firewall for Port 5110...'
-            sudo ufw allow 5110/tcp
-            
-            echo '🏗️ Rebuilding and starting Desktop container...'
-            docker compose up -d --build
-            
-            echo '🧹 Cleaning up legacy images...'
-            docker image prune -f
-            
-            echo '✅ Deployment Successful: Terminal reachable on Port 5110'
+            -e "ssh -o StrictHostKeyChecking=no" \
+            $SOURCE_PATH ${{ env.USER }}@${{ env.HOST }}:${{ env.PROJECT_PATH }}
+          
+          ssh -o StrictHostKeyChecking=no ${{ env.USER }}@${{ env.HOST }} "
+            echo 'Opening port 5110/tcp on VPS (ufw)...' &&
+            (command -v ufw >/dev/null 2>&1 && sudo ufw allow 5110/tcp comment 'Sawari Sadhan Desktop service' 2>/dev/null && sudo ufw reload 2>/dev/null || true) &&
+            echo 'Port 5110 opened.' &&
+            cd ${{ env.PROJECT_PATH }} &&
+            DEPLOY_TIMESTAMP=\$(date -u +%Y%m%d%H%M%S) &&
+            GIT_TAG=\"${{ steps.tag.outputs.tag }}\" &&
+            echo \"Building Docker image (deploy timestamp: \$DEPLOY_TIMESTAMP, tag: \$GIT_TAG)...\" &&
+            docker compose build --no-cache --build-arg DEPLOY_TIMESTAMP=\$DEPLOY_TIMESTAMP --build-arg GIT_TAG=\$GIT_TAG sawari-desktop &&
+            docker compose up -d --force-recreate sawari-desktop &&
+            sleep 3 &&
+            docker compose ps
           "

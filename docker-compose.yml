@@ -1,17 +1,22 @@
-version: '3.8'
-
 services:
-  desktop:
+  sawari-desktop:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ss-desktop
+      args:
+        - NEXT_PUBLIC_GRAPH_API_URL=https://graph.sawarisadhan.com
+        - NEXT_PUBLIC_AGENT_API_URL=https://agent.sawarisadhan.com
+    container_name: sawari-desktop
     restart: always
     ports:
-      - "5110:5110"
+      - "5110:3000"
     environment:
       - NODE_ENV=production
-      - PORT=5110
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - ss-network
 
