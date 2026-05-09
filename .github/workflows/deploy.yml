@@ -34,11 +34,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ env.SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ env.HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p 21 -H ${{ env.HOST }} >> ~/.ssh/known_hosts
           
           SOURCE_PATH="./"
           
-          ssh -o StrictHostKeyChecking=no ${{ env.USER }}@${{ env.HOST }} "mkdir -p ${{ env.PROJECT_PATH }}"
+          ssh -o StrictHostKeyChecking=no -p 21 ${{ env.USER }}@${{ env.HOST }} "mkdir -p ${{ env.PROJECT_PATH }}"
           
           rsync -avz --delete \
             --exclude='.git' \
@@ -46,19 +46,29 @@ jobs:
             --exclude='.env.*' \
             --exclude='node_modules' \
             --exclude='.next' \
-            -e "ssh -o StrictHostKeyChecking=no" \
+            -e "ssh -p 21 -o StrictHostKeyChecking=no" \
             $SOURCE_PATH ${{ env.USER }}@${{ env.HOST }}:${{ env.PROJECT_PATH }}
           
-          ssh -o StrictHostKeyChecking=no ${{ env.USER }}@${{ env.HOST }} "
-            echo 'Opening port 5110/tcp on VPS (ufw)...' &&
-            (command -v ufw >/dev/null 2>&1 && sudo ufw allow 5110/tcp comment 'Sawari Sadhan Desktop service' 2>/dev/null && sudo ufw reload 2>/dev/null || true) &&
-            echo 'Port 5110 opened.' &&
+          ssh -o StrictHostKeyChecking=no -p 21 ${{ env.USER }}@${{ env.HOST }} "
+            echo '🚀 Starting Deployment for Sawari Sadhan Desktop...'
             cd ${{ env.PROJECT_PATH }} &&
+            
+            echo '🌐 Checking network infrastructure...'
+            docker network inspect ss-network >/dev/null 2>&1 || \
+              (echo 'Creating ss-network...' && docker network create ss-network)
+
+            echo '🛡️ Configuring firewall for Port 5110...'
+            (command -v ufw >/dev/null 2>&1 && sudo ufw allow 5110/tcp comment 'Sawari Sadhan Desktop service' 2>/dev/null && sudo ufw reload 2>/dev/null || true)
+            
+            echo '🏗️ Rebuilding and starting Sawari Sadhan Desktop container...'
             DEPLOY_TIMESTAMP=\$(date -u +%Y%m%d%H%M%S) &&
             GIT_TAG=\"${{ steps.tag.outputs.tag }}\" &&
-            echo \"Building Docker image (deploy timestamp: \$DEPLOY_TIMESTAMP, tag: \$GIT_TAG)...\" &&
             docker compose build --no-cache --build-arg DEPLOY_TIMESTAMP=\$DEPLOY_TIMESTAMP --build-arg GIT_TAG=\$GIT_TAG sawari-desktop &&
             docker compose up -d --force-recreate sawari-desktop &&
-            sleep 3 &&
+            
+            echo '🧹 Cleaning up legacy images...'
+            docker image prune -f
+            
+            echo '✅ Deployment Successful: Desktop Online'
             docker compose ps
           "
