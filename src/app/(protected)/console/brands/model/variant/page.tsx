@@ -57,9 +57,7 @@ const VariantRegistryPage = () => {
   }, [modelId]);
 
   const filteredVariants = variants.filter(variant => {
-    const nameStr = (typeof variant.name === 'object' && variant.name !== null)
-      ? String((variant.name as any).en || "")
-      : String(variant.name || "");
+    const nameStr = String(variant.name?.en || variant.name?.default || "");
     
     return nameStr.toLowerCase().includes(searchTerm.toLowerCase()) || variant.slug.toLowerCase().includes(searchTerm.toLowerCase());
   });
@@ -131,7 +129,7 @@ const VariantRegistryPage = () => {
                   <div className="space-y-6">
                     <div className="flex items-start justify-between">
                       <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white font-black text-xl border border-white/5 group-hover:border-white/20 transition-all">
-                        {typeof variant.name === 'object' ? String((variant.name as any)?.en || "?")[0] : String(variant.name || "?")[0]}
+                        {String((variant.name as any)?.en || (variant.name as any)?.default || variant.name || "?")[0]}
                       </div>
                       <div className="px-3 py-1 bg-white/5 rounded-full text-[8px] font-black uppercase tracking-tighter text-slate-500">
                         {variant.slug}
@@ -140,7 +138,7 @@ const VariantRegistryPage = () => {
 
                     <div>
                       <h3 className="text-2xl font-black text-white group-hover:text-slate-300 transition-colors leading-tight">
-                        {typeof variant.name === 'object' ? String((variant.name as any)?.en || "Unnamed Variant") : String(variant.name || "Unnamed Variant")}
+                        {(variant.name as any)?.en || (variant.name as any)?.default || variant.name || "Unnamed Variant"}
                       </h3>
                       {!modelId && (
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">

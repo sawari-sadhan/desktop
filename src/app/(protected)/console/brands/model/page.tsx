@@ -59,9 +59,7 @@ const ModelRegistryPage = () => {
   }, [brandId]);
 
   const filteredModels = models.filter(model => {
-    const nameStr = (typeof model.name === 'object' && model.name !== null)
-      ? String((model.name as any).en || "")
-      : String(model.name || "");
+    const nameStr = String(model.name?.en || model.name?.default || "");
     
     return nameStr.toLowerCase().includes(searchTerm.toLowerCase()) || model.slug.toLowerCase().includes(searchTerm.toLowerCase());
   });
@@ -149,7 +147,7 @@ const ModelRegistryPage = () => {
 
                     <div>
                       <h3 className="text-2xl font-black text-white group-hover:text-slate-300 transition-colors leading-tight">
-                        {typeof model.name === 'object' ? String((model.name as any)?.en || "Unnamed Model") : String(model.name || "Unnamed Model")}
+                        {(model.name as any)?.en || (model.name as any)?.default || model.name || "Unnamed Model"}
                       </h3>
                       {!brandId && (
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">

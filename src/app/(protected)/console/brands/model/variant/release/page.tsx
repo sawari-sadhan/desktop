@@ -57,9 +57,7 @@ const ReleaseRegistryPage = () => {
   }, [variantId]);
 
   const filteredReleases = releases.filter(release => {
-    const nameStr = (typeof release.name === 'object' && release.name !== null)
-      ? String((release.name as any).en || "")
-      : String(release.name || "");
+    const nameStr = String(release.name?.en || release.name?.default || "");
     
     return nameStr.toLowerCase().includes(searchTerm.toLowerCase()) || release.slug.toLowerCase().includes(searchTerm.toLowerCase());
   });
@@ -140,7 +138,7 @@ const ReleaseRegistryPage = () => {
 
                     <div>
                       <h3 className="text-2xl font-black text-white group-hover:text-slate-300 transition-colors leading-tight">
-                        {typeof release.name === 'object' ? String((release.name as any)?.en || "Unnamed Release") : String(release.name || "Unnamed Release")}
+                        {(release.name as any)?.en || (release.name as any)?.default || release.name || "Unnamed Release"}
                       </h3>
                       {!variantId && (
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">

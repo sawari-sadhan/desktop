@@ -29,9 +29,7 @@ const BrandRegistryPage = () => {
   }, []);
 
   const filteredBrands = brands.filter(brand => {
-    const nameStr = typeof brand.name === 'object' 
-      ? (brand.name?.en || "").toString().toLowerCase() 
-      : (brand.name || "").toString().toLowerCase();
+    const nameStr = (brand.name?.en || brand.name?.default || "").toString().toLowerCase();
     
     return nameStr.includes(searchTerm.toLowerCase()) || brand.slug.toLowerCase().includes(searchTerm.toLowerCase());
   });
