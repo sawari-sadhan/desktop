@@ -105,3 +105,15 @@ textarea {
   scrollbar-width: thin;
   scrollbar-color: rgba(45, 212, 191, 0.3) rgba(255, 255, 255, 0.02);
 }
+
+/* Hide spin buttons for number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

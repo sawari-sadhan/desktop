@@ -7,8 +7,8 @@ interface Node {
   id: number;
   x: number;
   y: number;
-  vx: number; // velocity x
-  vy: number; // velocity y
+  vx: number;
+  vy: number;
   createdAt: number;
 }
 
@@ -16,363 +16,182 @@ interface Connection {
   from: number;
   to: number;
   id: string;
-  createdAt: number;
 }
 
 let nodeIdCounter = 0;
 
 export const AnimatedBackground = () => {
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [connections, setConnections] = useState<Connection[]>([]);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [viewData, setViewData] = useState<{ nodes: Node[]; connections: Connection[] }>({
+    nodes: [],
+    connections: [],
+  });
+  
   const nodesRef = useRef<Node[]>([]);
-  const connectionsRef = useRef<Connection[]>([]);
+  const lastUpdateRef = useRef<number>(0);
+  const lastConnectionUpdateRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
-  const isAnimatingRef = useRef<boolean>(false);
 
+  // Initialize nodes
   useEffect(() => {
-    nodesRef.current = nodes;
-  }, [nodes]);
-
-  useEffect(() => {
-    connectionsRef.current = connections;
-  }, [connections]);
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      setDimensions({ width: window.innerWidth, height: window.innerHeight });
-    };
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
-
-  // Initialize nodes on mount
-  useEffect(() => {
-    const initialNodeCount = 15;
-    const newNodes: Node[] = Array.from({ length: initialNodeCount }, () => ({
+    const initialNodes: Node[] = Array.from({ length: 15 }, () => ({
       id: nodeIdCounter++,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      vx: (Math.random() - 0.5) * 0.02, // slow velocity
-      vy: (Math.random() - 0.5) * 0.02,
+      vx: (Math.random() - 0.5) * 0.015,
+      vy: (Math.random() - 0.5) * 0.015,
       createdAt: Date.now(),
     }));
-    setNodes(newNodes);
-  }, [dimensions]);
+    nodesRef.current = initialNodes;
+    setViewData({ nodes: initialNodes, connections: [] });
+  }, []);
 
-  // Add new nodes randomly
   useEffect(() => {
-    if (dimensions.width === 0) return;
+    const animate = (time: number) => {
+      // 1. Update Positions (60fps internally, but we'll sync state less often if needed)
+      // Actually 60fps is fine for smoothness
+      if (time - lastUpdateRef.current >= 33) { // ~30fps sync is enough for background
+        lastUpdateRef.current = time;
 
-    const addNodeInterval = setInterval(() => {
-      setNodes((prev) => {
-        // Limit max nodes
-        if (prev.length >= 25) return prev;
+        const connectionDistance = 25;
+        const currentNodes = nodesRef.current.map(node => {
+          let newX = node.x + node.vx;
+          let newY = node.y + node.vy;
 
-        const newNode: Node = {
-          id: nodeIdCounter++,
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          vx: (Math.random() - 0.5) * 0.02,
-          vy: (Math.random() - 0.5) * 0.02,
-          createdAt: Date.now(),
-        };
+          if (newX <= 0 || newX >= 100) {
+            newX = Math.max(0, Math.min(100, newX));
+            return { ...node, x: newX, vx: -node.vx };
+          }
+          if (newY <= 0 || newY >= 100) {
+            newY = Math.max(0, Math.min(100, newY));
+            return { ...node, y: newY, vy: -node.vy };
+          }
+          return { ...node, x: newX, y: newY };
+        });
 
-        return [...prev, newNode];
-      });
-    }, 3000 + Math.random() * 2000); // Random interval between 3-5 seconds
+        nodesRef.current = currentNodes;
 
-    return () => clearInterval(addNodeInterval);
-  }, [dimensions]);
-
-  // Remove old nodes randomly
-  useEffect(() => {
-    if (nodes.length < 10) return; // Keep minimum nodes
-
-    const removeNodeInterval = setInterval(() => {
-      setNodes((prev) => {
-        if (prev.length <= 10) return prev;
-
-        // Remove a random node that's been around for a while
-        const oldNodes = prev.filter(
-          (node) => Date.now() - node.createdAt > 15000
-        );
-
-        if (oldNodes.length > 0) {
-          const nodeToRemove = oldNodes[Math.floor(Math.random() * oldNodes.length)];
-          return prev.filter((node) => node.id !== nodeToRemove.id);
+        // 2. Update Connections (less often, every 500ms)
+        let currentConnections = viewData.connections;
+        if (time - lastConnectionUpdateRef.current >= 500) {
+          lastConnectionUpdateRef.current = time;
+          
+          const newConnections: Connection[] = [];
+          for (let i = 0; i < currentNodes.length; i++) {
+            for (let j = i + 1; j < currentNodes.length; j++) {
+              const n1 = currentNodes[i];
+              const n2 = currentNodes[j];
+              const dist = Math.sqrt(Math.pow(n2.x - n1.x, 2) + Math.pow(n2.y - n1.y, 2));
+              if (dist < connectionDistance) {
+                newConnections.push({ from: n1.id, to: n2.id, id: `${n1.id}-${n2.id}` });
+              }
+            }
+          }
+          currentConnections = newConnections;
         }
 
-        return prev;
-      });
-    }, 4000 + Math.random() * 3000); // Random interval between 4-7 seconds
-
-    return () => clearInterval(removeNodeInterval);
-  }, [nodes.length]);
-
-  // Animate node positions (slow motion)
-  useEffect(() => {
-    if (isAnimatingRef.current) return;
-    
-    isAnimatingRef.current = true;
-    let lastUpdateTime = 0;
-    const updateInterval = 50; // Update every 50ms
-
-    const animate = (currentTime: number) => {
-      if (!isAnimatingRef.current) return;
-      
-      if (currentTime - lastUpdateTime >= updateInterval) {
-        lastUpdateTime = currentTime;
-        
-        setNodes((prev) => {
-          if (prev.length === 0) return prev;
-          
-          return prev.map((node) => {
-            let newX = node.x + node.vx;
-            let newY = node.y + node.vy;
-
-            // Bounce off edges
-            if (newX <= 0 || newX >= 100) {
-              newX = Math.max(0, Math.min(100, newX));
-              return { ...node, x: newX, vx: -node.vx };
-            }
-            if (newY <= 0 || newY >= 100) {
-              newY = Math.max(0, Math.min(100, newY));
-              return { ...node, y: newY, vy: -node.vy };
-            }
-
-            return { ...node, x: newX, y: newY };
-          });
-        });
+        // 3. Batch State Update
+        setViewData({ nodes: currentNodes, connections: currentConnections });
       }
 
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
     animationFrameRef.current = requestAnimationFrame(animate);
-
     return () => {
-      isAnimatingRef.current = false;
-      if (animationFrameRef.current !== null) {
-        cancelAnimationFrame(animationFrameRef.current);
-        animationFrameRef.current = null;
-      }
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, []);
+  }, [viewData.connections]); // Only re-run if connections count changes or on mount
 
-  // Calculate and update connections dynamically
+  // Periodic node churn (Add/Remove)
   useEffect(() => {
-    const updateConnections = () => {
-      const currentNodes = nodesRef.current;
-      if (currentNodes.length === 0) return;
+    const churnInterval = setInterval(() => {
+      const now = Date.now();
+      let current = [...nodesRef.current];
 
-      const newConnections: Connection[] = [];
-      const connectionDistance = 25;
-
-      for (let i = 0; i < currentNodes.length; i++) {
-        for (let j = i + 1; j < currentNodes.length; j++) {
-          const node1 = currentNodes[i];
-          const node2 = currentNodes[j];
-          const distance = Math.sqrt(
-            Math.pow(node2.x - node1.x, 2) + Math.pow(node2.y - node1.y, 2)
-          );
-
-          if (distance < connectionDistance) {
-            const connId = `${node1.id}-${node2.id}`;
-            const existingConn = connectionsRef.current.find(
-              (c) => c.id === connId
-            );
-
-            if (!existingConn) {
-              newConnections.push({
-                from: node1.id,
-                to: node2.id,
-                id: connId,
-                createdAt: Date.now(),
-              });
-            } else {
-              newConnections.push(existingConn);
-            }
-          }
-        }
+      // Remove old or excess nodes
+      if (current.length > 10) {
+        current = current.filter(n => (now - n.createdAt < 30000) || current.length <= 12);
       }
 
-      // Remove connections that are too far apart or nodes are gone
-      const validConnections = newConnections.filter((conn) => {
-        const node1 = currentNodes.find((n) => n.id === conn.from);
-        const node2 = currentNodes.find((n) => n.id === conn.to);
-
-        if (!node1 || !node2) return false;
-
-        const distance = Math.sqrt(
-          Math.pow(node2.x - node1.x, 2) + Math.pow(node2.y - node1.y, 2)
-        );
-
-        return distance < connectionDistance * 1.2; // Slight buffer before disconnecting
-      });
-
-      setConnections(validConnections);
-    };
-
-    const connectionInterval = setInterval(updateConnections, 500);
-    updateConnections(); // Initial update
-
-    return () => clearInterval(connectionInterval);
-  }, []);
-
-  // Remove old connections
-  useEffect(() => {
-    const cleanupInterval = setInterval(() => {
-      setConnections((prev) => {
-        const now = Date.now();
-        return prev.filter((conn) => {
-          // Keep connections that are recent or still valid
-          const age = now - conn.createdAt;
-          return age < 20000; // Remove connections older than 20 seconds
+      // Add new nodes if low
+      if (current.length < 20) {
+        current.push({
+          id: nodeIdCounter++,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          vx: (Math.random() - 0.5) * 0.015,
+          vy: (Math.random() - 0.5) * 0.015,
+          createdAt: now,
         });
-      });
-    }, 2000);
+      }
 
-    return () => clearInterval(cleanupInterval);
+      nodesRef.current = current;
+    }, 5000);
+
+    return () => clearInterval(churnInterval);
   }, []);
+
+  const { nodes, connections } = viewData;
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none bg-[#121218] -z-10">
-      {/* Visible grid pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:3rem_3rem]" />
 
-      {/* Animated gradient orbs with subtle motion */}
       <div className="absolute inset-0">
         <motion.div
           className="absolute top-0 -left-1/4 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl"
           animate={{
-            x: [0, 60, 40, 0],
-            y: [0, 30, 20, 0],
-            scale: [1, 1.15, 1.05, 1],
-            opacity: [0.15, 0.2, 0.18, 0.15],
+            x: [0, 40, 0],
+            y: [0, 20, 0],
+            scale: [1, 1.1, 1],
           }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
           className="absolute top-1/3 -right-1/4 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl"
           animate={{
-            x: [0, -60, -40, 0],
-            y: [0, -30, -20, 0],
-            scale: [1, 1.2, 1.1, 1],
-            opacity: [0.15, 0.2, 0.18, 0.15],
+            x: [0, -40, 0],
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1],
           }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-0 left-1/3 w-96 h-96 bg-cyan-500/12 rounded-full blur-3xl"
-          animate={{
-            x: [0, 50, 30, 0],
-            y: [0, -50, -30, 0],
-            scale: [1, 1.1, 1.05, 1],
-            opacity: [0.12, 0.17, 0.15, 0.12],
-          }}
-          transition={{
-            duration: 35,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
 
-      {/* Tech-style connecting nodes and lines */}
       <svg className="absolute inset-0 w-full h-full">
-        {/* Draw connections */}
         {connections.map((conn) => {
-          const node1 = nodes.find((n) => n.id === conn.from);
-          const node2 = nodes.find((n) => n.id === conn.to);
-          if (!node1 || !node2) return null;
+          const n1 = nodes.find((n) => n.id === conn.from);
+          const n2 = nodes.find((n) => n.id === conn.to);
+          if (!n1 || !n2) return null;
 
           return (
-            <motion.line
+            <line
               key={conn.id}
-              x1={`${node1.x}%`}
-              y1={`${node1.y}%`}
-              x2={`${node2.x}%`}
-              y2={`${node2.y}%`}
-              stroke="rgba(147, 197, 253, 0.25)"
-              strokeWidth="1.5"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{
-                pathLength: 1,
-                opacity: [0.15, 0.35, 0.25],
-              }}
-              exit={{ pathLength: 0, opacity: 0 }}
-              transition={{
-                pathLength: { duration: 1.2, ease: "easeOut" },
-                opacity: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-              }}
+              x1={`${n1.x}%`}
+              y1={`${n1.y}%`}
+              x2={`${n2.x}%`}
+              y2={`${n2.y}%`}
+              stroke="rgba(147, 197, 253, 0.15)"
+              strokeWidth="1"
             />
           );
         })}
 
-        {/* Draw nodes */}
         {nodes.map((node) => (
-          <motion.g key={node.id}>
-            {/* Outer glow */}
-            <motion.circle
-              cx={`${node.x}%`}
-              cy={`${node.y}%`}
-              r="5"
-              fill="rgba(147, 197, 253, 0.4)"
-              animate={{
-                scale: [1, 1.4, 1],
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-            {/* Middle ring */}
-            <motion.circle
-              cx={`${node.x}%`}
-              cy={`${node.y}%`}
-              r="3.5"
-              fill="rgba(147, 197, 253, 0.5)"
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.4, 0.7, 0.4],
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.1,
-              }}
-            />
-            {/* Core */}
-            <motion.circle
+          <g key={node.id}>
+            <circle
               cx={`${node.x}%`}
               cy={`${node.y}%`}
               r="2"
-              fill="rgba(255, 255, 255, 0.95)"
-              animate={{
-                scale: [1, 1.15, 1],
-                opacity: [0.8, 1, 0.8],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.2,
-              }}
+              fill="rgba(147, 197, 253, 0.5)"
             />
-          </motion.g>
+            <circle
+              cx={`${node.x}%`}
+              cy={`${node.y}%`}
+              r="1"
+              fill="white"
+            />
+          </g>
         ))}
       </svg>
     </div>

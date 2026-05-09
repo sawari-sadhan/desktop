@@ -28,16 +28,16 @@ export const CONSOLE_NAV_ITEMS = [
     description: "Ingest new vehicle nodes and relationships"
   },
   { 
-    name: "Explorer", 
-    href: "/graph", 
-    icon: Network,
-    description: "Visual exploration of the Knowledge Graph"
-  },
-  { 
     name: "Brands", 
     href: "/console/brands", 
     icon: Shield,
     description: "Vehicle manufacturer registry"
+  },
+  { 
+    name: "Attributes", 
+    href: "/console/attribute", 
+    icon: Terminal,
+    description: "Technical feature registry"
   },
 ];
 

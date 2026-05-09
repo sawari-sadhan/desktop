@@ -17,7 +17,12 @@ const groupColors: Record<string, string> = {
   brand: "#5EEAD4",
   model: "#2DD4BF",
   variant: "#F59E0B",
-  release: "#EC4899"
+  release: "#EC4899",
+  engine_displacement: "#3B82F6",
+  fuel_type: "#10B981",
+  transmission_type: "#8B5CF6",
+  body_type: "#6366F1",
+  emission_standard: "#F43F5E"
 };
 
 const KnowledgeGraph = () => {

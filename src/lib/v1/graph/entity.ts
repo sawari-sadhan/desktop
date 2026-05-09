@@ -69,13 +69,22 @@ export const entityApi = {
   /**
    * Update an existing entity in the Knowledge Graph
    */
-  async update(id: string, entity: Partial<EntityNode>): Promise<EntityNode> {
+  async update(id: string, entity: Partial<EntityNode>): Promise<void> {
     const response = await fetch(`${GRAPH_API}/entity/${id}`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(entity)
     });
     if (!response.ok) throw new Error("Failed to update entity");
-    return response.json();
+  },
+
+  /**
+   * Delete an entity from the Knowledge Graph
+   */
+  async delete(id: string): Promise<void> {
+    const response = await fetch(`${GRAPH_API}/entity/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error("Failed to delete entity");
   }
 };
