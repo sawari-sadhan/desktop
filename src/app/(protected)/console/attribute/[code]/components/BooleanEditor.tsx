@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Power, ShieldCheck, Loader2, ArrowUpRight } from "lucide-react";
-import { entityApi, EntityNode } from "$lib/v1/graph/entity";
+import { entityApi, EntityNode } from "@lib/v1/graph/entity";
 
 interface BooleanEditorProps {
   attributeCode: string;

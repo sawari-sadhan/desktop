@@ -9,7 +9,7 @@ import {
   User,
   Settings
 } from "lucide-react";
-import { CONSOLE_NAV_ITEMS } from "$lib/navigation";
+import { CONSOLE_NAV_ITEMS } from "@lib/navigation";
 
 export const Sidebar = () => {
   const pathname = usePathname();

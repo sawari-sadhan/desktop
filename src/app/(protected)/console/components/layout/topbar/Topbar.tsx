@@ -7,7 +7,7 @@ import {
   Bell, 
   LogOut 
 } from "lucide-react";
-import { logoutAction } from "@/app/(public)/console-login/actions";
+import { consoleLogoutAction as logoutAction } from "@lib/auth";
 
 export const Topbar = () => {
   const pathname = usePathname();

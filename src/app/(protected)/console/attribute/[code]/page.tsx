@@ -10,7 +10,7 @@ import {
   Tag
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { attributeApi, AttributeNode } from "$lib/v1/graph/attribute";
+import { attributeApi, AttributeNode } from "@lib/v1/graph/attribute";
 import { AttributeEditor } from "./components/AttributeEditor";
 
 const AttributeDetailPage = ({ params }: { params: Promise<{ code: string }> }) => {

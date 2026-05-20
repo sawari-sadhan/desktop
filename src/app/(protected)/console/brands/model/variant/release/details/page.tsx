@@ -23,8 +23,8 @@ import {
   RefreshCw,
   Plus
 } from "lucide-react";
-import { entityApi, EntityNode } from "$lib/v1/graph/entity";
-import { typesApi, TypeBlueprint } from "$lib/v1/graph/types/index";
+import { entityApi, EntityNode } from "@lib/v1/graph/entity";
+import { typesApi, TypeBlueprint } from "@lib/v1/graph/types/index";
 
 const ReleaseDetailsPage = () => {
   const router = useRouter();

@@ -3,6 +3,10 @@
  * Orchestrates API endpoints for local development and production environments.
  */
 
+import { createPromiseClient } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
+import { AuthService } from "../gen/auth_connect";
+
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 export const CONFIG = {
@@ -26,6 +30,12 @@ export const CONFIG = {
       : "http://localhost:5122"),
     VERSION: "v1",
   },
+  AUTH: {
+    NAME: "Authentication Service",
+    API_URL: process.env.NEXT_PUBLIC_AUTH_API_URL || (IS_PRODUCTION
+      ? "https://auth.sawarisadhan.com"
+      : "http://localhost:5101"),
+  },
   APP: {
     NAME: "Sawari Sadhan Desktop",
     VERSION: "0.1.0-alpha",
@@ -34,3 +44,10 @@ export const CONFIG = {
 
 export const AGENT_API = `${CONFIG.AGENT.API_URL}/${CONFIG.AGENT.VERSION}`;
 export const GRAPH_API = `${CONFIG.GRAPH.API_URL}/${CONFIG.GRAPH.VERSION}`;
+
+const authTransport = createConnectTransport({
+  baseUrl: CONFIG.AUTH.API_URL,
+});
+
+export const authClient = createPromiseClient(AuthService, authTransport);
+export { AccountContext } from "../gen/auth_pb";

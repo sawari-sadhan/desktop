@@ -1,4 +1,4 @@
-import { AGENT_API } from '@/lib/config';
+import { AGENT_API } from '@lib/config';
 
 /**
  * Agent V1 SDK

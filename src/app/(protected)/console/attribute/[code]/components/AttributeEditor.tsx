@@ -4,7 +4,7 @@ import React from "react";
 import { StringEditor } from "./StringEditor";
 import { NumberEditor } from "./NumberEditor";
 import { BooleanEditor } from "./BooleanEditor";
-import { AttributeNode } from "$lib/v1/graph/attribute";
+import { AttributeNode } from "@lib/v1/graph/attribute";
 import { AlertCircle } from "lucide-react";
 
 interface AttributeEditorProps {

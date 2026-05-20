@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { Save, Database, Info, CheckCircle2, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { entityApi } from "$lib/v1/graph/entity";
-import { edgeApi } from "$lib/v1/graph/edge";
+import { entityApi } from "@lib/v1/graph/entity";
+import { edgeApi } from "@lib/v1/graph/edge";
 
 const IngestPage = () => {
   const [isSaving, setIsSaving] = useState(false);

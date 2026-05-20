@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Globe, MapPin, Search, RefreshCw, Layers, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { entityApi, EntityNode } from "$lib/v1/graph/entity";
+import { entityApi, EntityNode } from "@lib/v1/graph/entity";
 
 const BrandRegistryPage = () => {
   const router = useRouter();

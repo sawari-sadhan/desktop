@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, Check, X, Hash, Loader2, CheckCircle2, Workflow, Activity, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { entityApi, EntityNode } from "$lib/v1/graph/entity";
+import { entityApi, EntityNode } from "@lib/v1/graph/entity";
 import { InlineDeleteConfirmation } from "@/app/components/confirmation/delete";
 
 interface NumberEditorProps {

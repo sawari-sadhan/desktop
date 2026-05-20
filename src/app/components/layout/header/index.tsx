@@ -1,6 +1,6 @@
 "use client";
 
-import { PUBLIC_NAV_ITEMS } from "$lib/navigation";
+import { PUBLIC_NAV_ITEMS } from "@lib/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

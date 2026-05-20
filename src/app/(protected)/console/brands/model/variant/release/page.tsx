@@ -14,7 +14,7 @@ import {
   Layers,
   CheckCircle2
 } from "lucide-react";
-import { entityApi, EntityNode } from "$lib/v1/graph/entity";
+import { entityApi, EntityNode } from "@lib/v1/graph/entity";
 
 const ReleaseRegistryPage = () => {
   const router = useRouter();

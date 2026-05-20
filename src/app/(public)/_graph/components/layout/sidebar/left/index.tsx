@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Layers, ChevronRight, ChevronDown, Database, Cpu } from "lucide-react";
-import { categoryApi, CategoryNode } from "$lib/v1/graph/types/category";
+import { categoryApi, CategoryNode } from "@lib/v1/graph/types/category";
 
 interface LeftSidebarProps {
   onCategorySelect?: (slug: string) => void;

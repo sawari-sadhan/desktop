@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Lock, ArrowRight, ShieldCheck, Loader2, AlertCircle, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { loginAction } from "./actions";
+import { consoleLoginAction as loginAction } from "@lib/auth";
 
 /**
  * @SS-Auth-Audit

@@ -14,7 +14,7 @@ import {
   Layers,
   ArrowRight
 } from "lucide-react";
-import { entityApi, EntityNode } from "$lib/v1/graph/entity";
+import { entityApi, EntityNode } from "@lib/v1/graph/entity";
 
 const ModelRegistryPage = () => {
   const router = useRouter();

@@ -1,0 +1,36 @@
+# Sawari Sadhan Desktop Terminal Local Contract Configuration
+# ==================================================
+# @SS-Mapping-Audit
+# Source of Truth: [oracle/config/settings.yml]
+# Service: Desktop
+
+service:
+  name: "desktop"
+  display_name: "Sawari Sadhan Desktop HUD"
+  description: "Next.js technical terminal dashboard, attribute registry manager, and vehicle graph console."
+  version: "0.1.0-alpha"
+  port: 5110
+  runtime: "NodeJS / Next.js v15"
+  framework: "React v19"
+  language: "TypeScript"
+
+api_connections:
+  auth:
+    endpoint: "http://localhost:5101"
+    description: "Central Go Auth Connect-RPC Server"
+  core:
+    endpoint: "http://localhost:5102"
+    description: "Core Vehicle Information Graph engine"
+  media:
+    endpoint: "http://localhost:5106"
+    description: "Media uploads manager"
+
+build_settings:
+  output: "standalone"
+  styles: "Vanilla CSS / PostCSS"
+  routing: "App Router"
+
+governance:
+  audit_tag: "@SS-Mapping-Audit"
+  integrity_tool: "oracle/main.go"
+  enforcement: "STRICT"

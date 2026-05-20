@@ -51,11 +51,11 @@ export const PUBLIC_NAV_ITEMS = [
     href: "/", 
     icon: Home 
   },
-  { 
-    name: "Explore Graph", 
-    href: "/graph", 
-    icon: Search 
-  },
+  // { 
+  //   name: "Explore Graph", 
+  //   href: "/graph", 
+  //   icon: Search 
+  // },
   { 
     name: "About", 
     href: "/about", 

@@ -1,4 +1,4 @@
-import { GRAPH_API } from "$lib/config";
+import { GRAPH_API } from "@lib/config";
 
 /**
  * Technical Blueprint API Client

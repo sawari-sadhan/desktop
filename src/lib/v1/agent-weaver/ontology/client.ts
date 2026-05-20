@@ -1,4 +1,4 @@
-import { AGENT_API } from '$lib/config';
+import { AGENT_API } from '@lib/config';
 import type { OntologyIndex, OntologyResponse } from './types';
 
 export class OntologyClient {

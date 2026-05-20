@@ -9,6 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.6.1",
+    "@connectrpc/connect-web": "^1.6.1",
     "@tailwindcss/postcss": "^4.2.4",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",

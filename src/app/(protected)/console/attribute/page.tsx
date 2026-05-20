@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, RefreshCw, ArrowRight, Type, Hash, ToggleLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { attributeApi, AttributeNode } from "$lib/v1/graph/attribute";
+import { attributeApi, AttributeNode } from "@lib/v1/graph/attribute";
 
 const AttributeRegistryPage = () => {
   const router = useRouter();

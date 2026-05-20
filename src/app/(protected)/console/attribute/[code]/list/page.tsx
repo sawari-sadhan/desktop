@@ -17,8 +17,8 @@ import {
   ArrowUpRight,
   CheckCircle2
 } from "lucide-react";
-import { entityApi, EntityNode } from "$lib/v1/graph/entity";
-import { attributeApi, AttributeNode } from "$lib/v1/graph/attribute";
+import { entityApi, EntityNode } from "@lib/v1/graph/entity";
+import { attributeApi, AttributeNode } from "@lib/v1/graph/attribute";
 
 const AttributeLinkedVehiclesPage = () => {
   const router = useRouter();
