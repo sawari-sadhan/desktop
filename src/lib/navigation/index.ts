@@ -23,7 +23,7 @@ export const CONSOLE_NAV_ITEMS = [
     description: "System overview and registry metrics"
   },
   { 
-    name: "Graph Forge", 
+    name: "Ingest", 
     href: "/console/ingest", 
     icon: Database,
     description: "Ingest new vehicle nodes and relationships"

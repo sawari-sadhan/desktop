@@ -12,7 +12,10 @@ interface AttributeEditorProps {
 }
 
 export const AttributeEditor = ({ attribute }: AttributeEditorProps) => {
-  const type = (attribute.dataTypes as any)?.type || "string";
+  const rawType = (attribute.dataTypes as any)?.type || "string";
+  const type = Array.isArray(rawType)
+    ? (rawType.includes("string") ? "string" : (rawType[0] || "string"))
+    : rawType;
   const unit = (attribute.dataTypes as any)?.units || (attribute.dataTypes as any)?.unit;
 
   const renderEditor = () => {

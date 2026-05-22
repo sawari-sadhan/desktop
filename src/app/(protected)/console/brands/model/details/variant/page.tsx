@@ -218,9 +218,10 @@ const VariantDetailsPage = () => {
     setEditingField({ section, field });
     setAvailableNodes([]);
     try {
+      const dbFieldType = field.replace(/_/g, "-");
       const res = await graphClient.searchNodes({
         query: "",
-        types: [field],
+        types: [dbFieldType],
         limit: 1000,
         vector: []
       });
@@ -299,21 +300,23 @@ const VariantDetailsPage = () => {
       const targetValue = !isCurrentlyTrue;
 
       if (targetValue === true) {
+        const dbFieldType = field.replace(/_/g, "-");
+        const targetSlug = `${dbFieldType}-yes`;
         const existingNodesRes = await graphClient.searchNodes({
           query: "",
-          types: [field],
+          types: [dbFieldType],
           limit: 100,
           vector: []
         });
-        const matchingNode = (existingNodesRes.nodes || []).find(n => n.slug === field);
+        const matchingNode = (existingNodesRes.nodes || []).find(n => n.slug === targetSlug);
 
         if (!matchingNode) {
           await graphClient.createNode({
-            type: field,
-            slug: field,
+            type: dbFieldType,
+            slug: targetSlug,
             name: { en: "Yes" },
             description: {},
-            tags: [field],
+            tags: [dbFieldType],
             metadata: {},
             data: { value: true },
             embedding: []
@@ -358,9 +361,10 @@ const VariantDetailsPage = () => {
     if (!attributeSearchTerm.trim() || !variant) return;
     setIsUpdating(true);
     try {
+      const dbFieldType = field.replace(/_/g, "-");
       const name = attributeSearchTerm.trim();
       const randomSuffix = Math.random().toString(36).substring(7);
-      const slug = `${field}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${randomSuffix}`;
+      const slug = `${dbFieldType}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${randomSuffix}`;
       
       const data: any = {};
       if (type === 'number') {
@@ -369,11 +373,11 @@ const VariantDetailsPage = () => {
       }
 
       const res = await graphClient.createNode({
-        type: field,
+        type: dbFieldType,
         slug,
         name: { en: name },
         description: {},
-        tags: [field],
+        tags: [dbFieldType],
         metadata: {},
         data,
         embedding: []

@@ -8,14 +8,14 @@
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { CONFIG } from "../config";
-import { GraphService } from "../gen/graph_auto_pb";
+import { AutoService } from "../gen/graph_auto_pb";
 import { OBDService } from "../gen/graph_obd_pb";
 
 const coreTransport = createConnectTransport({
   baseUrl: CONFIG.CORE.API_URL,
 });
 
-export const graphClient = createClient(GraphService, coreTransport);
+export const graphClient = createClient(AutoService, coreTransport);
 export const obdClient = createClient(OBDService, coreTransport);
 
 export interface EntityNode {
@@ -30,6 +30,14 @@ export interface EntityNode {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface TypeBlueprint {
+  code: string;
+  name: string;
+  blueprint: Record<string, any>;
+  metadata: Record<string, any>;
+}
+
 
 // Re-export request/response types for convenience
 export type {

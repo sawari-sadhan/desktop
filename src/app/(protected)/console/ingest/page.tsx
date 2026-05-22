@@ -10,16 +10,13 @@ const IngestPage = () => {
   const [status, setStatus] = useState<{ type: "success" | "error" | null, message: string }>({ type: null, message: "" });
   const [brands, setBrands] = useState<{id: string, name: any, slug: string}[]>([]);
   const [models, setModels] = useState<{id: string, name: any, slug: string, parent_brand_id?: string}[]>([]);
-  const [variants, setVariants] = useState<{id: string, name: any, slug: string, parent_model_id?: string}[]>([]);
   const [formData, setFormData] = useState({
     slug: "",
     type: "brand",
     name_en: "",
     desc_en: "",
     brandId: "",
-    modelId: "",
-    variantId: "",
-    vehicle_type: "4w-ice"
+    modelId: ""
   });
 
   // Initial load of brands
@@ -41,7 +38,7 @@ const IngestPage = () => {
 
   // Fetch models whenever a brand is selected
   React.useEffect(() => {
-    if ((formData.type === "variant" || formData.type === "model" || formData.type === "release") && formData.brandId) {
+    if ((formData.type === "variant" || formData.type === "model") && formData.brandId) {
       const loadModels = async () => {
         try {
           const res = await graphClient.searchNodes({
@@ -61,35 +58,10 @@ const IngestPage = () => {
     }
   }, [formData.brandId, formData.type]);
 
-  // Fetch variants whenever a model is selected (for release selection)
-  React.useEffect(() => {
-    if (formData.type === "release" && formData.modelId) {
-      const loadVariants = async () => {
-        try {
-          const res = await graphClient.searchNodes({
-            query: "",
-            types: ["variant"],
-            limit: 1000
-          });
-          const filtered = (res.nodes || [])
-            .filter(v => (v.data as any)?.parent_model_id === formData.modelId)
-            .map(v => ({ id: v.id, name: v.name, slug: v.slug }));
-          setVariants(filtered);
-        } catch (err) {
-          console.error("Failed to load variants:", err);
-        }
-      };
-      loadVariants();
-    } else {
-      setVariants([]);
-    }
-  }, [formData.modelId, formData.type]);
-
   // Hierarchical Slug Generation
   React.useEffect(() => {
     const brand = brands.find(b => b.id === formData.brandId);
     const model = models.find(m => m.id === formData.modelId);
-    const variant = variants.find(v => v.id === formData.variantId);
     const nameSlug = slugify(formData.name_en);
 
     let finalSlug = nameSlug;
@@ -98,14 +70,10 @@ const IngestPage = () => {
     } else if (formData.type === "variant" && brand && model) {
       const modelClean = model.slug.replace(`${brand.slug}-`, "");
       finalSlug = `${brand.slug}-${modelClean}-${nameSlug}`;
-    } else if (formData.type === "release" && brand && model && variant) {
-      const modelClean = model.slug.replace(`${brand.slug}-`, "");
-      const variantClean = variant.slug.replace(`${brand.slug}-${modelClean}-`, "");
-      finalSlug = `${brand.slug}-${modelClean}-${variantClean}-${nameSlug}`;
     }
 
     setFormData(prev => ({ ...prev, slug: finalSlug }));
-  }, [formData.name_en, formData.brandId, formData.modelId, formData.variantId, formData.type, brands, models, variants]);
+  }, [formData.name_en, formData.brandId, formData.modelId, formData.type, brands, models]);
 
   const slugify = (text: string) => {
     return text
@@ -136,11 +104,6 @@ const IngestPage = () => {
       return;
     }
 
-    if (formData.type === "release" && (!formData.brandId || !formData.modelId || !formData.variantId)) {
-      setStatus({ type: "error", message: "Full hierarchy (Brand, Model, and Variant) must be selected for releases." });
-      return;
-    }
-    
     setIsSaving(true);
     setStatus({ type: null, message: "" });
 
@@ -155,9 +118,8 @@ const IngestPage = () => {
         data: { 
           icon: formData.type, 
           source: "Manual_Ingest",
-          ...(formData.type === "model" && { parent_brand_id: formData.brandId, vehicle_type: formData.vehicle_type }),
-          ...(formData.type === "variant" && { parent_model_id: formData.modelId, parent_brand_id: formData.brandId }),
-          ...(formData.type === "release" && { parent_variant_id: formData.variantId, parent_model_id: formData.modelId, parent_brand_id: formData.brandId })
+          ...(formData.type === "model" && { parent_brand_id: formData.brandId }),
+          ...(formData.type === "variant" && { parent_model_id: formData.modelId, parent_brand_id: formData.brandId })
         } as any
       });
 
@@ -179,13 +141,6 @@ const IngestPage = () => {
           linkType: "VARIANT_OF",
           metadata: { context: "Manual_Ingest_Hierarchy" } as any
         });
-      } else if (formData.type === "release" && formData.variantId) {
-        await graphClient.addLink({
-          sourceId: newNode.id,
-          targetId: formData.variantId,
-          linkType: "VERSION_OF",
-          metadata: { context: "Manual_Ingest_Hierarchy" } as any
-        });
       }
       
       setFormData({
@@ -194,9 +149,7 @@ const IngestPage = () => {
         name_en: "",
         desc_en: "",
         brandId: "",
-        modelId: "",
-        variantId: "",
-        vehicle_type: "4w-ice"
+        modelId: ""
       });
       setStatus({ type: "success", message: "Node successfully committed to the registry." });
     } catch (err: any) {
@@ -208,122 +161,114 @@ const IngestPage = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center py-16 px-12 relative">
-      <div className="w-full max-w-6xl space-y-16">
+    <div className="flex-1 flex flex-col items-center py-8 px-8 lg:px-12 min-h-screen bg-slate-950/20">
+      <div className="w-full max-w-7xl space-y-8">
         
+        {/* Unified Console Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/[0.03] pb-8 gap-6">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-black text-white tracking-tight">
+              Node <span className="text-slate-500 text-xl ml-2 font-bold tracking-widest uppercase">Ingestion</span>
+            </h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Add new nodes to the automotive knowledge graph</p>
+          </div>
+        </div>
+
         {/* Status Message */}
         {status.type && (
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`p-6 rounded-3xl flex items-start gap-5 backdrop-blur-xl border ${
+            className={`p-5 rounded-2xl flex items-start gap-4 backdrop-blur-xl border ${
               status.type === 'success' 
                 ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' 
                 : 'bg-rose-500/10 text-rose-300 border-rose-500/20'
             }`}
           >
-            {status.type === 'success' ? <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" /> : <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />}
-            <span className="text-sm font-semibold tracking-tight leading-relaxed">{status.message}</span>
+            {status.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" /> : <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />}
+            <span className="text-xs font-bold tracking-tight leading-relaxed">{status.message}</span>
           </motion.div>
         )}
 
         {/* Main Forge Interface */}
-        <div className="space-y-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-            
-            {/* Left Column (Identity) */}
-            <div className="space-y-16">
-              {/* Type Selection */}
-              <div className="space-y-6">
-                <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] flex items-center gap-3 px-1">
-                  1. Node Type
-                </label>
-                <div className="relative group">
-                  <select 
-                    value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value, brandId: "", modelId: "", variantId: ""})}
-                    className="w-full bg-white/[0.02] border border-white/[0.03] p-8 text-sm font-bold text-slate-100 focus:ring-1 focus:ring-white/20 transition-all rounded-[2rem] cursor-pointer appearance-none hover:bg-white/[0.04]"
-                  >
-                    <option value="brand" className="bg-[#1a1c23] text-slate-300">Brand / Manufacturer</option>
-                    <option value="model" className="bg-[#1a1c23] text-slate-300">Vehicle Model</option>
-                    <option value="variant" className="bg-[#1a1c23] text-slate-300">Technical Variant</option>
-                    <option value="release" className="bg-[#1a1c23] text-slate-300">Model Year Release</option>
-                  </select>
-                  <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-slate-600 group-hover:text-slate-100 transition-colors">
-                    <Database className="w-5 h-5" />
-                  </div>
-                </div>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* Left Column (Identity) */}
+          <div className="bg-slate-950/40 border border-white/[0.03] p-8 rounded-[2.5rem] space-y-8 backdrop-blur-md">
+            <h2 className="text-sm font-black text-white uppercase tracking-[0.25em] border-l-2 border-teal-500/30 pl-4">
+              Node Identity
+            </h2>
 
-              {/* Vehicle Segment Selection (Conditional) */}
-              {formData.type === "model" && (
-                <div className="space-y-6">
-                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] flex items-center gap-3 px-1">
-                    1.5 Vehicle Segment
-                  </label>
-                  <div className="relative group">
-                    <select 
-                      value={formData.vehicle_type}
-                      onChange={(e) => setFormData({...formData, vehicle_type: e.target.value})}
-                      className="w-full bg-white/[0.02] border border-white/[0.03] p-8 text-sm font-bold text-slate-100 focus:ring-1 focus:ring-white/20 transition-all rounded-[2rem] cursor-pointer appearance-none hover:bg-white/[0.04]"
-                    >
-                      <option value="2w-ice" className="bg-[#1a1c23] text-slate-300">2-Wheeler (ICE)</option>
-                      <option value="4w-ice" className="bg-[#1a1c23] text-slate-300">4-Wheeler (ICE)</option>
-                      <option value="4w-electric" className="bg-[#1a1c23] text-slate-300">4-Wheeler (Electric)</option>
-                    </select>
-                    <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-slate-600 group-hover:text-slate-100 transition-colors">
-                      <Info className="w-5 h-5" />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Name Input */}
-              <div className="space-y-6">
-                <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] px-1">2. Node Name</label>
-                <input 
-                  type="text"
-                  value={formData.name_en}
-                  onChange={handleNameChange}
-                  autoComplete="off"
-                  className="w-full bg-white/[0.02] border border-white/[0.03] p-8 text-xl font-black text-slate-100 placeholder:text-slate-700 focus:ring-1 focus:ring-white/20 transition-all rounded-[2rem] hover:bg-white/[0.04]"
-                  placeholder="e.g. Tesla Motors"
-                />
-              </div>
-
-              {/* Slug Input */}
-              <div className="space-y-6">
-                <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] flex items-center justify-between px-1">
-                  3. System Key
-                  <span className="text-[9px] font-mono text-slate-600">Immutable Slug</span>
-                </label>
-                <div className="relative">
-                  <input 
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) => setFormData({...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-')})}
-                    className="w-full bg-white/[0.02] border border-white/[0.03] p-8 text-sm font-mono text-slate-100 focus:ring-1 focus:ring-white/20 transition-all rounded-[2rem] hover:bg-white/[0.04]"
-                    placeholder="tesla-motors"
-                  />
-                </div>
+            {/* Type Selection */}
+            <div className="space-y-3">
+              <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] px-1">
+                1. Node Type
+              </label>
+              <div className="relative group">
+                <select 
+                  value={formData.type}
+                  onChange={(e) => setFormData({...formData, type: e.target.value, brandId: "", modelId: ""})}
+                  className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold text-slate-100 focus:ring-1 focus:ring-white/20 transition-all rounded-2xl cursor-pointer hover:bg-white/[0.04]"
+                >
+                  <option value="brand" className="bg-[#1a1c23] text-slate-300">Brand / Manufacturer</option>
+                  <option value="model" className="bg-[#1a1c23] text-slate-300">Vehicle Model</option>
+                  <option value="variant" className="bg-[#1a1c23] text-slate-300">Technical Variant</option>
+                </select>
               </div>
             </div>
 
-            {/* Right Column (Hierarchy) */}
-            <div className="space-y-16 flex flex-col">
+
+
+            {/* Name Input */}
+            <div className="space-y-3">
+              <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] px-1">
+                2. Node Name
+              </label>
+              <input 
+                type="text"
+                value={formData.name_en}
+                onChange={handleNameChange}
+                autoComplete="off"
+                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-sm font-bold text-slate-100 placeholder:text-slate-700 focus:ring-1 focus:ring-white/20 transition-all rounded-2xl hover:bg-white/[0.04]"
+                placeholder="e.g. Tesla Motors"
+              />
+            </div>
+
+            {/* Slug Input */}
+            <div className="space-y-3">
+              <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] flex items-center justify-between px-1">
+                3. System Key
+                <span className="text-[8px] font-mono text-slate-600">Immutable Slug</span>
+              </label>
+              <input 
+                type="text"
+                value={formData.slug}
+                onChange={(e) => setFormData({...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-')})}
+                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-mono text-slate-400 focus:ring-1 focus:ring-white/20 transition-all rounded-2xl hover:bg-white/[0.04]"
+                placeholder="tesla-motors"
+              />
+            </div>
+          </div>
+
+          {/* Right Column (Hierarchy) */}
+          <div className="bg-slate-950/40 border border-white/[0.03] p-8 rounded-[2.5rem] space-y-8 backdrop-blur-md flex flex-col justify-between">
+            <div className="space-y-8">
+              <h2 className="text-sm font-black text-white uppercase tracking-[0.25em] border-l-2 border-teal-500/30 pl-4">
+                Hierarchy & Context
+              </h2>
+
               {/* Hierarchical Selection Hub (Brands) */}
-              {(formData.type === "model" || formData.type === "variant" || formData.type === "release") && (
+              {(formData.type === "model" || formData.type === "variant") && (
                 <motion.div 
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="space-y-6"
+                  className="space-y-3"
                 >
-                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] flex items-center gap-3 px-1">
+                  <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] px-1">
                     4. Select Brand
                   </label>
-
-                  <div className="relative bg-white/[0.01] border border-white/[0.02] rounded-[2.5rem] p-8 hover:bg-white/[0.02] transition-all">
-                    <div className="flex flex-wrap gap-4 max-h-32 overflow-y-auto px-2 pr-3 custom-scrollbar py-1">
+                  <div className="bg-white/[0.01] border border-white/[0.03] rounded-3xl p-5 hover:bg-white/[0.02] transition-all">
+                    <div className="flex flex-wrap gap-2.5 max-h-32 overflow-y-auto px-1 pr-2 custom-scrollbar py-0.5">
                       {brands.map((brand, idx) => {
                         const isSelected = formData.brandId === brand.id;
                         const displayName = brand.name?.en || brand.name;
@@ -332,11 +277,11 @@ const IngestPage = () => {
                             key={brand.id}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: idx * 0.02 }}
+                            transition={{ delay: idx * 0.01 }}
                             onClick={() => setFormData(prev => ({ ...prev, brandId: isSelected ? "" : brand.id, modelId: "" }))}
-                            className={`relative px-8 py-4 rounded-[1.25rem] text-[10px] font-black uppercase tracking-widest transition-all duration-300 border-2 ${
+                            className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 border ${
                               isSelected 
-                                ? "bg-slate-400/30 text-white border-slate-400/50 shadow-xl scale-105" 
+                                ? "bg-teal-500/10 text-teal-400 border-teal-500/30 shadow-lg scale-105" 
                                 : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-slate-200"
                             }`}
                           >
@@ -350,17 +295,17 @@ const IngestPage = () => {
               )}
 
               {/* Hierarchical Selection Hub (Models) */}
-              {(formData.type === "variant" || formData.type === "release") && formData.brandId && (
+              {formData.type === "variant" && formData.brandId && (
                 <motion.div 
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="space-y-6"
+                  className="space-y-3"
                 >
-                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] flex items-center gap-3 px-1">
+                  <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] px-1">
                     5. Select Model
                   </label>
-                  <div className="relative bg-white/[0.01] border border-white/[0.02] rounded-[2.5rem] p-8 hover:bg-white/[0.02] transition-all">
-                    <div className="flex flex-wrap gap-4 max-h-32 overflow-y-auto px-2 pr-3 custom-scrollbar py-1">
+                  <div className="bg-white/[0.01] border border-white/[0.03] rounded-3xl p-5 hover:bg-white/[0.02] transition-all">
+                    <div className="flex flex-wrap gap-2.5 max-h-32 overflow-y-auto px-1 pr-2 custom-scrollbar py-0.5">
                       {models.length > 0 ? models.map((model, idx) => {
                         const isSelected = formData.modelId === model.id;
                         const displayName = model.name?.en || model.name;
@@ -369,11 +314,11 @@ const IngestPage = () => {
                             key={model.id}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: idx * 0.02 }}
-                            onClick={() => setFormData(prev => ({ ...prev, modelId: isSelected ? "" : model.id, variantId: "" }))}
-                            className={`relative px-8 py-4 rounded-[1.25rem] text-[10px] font-black uppercase tracking-widest transition-all duration-300 border-2 ${
+                            transition={{ delay: idx * 0.01 }}
+                            onClick={() => setFormData(prev => ({ ...prev, modelId: isSelected ? "" : model.id }))}
+                            className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 border ${
                               isSelected 
-                                ? "bg-slate-400/30 text-white border-slate-400/50 shadow-xl scale-105" 
+                                ? "bg-teal-500/10 text-teal-400 border-teal-500/30 shadow-lg scale-105" 
                                 : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-slate-200"
                             }`}
                           >
@@ -381,7 +326,7 @@ const IngestPage = () => {
                           </motion.button>
                         );
                       }) : (
-                        <div className="w-full py-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-600 text-center italic">
+                        <div className="w-full py-4 text-[9px] font-black uppercase tracking-[0.2em] text-slate-600 text-center italic">
                           No models discovered
                         </div>
                       )}
@@ -390,87 +335,47 @@ const IngestPage = () => {
                 </motion.div>
               )}
 
-              {/* Hierarchical Selection Hub (Variants) */}
-              {formData.type === "release" && formData.modelId && (
-                <motion.div 
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="space-y-6"
-                >
-                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] flex items-center gap-3 px-1">
-                    6. Select Variant
-                  </label>
-                  <div className="relative bg-white/[0.01] border border-white/[0.02] rounded-[2.5rem] p-8 hover:bg-white/[0.02] transition-all">
-                    <div className="flex flex-wrap gap-4 max-h-32 overflow-y-auto px-2 pr-3 custom-scrollbar py-1">
-                      {variants.length > 0 ? variants.map((variant, idx) => {
-                        const isSelected = formData.variantId === variant.id;
-                        const displayName = variant.name?.en || variant.name;
-                        return (
-                          <motion.button
-                            key={variant.id}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: idx * 0.02 }}
-                            onClick={() => setFormData(prev => ({ ...prev, variantId: isSelected ? "" : variant.id }))}
-                            className={`relative px-8 py-4 rounded-[1.25rem] text-[10px] font-black uppercase tracking-widest transition-all duration-300 border-2 ${
-                              isSelected 
-                                ? "bg-slate-400/30 text-white border-slate-400/50 shadow-xl scale-105" 
-                                : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-slate-200"
-                            }`}
-                          >
-                            {displayName}
-                          </motion.button>
-                        );
-                      }) : (
-                        <div className="w-full py-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-600 text-center italic">
-                          No variants discovered
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
               {/* Description Input */}
-              <div className="space-y-6 flex-1 flex flex-col">
-                <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] px-1">7. Metadata Context</label>
+              <div className="space-y-3 flex-1 flex flex-col">
+                <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] px-1">
+                  6. Metadata Context
+                </label>
                 <textarea 
                   value={formData.desc_en}
                   onChange={(e) => setFormData({...formData, desc_en: e.target.value})}
-                  className="flex-1 w-full bg-white/[0.02] border border-white/[0.03] p-8 text-sm font-medium text-slate-300 placeholder:text-slate-700 focus:ring-1 focus:ring-white/20 transition-all rounded-[2.5rem] resize-none leading-relaxed hover:bg-white/[0.04] min-h-[160px]"
+                  className="w-full bg-white/[0.02] border border-white/[0.05] p-5 text-xs font-medium text-slate-300 placeholder:text-slate-700 focus:ring-1 focus:ring-white/20 transition-all rounded-2xl resize-none leading-relaxed hover:bg-white/[0.04] min-h-[120px]"
                   placeholder="Technical specifications or operational context..."
                 />
               </div>
             </div>
+
+            {/* Registry Control Hub */}
+            <div className="pt-6 w-full">
+              <motion.button 
+                onClick={handleSave}
+                disabled={isSaving || !formData.slug || !formData.name_en || 
+                  (formData.type === 'model' && !formData.brandId) || 
+                  (formData.type === 'variant' && (!formData.brandId || !formData.modelId))
+                }
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full flex items-center justify-center gap-3 py-5 bg-slate-100 text-slate-950 font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all rounded-2xl disabled:opacity-5 disabled:bg-white/10 shadow-2xl relative overflow-hidden group/btn cursor-pointer"
+              >
+                {isSaving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-slate-950/20 border-t-slate-950 rounded-full animate-spin" />
+                    <span>Processing Node...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    <span>Commit to Registry</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
           </div>
 
-          {/* Registry Control Hub */}
-          <div className="space-y-12 pt-12">
-            <motion.button 
-              onClick={handleSave}
-              disabled={isSaving || !formData.slug || !formData.name_en || 
-                (formData.type === 'model' && !formData.brandId) || 
-                (formData.type === 'variant' && (!formData.brandId || !formData.modelId)) ||
-                (formData.type === 'release' && (!formData.brandId || !formData.modelId || !formData.variantId))
-              }
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full flex items-center justify-center gap-6 py-10 bg-slate-100 text-slate-950 font-black uppercase text-[12px] tracking-[0.5em] hover:bg-slate-200 transition-all rounded-[2.5rem] disabled:opacity-5 disabled:bg-white/10 shadow-2xl relative overflow-hidden group/btn"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_2s_infinite]" />
-              {isSaving ? (
-                <>
-                  <div className="w-6 h-6 border-2 border-slate-950/20 border-t-slate-950 rounded-full animate-spin" />
-                  <span>Processing Node...</span>
-                </>
-              ) : (
-                <>
-                  <Save className="w-6 h-6" />
-                  <span>Commit to Registry</span>
-                </>
-              )}
-            </motion.button>
-          </div>
         </div>
       </div>
     </div>

@@ -21,9 +21,60 @@ import {
   Tag,
   Gauge,
   Sliders,
-  Sparkles
+  Sparkles,
+  Edit3,
+  Check,
+  Plus,
+  Loader2
 } from "lucide-react";
-import { graphClient, EntityNode } from "@lib/core";
+import { graphClient, EntityNode, TypeBlueprint } from "@lib/core";
+
+const getModelValue = (model: any, fieldKey: string, fieldConfig: any) => {
+  if (!model?.data) return undefined;
+  
+  if (model.data[fieldKey] !== undefined) {
+    return model.data[fieldKey];
+  }
+  
+  const specs = model.data.specifications;
+  if (!specs) return undefined;
+  
+  const label = fieldConfig.label;
+  if (label) {
+    const cleanedLabel = label.toLowerCase();
+    for (const k of Object.keys(specs)) {
+      if (k.toLowerCase() === cleanedLabel) {
+        return specs[k];
+      }
+    }
+  }
+  
+  return undefined;
+};
+
+const formatValue = (val: any) => {
+  if (val === null || val === undefined) return undefined;
+  if (typeof val === 'object') {
+    if (val.value !== undefined) {
+      return val.value;
+    }
+  }
+  return val;
+};
+
+const KEY_SPECS = {
+  engine_type: { label: "Engine Type", type: "string" },
+  displacement: { label: "Displacement", type: "number", unit: "cc" },
+  max_power: { label: "Max Power", type: "string" },
+  max_torque: { label: "Max Torque", type: "string" },
+  transmission_type: { label: "Transmission Type", type: "string" },
+  fuel_type: { label: "Fuel Type", type: "string" },
+  seating_capacity: { label: "Seating Capacity", type: "number" },
+  length: { label: "Length", type: "number", unit: "mm" },
+  width: { label: "Width", type: "number", unit: "mm" },
+  height: { label: "Height", type: "number", unit: "mm" },
+  ground_clearance: { label: "Ground Clearance Unladen", type: "number", unit: "mm" }
+};
 
 const ModelDetailsPage = () => {
   const router = useRouter();
@@ -34,6 +85,10 @@ const ModelDetailsPage = () => {
   const [brand, setBrand] = useState<EntityNode | null>(null);
   const [variants, setVariants] = useState<EntityNode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [availableNodes, setAvailableNodes] = useState<EntityNode[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [attributeSearchTerm, setAttributeSearchTerm] = useState("");
 
   const loadData = async () => {
     if (!modelId) return;
@@ -109,6 +164,199 @@ const ModelDetailsPage = () => {
     loadData();
   }, [modelId]);
 
+  const handleEditClick = async (field: string) => {
+    setEditingField(field);
+    setAvailableNodes([]);
+    try {
+      const dbFieldType = field.replace(/_/g, "-");
+      const res = await graphClient.searchNodes({
+        query: "",
+        types: [dbFieldType],
+        limit: 1000,
+        vector: []
+      });
+      const mapped = (res.nodes || []).map(n => ({
+        id: n.id,
+        type: n.type,
+        slug: n.slug,
+        name: n.name || {},
+        description: n.description || {},
+        tags: n.tags || [],
+        metadata: n.metadata || {},
+        data: n.data || {},
+        created_at: "",
+        updated_at: n.updatedAt
+      }));
+      setAvailableNodes(mapped);
+    } catch (err) {
+      console.error("Failed to fetch attribute nodes:", err);
+    }
+  };
+
+  const handleSaveEdit = async (field: string, node: EntityNode) => {
+    if (!model) return;
+    setIsUpdating(true);
+    try {
+      const updatedData = { ...model.data };
+      if (!updatedData.specifications) updatedData.specifications = {};
+      
+      const valueToSave = node.data?.value !== undefined ? node.data.value : node.name.en;
+      
+      const fieldConfig = KEY_SPECS[field as keyof typeof KEY_SPECS];
+      let targetKey = fieldConfig?.label || field.replace(/_/g, " ");
+      const cleanedKey = targetKey.toLowerCase();
+      for (const k of Object.keys(updatedData.specifications)) {
+        if (k.toLowerCase() === cleanedKey) {
+          targetKey = k;
+          break;
+        }
+      }
+
+      const oldVal = updatedData.specifications[targetKey];
+      if (oldVal && typeof oldVal === 'object' && oldVal.unit !== undefined) {
+        updatedData.specifications[targetKey] = {
+          value: valueToSave,
+          unit: oldVal.unit
+        };
+      } else {
+        updatedData.specifications[targetKey] = valueToSave;
+      }
+
+      await graphClient.updateNode({
+        id: model.id,
+        name: model.name,
+        description: model.description,
+        tags: model.tags,
+        metadata: model.metadata,
+        data: updatedData,
+        embedding: []
+      });
+
+      setModel({ ...model, data: updatedData });
+      setEditingField(null);
+    } catch (err) {
+      console.error("Failed to update attribute:", err);
+      alert("Failed to save change.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleToggleBoolean = async (field: string, currentValue: any) => {
+    if (!model || isUpdating) return;
+    setIsUpdating(true);
+    try {
+      const isCurrentlyTrue = currentValue === true || currentValue === "Yes" || currentValue === "true";
+      const targetValue = !isCurrentlyTrue;
+
+      if (targetValue === true) {
+        const dbFieldType = field.replace(/_/g, "-");
+        const targetSlug = `${dbFieldType}-yes`;
+        const existingNodesRes = await graphClient.searchNodes({
+          query: "",
+          types: [dbFieldType],
+          limit: 100,
+          vector: []
+        });
+        const matchingNode = (existingNodesRes.nodes || []).find(n => n.slug === targetSlug);
+
+        if (!matchingNode) {
+          await graphClient.createNode({
+            type: dbFieldType,
+            slug: targetSlug,
+            name: { en: "Yes" },
+            description: {},
+            tags: [dbFieldType],
+            metadata: {},
+            data: { value: true },
+            embedding: []
+          });
+        }
+      }
+
+      const updatedData = { ...model.data };
+      if (!updatedData.specifications) updatedData.specifications = {};
+      
+      const fieldConfig = KEY_SPECS[field as keyof typeof KEY_SPECS];
+      let targetKey = fieldConfig?.label || field.replace(/_/g, " ");
+      const cleanedKey = targetKey.toLowerCase();
+      for (const k of Object.keys(updatedData.specifications)) {
+        if (k.toLowerCase() === cleanedKey) {
+          targetKey = k;
+          break;
+        }
+      }
+
+      updatedData.specifications[targetKey] = targetValue;
+
+      await graphClient.updateNode({
+        id: model.id,
+        name: model.name,
+        description: model.description,
+        tags: model.tags,
+        metadata: model.metadata,
+        data: updatedData,
+        embedding: []
+      });
+
+      setModel({ ...model, data: updatedData });
+    } catch (err) {
+      console.error("Failed to toggle boolean attribute:", err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleQuickCreate = async (field: string, type: string) => {
+    if (!attributeSearchTerm.trim() || !model) return;
+    setIsUpdating(true);
+    try {
+      const dbFieldType = field.replace(/_/g, "-");
+      const name = attributeSearchTerm.trim();
+      const randomSuffix = Math.random().toString(36).substring(7);
+      const slug = `${dbFieldType}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${randomSuffix}`;
+      
+      const data: any = {};
+      if (type === 'number') {
+        const num = parseFloat(name);
+        if (!isNaN(num)) data.value = num;
+      }
+
+      const res = await graphClient.createNode({
+        type: dbFieldType,
+        slug,
+        name: { en: name },
+        description: {},
+        tags: [dbFieldType],
+        metadata: {},
+        data,
+        embedding: []
+      });
+
+      if (!res.node) throw new Error("Failed to create node");
+
+      const newNode: EntityNode = {
+        id: res.node.id,
+        type: res.node.type,
+        slug: res.node.slug,
+        name: res.node.name || {},
+        description: res.node.description || {},
+        tags: res.node.tags || [],
+        metadata: res.node.metadata || {},
+        data: res.node.data || {},
+        created_at: "",
+        updated_at: res.node.updatedAt
+      };
+
+      await handleSaveEdit(field, newNode);
+      setAttributeSearchTerm("");
+    } catch (err) {
+      console.error("Failed to quick create node:", err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-slate-950">
@@ -161,7 +409,18 @@ const ModelDetailsPage = () => {
             </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex items-center gap-6">
+            <div className="relative w-64">
+              <input 
+                type="text"
+                placeholder="Search specs..."
+                value={attributeSearchTerm}
+                onChange={(e) => setAttributeSearchTerm(e.target.value)}
+                className="w-full bg-white/[0.03] border border-white/[0.05] rounded-2xl py-2.5 pl-10 pr-4 text-xs text-white focus:ring-1 focus:ring-white/20 transition-all hover:bg-white/[0.05]"
+              />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+            </div>
+
             <button 
               onClick={loadData}
               className="p-4 bg-white/5 border border-white/5 rounded-2xl text-slate-400 hover:text-white hover:bg-white/10 hover:border-white/10 transition-all flex items-center gap-2 cursor-pointer"
@@ -177,31 +436,168 @@ const ModelDetailsPage = () => {
           
           {/* Specifications Box */}
           <div className="lg:col-span-2 bg-slate-950/40 border border-white/[0.03] p-8 rounded-[2.5rem] space-y-8 backdrop-blur-md">
-            <div className="flex items-center gap-3 text-slate-200">
+            <div className="flex items-center gap-3 text-slate-200 border-b border-white/5 pb-6">
               <Sliders className="w-5 h-5 text-teal-400" />
-              <h2 className="text-lg font-black uppercase tracking-wider">Specifications Blueprint</h2>
+              <h2 className="text-lg font-black uppercase tracking-wider">Key Specifications</h2>
             </div>
 
-            {Object.keys(specs).length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {Object.entries(specs).map(([key, val]: [string, any]) => {
-                  let valStr = "";
-                  if (typeof val === 'object' && val !== null) {
-                    valStr = val.unit ? `${val.value} ${val.unit}` : String(val.value || "");
-                  } else {
-                    valStr = String(val);
-                  }
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+              {Object.entries(KEY_SPECS)
+                .filter(([fieldKey, fieldConfig]) => {
+                  const label = (fieldConfig.label || fieldKey.replace(/_/g, " ")).toLowerCase();
+                  return label.includes(attributeSearchTerm.toLowerCase());
+                })
+                .map(([fieldKey, fieldConfig]) => {
+                  const rawValue = getModelValue(model, fieldKey, fieldConfig);
+                  const value = formatValue(rawValue);
                   return (
-                    <div key={key} className="bg-white/[0.01] border border-white/[0.02] p-4 rounded-2xl flex flex-col gap-1 hover:border-white/5 transition-all">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{key}</span>
-                      <span className="text-slate-200 font-bold text-sm">{valStr || "---"}</span>
+                    <div key={fieldKey} className="group bg-white/[0.01] border border-white/[0.03] p-5 rounded-2xl hover:bg-white/[0.02] transition-all hover:border-white/10 flex items-center justify-between gap-4 relative overflow-hidden">
+                      {editingField === fieldKey ? (
+                        <div className="flex-1 flex flex-col gap-4 relative z-10">
+                          <div className="flex items-center justify-between gap-4">
+                            <p className="text-[10px] font-black text-white uppercase tracking-widest truncate">
+                              Editing {fieldConfig.label || fieldKey.replace(/_/g, " ")}
+                            </p>
+                            <button 
+                              onClick={() => setEditingField(null)}
+                              className="text-[10px] font-bold text-slate-500 hover:text-white transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                          
+                          <div className="relative">
+                            <input 
+                              type="text"
+                              autoFocus
+                              placeholder="Search nodes..."
+                              value={attributeSearchTerm}
+                              onChange={(e) => setAttributeSearchTerm(e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-4 pr-10 text-xs text-white focus:ring-1 focus:ring-white/20 transition-all"
+                            />
+                            <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+                          </div>
+
+                          <div className="max-h-40 overflow-y-auto custom-scrollbar flex flex-col gap-1 p-1">
+                            {attributeSearchTerm.trim() && (
+                              <button 
+                                onClick={() => handleQuickCreate(fieldKey, fieldConfig.type)}
+                                className="text-left px-4 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl text-xs text-emerald-400 font-bold transition-all flex items-center justify-between group/create"
+                              >
+                                <div className="flex flex-col">
+                                  <span className="text-[10px] uppercase font-black tracking-widest">Create New Node</span>
+                                  <span className="text-[11px] opacity-80">"{attributeSearchTerm}"</span>
+                                </div>
+                                <Plus className="w-4 h-4 group-hover/create:rotate-90 transition-transform" />
+                              </button>
+                            )}
+
+                            {availableNodes
+                              .filter(node => {
+                                const name = typeof node.name === 'object' ? node.name.en : node.name;
+                                return name.toLowerCase().includes(attributeSearchTerm.toLowerCase());
+                              })
+                              .length > 0 ? (
+                              availableNodes
+                                .filter(node => {
+                                  const name = typeof node.name === 'object' ? node.name.en : node.name;
+                                  return name.toLowerCase().includes(attributeSearchTerm.toLowerCase());
+                                })
+                                .map(node => (
+                                  <button
+                                    key={node.id}
+                                    onClick={() => {
+                                      handleSaveEdit(fieldKey, node);
+                                      setAttributeSearchTerm("");
+                                    }}
+                                    disabled={isUpdating}
+                                    className="text-left px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-xs text-slate-300 hover:text-white transition-all flex items-center justify-between group/opt"
+                                  >
+                                    <span>{typeof node.name === 'object' ? node.name.en : node.name}</span>
+                                    <Check className="w-3 h-3 opacity-0 group-hover/opt:opacity-100 transition-opacity text-emerald-500" />
+                                  </button>
+                                ))
+                            ) : !attributeSearchTerm.trim() && (
+                              <div className="flex flex-col items-center gap-3 py-4">
+                                <p className="text-[10px] text-slate-600 uppercase font-black text-center">No nodes found in registry</p>
+                              </div>
+                            )}
+                          </div>
+                          {isUpdating && (
+                            <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm flex items-center justify-center rounded-2xl">
+                              <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex-1 space-y-2">
+                            <p className="text-[9px] font-black text-slate-500 tracking-[0.15em] uppercase">
+                              {fieldConfig.label || fieldKey.replace(/_/g, " ")}
+                            </p>
+                            <div className="flex items-baseline gap-1.5">
+                              <p className="text-base font-black text-white group-hover:text-teal-400 transition-colors">
+                                {fieldConfig.type === 'boolean' 
+                                  ? (value === true || value === "Yes" || value === "true" ? "Yes" : "No")
+                                  : (value !== undefined ? value : "---")
+                                }
+                              </p>
+                              {(fieldConfig as any).unit && value !== undefined && (
+                                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                                  {(fieldConfig as any).unit}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-end justify-between self-stretch py-0.5">
+                            <div className="flex items-center gap-1.5">
+                              {fieldConfig.type === "string" && (
+                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-teal-300/80">String</span>
+                              )}
+                              {fieldConfig.type === "number" && (
+                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-blue-300/80">Number</span>
+                              )}
+                              {fieldConfig.type === "boolean" && (
+                                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-amber-300/80">Boolean</span>
+                              )}
+                            </div>
+
+                            <div className="pt-2">
+                              {fieldConfig.type === 'boolean' ? (
+                                <button 
+                                  onClick={() => handleToggleBoolean(fieldKey, value)}
+                                  disabled={isUpdating}
+                                  className={`relative w-8 h-4 rounded-full transition-all duration-300 ${
+                                    (value === true || value === "Yes" || value === "true") 
+                                      ? 'bg-emerald-500/20 border-emerald-500/30' 
+                                      : 'bg-white/5 border-white/10'
+                                  } border flex items-center p-0.5 hover:scale-105`}
+                                >
+                                  <motion.div 
+                                    animate={{ 
+                                      x: (value === true || value === "Yes" || value === "true") ? 14 : 0,
+                                      backgroundColor: (value === true || value === "Yes" || value === "true") ? '#10b981' : '#475569'
+                                    }}
+                                    className="w-2.5 h-2.5 rounded-full shadow-lg"
+                                  />
+                                </button>
+                              ) : (
+                                <button 
+                                  onClick={() => handleEditClick(fieldKey)}
+                                  className="opacity-0 group-hover:opacity-100 p-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-slate-500 hover:text-white transition-all"
+                                >
+                                  <Edit3 className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   );
                 })}
-              </div>
-            ) : (
-              <p className="text-xs text-slate-500 italic">No specifications blueprint seeded for this model.</p>
-            )}
+            </div>
           </div>
 
           {/* Features Column */}
