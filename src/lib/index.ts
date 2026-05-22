@@ -3,6 +3,7 @@ export { authClient, AccountContext } from "./config";
 export {
   consoleLoginAction,
   consoleLogoutAction,
+  consoleRegisterAction,
   memberLoginAction,
   memberLogoutAction,
   registerAction

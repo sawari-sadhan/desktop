@@ -7,7 +7,8 @@ import {
   Home,
   Info,
   Search,
-  Shield
+  Shield,
+  Activity
 } from "lucide-react";
 
 /**
@@ -38,6 +39,12 @@ export const CONSOLE_NAV_ITEMS = [
     href: "/console/attribute", 
     icon: Terminal,
     description: "Technical feature registry"
+  },
+  {
+    name: "OBD Codes",
+    href: "/console/obd",
+    icon: Activity,
+    description: "OBD-II diagnostic trouble code registry"
   },
 ];
 

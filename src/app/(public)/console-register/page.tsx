@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Phone, Sparkles, LogIn, CheckCircle } from "lucide-react";
+import { Phone, User, Mail, CheckCircle, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { registerAction } from "@lib/auth";
+import { consoleRegisterAction as registerAction } from "@lib/auth";
 import {
   AuthCardLayout,
   InputField,
@@ -16,10 +16,11 @@ import {
 
 /**
  * @SS-Auth-Audit
- * Module: [Dashboard Register Page]
- * Purpose: [Self-registration portal for dashboard-level members]
+ * Module: [Console Register Page]
+ * Purpose: [Administrative account registration portal mirrored with console UI theme]
  */
-export default function MemberRegisterPage() {
+
+export default function ConsoleRegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -35,12 +36,12 @@ export default function MemberRegisterPage() {
     const result = await registerAction(formData);
 
     if (result.success) {
-      setSuccess(result.message || "Registration successful!");
+      setSuccess(result.message || "Registration request completed successfully.");
       setTimeout(() => {
-        router.push("/login");
+        router.push("/console-login");
       }, 2500);
     } else {
-      setError(result.error || "Registration failed");
+      setError(result.error || "Registration failed.");
       setLoading(false);
     }
   }
@@ -48,16 +49,15 @@ export default function MemberRegisterPage() {
   const footer = (
     <>
       <Link
-        href="/login"
-        className="group flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-teal-400 transition-colors uppercase tracking-wider"
+        href="/console-login"
+        className="group flex items-center gap-2 text-[10px] font-bold text-slate-400 hover:text-slate-200 transition-colors uppercase tracking-widest"
       >
-        <LogIn className="w-4 h-4 text-slate-500 group-hover:text-teal-400 transition-colors" />
-        Already have an account? Sign In
+        <ArrowLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-200 transition-colors" />
+        Already registered? Sign In
       </Link>
-
       <div className="flex gap-1.5">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="w-1.5 h-1.5 rounded-full bg-teal-500/20" />
+          <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/[0.05]" />
         ))}
       </div>
     </>
@@ -65,11 +65,10 @@ export default function MemberRegisterPage() {
 
   return (
     <AuthCardLayout
-      theme="dashboard"
-      title="Create Account"
-      subtitle="Register as a Dashboard Member"
-      badgeText="New Registration"
-      badgeIcon={<Sparkles className="w-5 h-5 text-teal-400" />}
+      theme="console"
+      title="Registration Gateway"
+      subtitle="Create Administrative Account"
+      badgeText="Level: Console"
       scrollable={true}
       footerContent={footer}
     >
@@ -78,17 +77,18 @@ export default function MemberRegisterPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             className="flex flex-col items-center justify-center py-12 text-center"
           >
-            <div className="p-4 bg-teal-500/10 rounded-full border border-teal-500/20 mb-6">
-              <CheckCircle className="w-12 h-12 text-teal-400 animate-bounce" />
+            <div className="p-4 bg-emerald-500/10 rounded-full border border-emerald-500/20 mb-6">
+              <CheckCircle className="w-12 h-12 text-emerald-400 animate-bounce" />
             </div>
             <h2 className="text-2xl font-black text-slate-100 mb-2">Registration Complete!</h2>
             <p className="text-slate-400 max-w-sm text-sm mb-6">{success}</p>
-            <p className="text-xs text-teal-400 animate-pulse">Redirecting to login portal...</p>
+            <p className="text-xs text-emerald-400 animate-pulse">Redirecting to login portal...</p>
           </motion.div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+          <form onSubmit={handleSubmit} className="space-y-6 relative z-10 w-full">
             <InputField
               name="name"
               type="text"
@@ -96,37 +96,39 @@ export default function MemberRegisterPage() {
               placeholder="John Bahadur Doe"
               label="Full Name *"
               icon={User}
-              theme="dashboard"
+              theme="console"
             />
 
             <InputField
               name="email"
               type="email"
               required
-              placeholder="your@email.com"
+              placeholder="admin@domain.com"
               label="Email Address *"
               icon={Mail}
-              theme="dashboard"
+              theme="console"
             />
 
             <InputField
               name="mobile"
               type="tel"
               placeholder="98XXXXXXXX"
-              label="Mobile Number"
+              label="Mobile Identifier"
               icon={Phone}
-              theme="dashboard"
+              theme="console"
             />
 
-            <PinInput theme="dashboard" />
+            <PinInput theme="console" />
 
             <ErrorBanner error={error} />
 
-            <SubmitButton loading={loading} theme="dashboard" text="Register Account" />
+            <SubmitButton loading={loading} theme="console" text="Register Account" />
           </form>
         )}
       </AnimatePresence>
     </AuthCardLayout>
   );
 }
+
+
 
