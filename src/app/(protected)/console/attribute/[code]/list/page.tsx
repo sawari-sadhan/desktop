@@ -8,17 +8,11 @@ import {
   Car, 
   Search, 
   Loader2, 
-  Filter,
-  ExternalLink,
-  Shield,
-  Activity,
-  Zap,
   Tag,
   ArrowUpRight,
   CheckCircle2
 } from "lucide-react";
-import { entityApi, EntityNode } from "@lib/v1/graph/entity";
-import { attributeApi, AttributeNode } from "@lib/v1/graph/attribute";
+import { graphClient, NodeType, EntityNode } from "@lib/core";
 
 const AttributeLinkedVehiclesPage = () => {
   const router = useRouter();
@@ -28,7 +22,7 @@ const AttributeLinkedVehiclesPage = () => {
   const attributeCode = params.code as string;
   const targetValue = searchParams.get("value");
 
-  const [attribute, setAttribute] = useState<AttributeNode | null>(null);
+  const [attribute, setAttribute] = useState<NodeType | null>(null);
   const [vehicles, setVehicles] = useState<EntityNode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,27 +31,45 @@ const AttributeLinkedVehiclesPage = () => {
     setIsLoading(true);
     try {
       // 1. Fetch Attribute Details
-      const attrData = await attributeApi.getByCode(attributeCode);
-      setAttribute(attrData);
+      const attrData = await graphClient.getNodeType({ code: attributeCode });
+      setAttribute(attrData.nodeType || null);
 
-      // 2. Fetch ALL Releases (Vehicles)
-      // Note: In a production environment, this should be a backend search.
-      // For now, we fetch all and filter client-side as the graph grows.
-      const allReleases = await entityApi.listByType('release');
-      
-      // 3. Filter by attribute value
-      const linked = allReleases.filter(release => {
-        if (!release.data) return false;
-        
-        // Search through all sections in the release data
-        return Object.values(release.data).some(section => {
-          if (typeof section !== 'object' || section === null) return false;
-          // Check if any field in this section matches our attributeCode AND targetValue
-          return (section as any)[attributeCode]?.toString() === targetValue;
-        });
+      // 2. Search for the attribute value node in the graph
+      const searchRes = await graphClient.searchNodes({
+        query: targetValue || "",
+        types: [attributeCode],
+        limit: 20
       });
 
-      setVehicles(linked);
+      if (searchRes.nodes && searchRes.nodes.length > 0) {
+        // Find the node that matches the value exactly
+        const targetNode = searchRes.nodes.find(n => {
+          const val = n.metadata?.value || n.name?.en || n.slug;
+          return val?.toString().toLowerCase() === targetValue?.toLowerCase();
+        }) || searchRes.nodes[0];
+
+        // 3. Fetch its neighbors (which are the variants)
+        const neighborsRes = await graphClient.getNeighbors({
+          nodeId: targetNode.id,
+          linkTypes: ["has_attribute"]
+        });
+
+        // Cast nodes to EntityNode for consistent rendering
+        const linked = (neighborsRes.nodes || []).map(n => ({
+          id: n.id,
+          type: n.type,
+          slug: n.slug,
+          name: n.name as any,
+          description: n.description as any,
+          tags: n.tags,
+          metadata: n.metadata as any,
+          data: n.data as any
+        }));
+
+        setVehicles(linked);
+      } else {
+        setVehicles([]);
+      }
     } catch (err) {
       console.error("Failed to load linked vehicles:", err);
     } finally {
@@ -165,48 +177,51 @@ const AttributeLinkedVehiclesPage = () => {
             </div>
           </div>
 
-        {/* Vehicle Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <AnimatePresence mode="popLayout">
-            {filteredVehicles.length > 0 ? (
-              filteredVehicles.map((vehicle, idx) => (
-                <motion.div
-                  key={vehicle.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.03 }}
-                  onClick={() => router.push(`/console/brands/model/variant/release/details?releaseId=${vehicle.id}`)}
-                  className="group bg-white/[0.02] border border-white/5 rounded-2xl p-6 flex items-center justify-between hover:bg-emerald-500/[0.03] hover:border-emerald-500/20 transition-all cursor-pointer relative overflow-hidden"
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-mono font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest truncate">
-                      {vehicle.slug}
-                    </p>
+          {/* Vehicle Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <AnimatePresence mode="popLayout">
+              {filteredVehicles.length > 0 ? (
+                filteredVehicles.map((vehicle, idx) => {
+                  const displayName = (typeof vehicle.name === 'object' ? vehicle.name?.en : vehicle.name) || vehicle.slug;
+                  return (
+                    <motion.div
+                      key={vehicle.id}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.03 }}
+                      onClick={() => router.push(`/console/brands/model/details/variant?variantId=${vehicle.id}`)}
+                      className="group bg-white/[0.02] border border-white/5 rounded-2xl p-6 flex items-center justify-between hover:bg-emerald-500/[0.03] hover:border-emerald-500/20 transition-all cursor-pointer relative overflow-hidden"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-mono font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-widest truncate">
+                          {displayName}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <ArrowUpRight className="w-3.5 h-3.5 text-slate-700 group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })
+              ) : (
+                <div className="col-span-full py-20 flex flex-col items-center gap-4">
+                  <Car className="w-10 h-10 text-slate-800" />
+                  <div className="text-center space-y-1">
+                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">No active deployments</p>
+                    <p className="text-[9px] text-slate-700 font-medium tracking-tight">No vehicles found with this specific value.</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-700 group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                    </div>
-                  </div>
-                </motion.div>
-              ))
-            ) : (
-              <div className="col-span-full py-20 flex flex-col items-center gap-4">
-                <Car className="w-10 h-10 text-slate-800" />
-                <div className="text-center space-y-1">
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">No active deployments</p>
-                  <p className="text-[9px] text-slate-700 font-medium tracking-tight">No vehicles found with this specific value.</p>
                 </div>
-              </div>
-            )}
-          </AnimatePresence>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default AttributeLinkedVehiclesPage;

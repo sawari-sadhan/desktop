@@ -4,15 +4,16 @@ import React from "react";
 import { StringEditor } from "./StringEditor";
 import { NumberEditor } from "./NumberEditor";
 import { BooleanEditor } from "./BooleanEditor";
-import { AttributeNode } from "@lib/v1/graph/attribute";
+import { NodeType } from "@lib/core";
 import { AlertCircle } from "lucide-react";
 
 interface AttributeEditorProps {
-  attribute: AttributeNode;
+  attribute: NodeType;
 }
 
 export const AttributeEditor = ({ attribute }: AttributeEditorProps) => {
-  const type = attribute.data_types.type;
+  const type = (attribute.dataTypes as any)?.type || "string";
+  const unit = (attribute.dataTypes as any)?.units || (attribute.dataTypes as any)?.unit;
 
   const renderEditor = () => {
     switch (type) {
@@ -23,7 +24,7 @@ export const AttributeEditor = ({ attribute }: AttributeEditorProps) => {
           <NumberEditor 
             attributeCode={attribute.code} 
             name={attribute.name} 
-            unit={attribute.data_types.unit} 
+            unit={unit} 
           />
         );
       case "boolean":

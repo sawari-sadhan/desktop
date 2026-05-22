@@ -2,21 +2,21 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, RefreshCw, ArrowRight, Type, Hash, ToggleLeft } from "lucide-react";
+import { Search, RefreshCw, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { attributeApi, AttributeNode } from "@lib/v1/graph/attribute";
+import { graphClient, NodeType } from "@lib/core";
 
 const AttributeRegistryPage = () => {
   const router = useRouter();
-  const [attributes, setAttributes] = useState<AttributeNode[]>([]);
+  const [attributes, setAttributes] = useState<NodeType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
   const loadAttributes = async () => {
     setIsLoading(true);
     try {
-      const data = await attributeApi.listAll();
-      setAttributes(data);
+      const data = await graphClient.listNodeTypes({ parentCode: "attribute" });
+      setAttributes(data.nodeTypes || []);
     } catch (err) {
       console.error("Failed to load attributes:", err);
     } finally {
@@ -74,62 +74,62 @@ const AttributeRegistryPage = () => {
                 <div key={i} className="bg-white/[0.01] border border-white/[0.03] rounded-[2rem] h-56 animate-pulse" />
               ))
             ) : filteredAttributes.length > 0 ? (
-              filteredAttributes.map((attr, idx) => (
-                <motion.div
-                  key={attr.code}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ delay: idx * 0.005 }} // Faster transition for large lists
-                  whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.03)" }}
-                  onClick={() => router.push(`/console/attribute/${attr.code}`)}
-                  className="group cursor-pointer relative bg-white/[0.01] border border-white/[0.03] p-7 rounded-[2rem] transition-all hover:border-white/10 shadow-xl overflow-hidden"
-                >
-                  {/* Decorative Background Element */}
-                  <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-32 h-32 bg-white/[0.02] rounded-full blur-3xl group-hover:bg-white/[0.05] transition-all" />
-                  
-                  {/* Active Boolean Indicator */}
-                  {attr.data_types.type === "boolean" && attr.node_count > 0 && (
-                    <motion.div 
-                      initial={{ opacity: 0.4 }}
-                      animate={{ opacity: [0.4, 0.8, 0.4] }}
-                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                      className="absolute top-7 right-7 w-1 h-1 bg-amber-400/80 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.5)] z-20" 
-                    />
-                  )}
-                  
-                  <div className="space-y-6 relative">
-                    {/* The icon section has been removed as per user request */}
+              filteredAttributes.map((attr, idx) => {
+                const attrType = (attr.dataTypes as any)?.type || "string";
+                const nodeCount = attr.nodeCount;
+                return (
+                  <motion.div
+                    key={attr.code}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ delay: idx * 0.005 }}
+                    whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.03)" }}
+                    onClick={() => router.push(`/console/attribute/${attr.code}`)}
+                    className="group cursor-pointer relative bg-white/[0.01] border border-white/[0.03] p-7 rounded-[2rem] transition-all hover:border-white/10 shadow-xl overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-32 h-32 bg-white/[0.02] rounded-full blur-3xl group-hover:bg-white/[0.05] transition-all" />
                     
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[12px] text-slate-500 mb-1 font-mono tracking-widest uppercase">
-                        {attr.code}
-                      </p>
-                      <h3 className="text-lg font-black text-white group-hover:text-slate-300 transition-colors line-clamp-1">
-                        {attr.name}
-                      </h3>
-                    </div>
+                    {attrType === "boolean" && nodeCount > 0 && (
+                      <motion.div 
+                        initial={{ opacity: 0.4 }}
+                        animate={{ opacity: [0.4, 0.8, 0.4] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute top-7 right-7 w-1 h-1 bg-amber-400/80 rounded-full shadow-[0_0_8px_rgba(251,191,36,0.5)] z-20" 
+                      />
+                    )}
+                    
+                    <div className="space-y-6 relative">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] text-slate-500 mb-1 font-mono tracking-widest uppercase">
+                          {attr.code}
+                        </p>
+                        <h3 className="text-lg font-black text-white group-hover:text-slate-300 transition-colors line-clamp-1">
+                          {attr.name}
+                        </h3>
+                      </div>
 
-                    <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {attr.data_types.type === "string" && (
-                          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-300/80">String {attr.node_count > 0 ? `(${attr.node_count})` : ""}</span>
-                        )}
-                        {attr.data_types.type === "number" && (
-                          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-300/80">Number {attr.node_count > 0 ? `(${attr.node_count})` : ""}</span>
-                        )}
-                        {attr.data_types.type === "boolean" && (
-                          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-300/80">Boolean {attr.node_count > 0 ? `(${attr.node_count})` : ""}</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 text-slate-500">
-                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                      <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {attrType === "string" && (
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-300/80">String {nodeCount > 0 ? `(${nodeCount})` : ""}</span>
+                          )}
+                          {attrType === "number" && (
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-300/80">Number {nodeCount > 0 ? `(${nodeCount})` : ""}</span>
+                          )}
+                          {attrType === "boolean" && (
+                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-300/80">Boolean {nodeCount > 0 ? `(${nodeCount})` : ""}</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-500">
+                          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))
+                  </motion.div>
+                );
+              })
             ) : (
               <div className="col-span-full py-20 text-center space-y-4">
                 <Search className="w-12 h-12 text-slate-700 mx-auto" />

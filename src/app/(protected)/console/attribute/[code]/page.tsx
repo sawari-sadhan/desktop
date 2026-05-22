@@ -4,27 +4,26 @@ import React, { useState, useEffect, use } from "react";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, 
-  Layers, 
   Activity,
   Code2,
   Tag
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { attributeApi, AttributeNode } from "@lib/v1/graph/attribute";
+import { graphClient, NodeType } from "@lib/core";
 import { AttributeEditor } from "./components/AttributeEditor";
 
 const AttributeDetailPage = ({ params }: { params: Promise<{ code: string }> }) => {
   const router = useRouter();
   const { code } = use(params);
-  const [attribute, setAttribute] = useState<AttributeNode | null>(null);
+  const [attribute, setAttribute] = useState<NodeType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadAttribute = async () => {
       setIsLoading(true);
       try {
-        const data = await attributeApi.getByCode(code);
-        setAttribute(data);
+        const data = await graphClient.getNodeType({ code });
+        setAttribute(data.nodeType || null);
       } catch (err) {
         console.error("Failed to load attribute:", err);
       } finally {
@@ -57,6 +56,8 @@ const AttributeDetailPage = ({ params }: { params: Promise<{ code: string }> }) 
       </div>
     );
   }
+
+  const attrType = (attribute.dataTypes as any)?.type || "string";
 
   return (
     <div className="flex-1 flex flex-col items-center py-12 px-8 lg:px-12 min-h-screen">
@@ -100,7 +101,7 @@ const AttributeDetailPage = ({ params }: { params: Promise<{ code: string }> }) 
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
                     <Tag className="w-3 h-3 text-slate-500" />
-                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{attribute.data_types.type}</span>
+                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{attrType}</span>
                   </div>
                 </div>
               </div>

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Globe, MapPin, Search, RefreshCw, Layers, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { entityApi, EntityNode } from "@lib/v1/graph/entity";
+import { graphClient, EntityNode } from "@lib/core";
 
 const BrandRegistryPage = () => {
   const router = useRouter();
@@ -15,8 +15,27 @@ const BrandRegistryPage = () => {
   const loadBrands = async () => {
     setIsLoading(true);
     try {
-      const data = await entityApi.getBrands();
-      setBrands(data);
+      const response = await graphClient.searchNodes({
+        query: "",
+        types: ["brand"],
+        limit: 100,
+        vector: []
+      });
+      
+      const mappedBrands: EntityNode[] = (response.nodes || []).map(n => ({
+        id: n.id,
+        type: n.type,
+        slug: n.slug,
+        name: n.name || {},
+        description: n.description || {},
+        tags: n.tags || [],
+        metadata: n.metadata || {},
+        data: n.data || {},
+        created_at: "",
+        updated_at: n.updatedAt
+      }));
+      
+      setBrands(mappedBrands);
     } catch (err) {
       console.error("Failed to load brands:", err);
     } finally {

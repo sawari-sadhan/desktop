@@ -14,7 +14,7 @@ import {
   Layers,
   ArrowRight
 } from "lucide-react";
-import { entityApi, EntityNode } from "@lib/v1/graph/entity";
+import { graphClient, EntityNode } from "@lib/core";
 
 const ModelRegistryPage = () => {
   const router = useRouter();
@@ -29,24 +29,56 @@ const ModelRegistryPage = () => {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [allModels, allBrands] = await Promise.all([
-        entityApi.listByType('model'),
-        entityApi.getBrands()
-      ]);
+      const brandsResponse = await graphClient.searchNodes({
+        query: "",
+        types: ["brand"],
+        limit: 1000,
+        vector: []
+      });
+      const allBrands = brandsResponse.nodes || [];
 
       // Create brand name map for easy lookup
       const brandMap: Record<string, string> = {};
       allBrands.forEach(b => {
-        brandMap[b.id] = typeof b.name === 'object' ? (b.name?.en || b.slug) : (b.name || b.slug);
+        const bName = b.name || {};
+        brandMap[b.id] = (bName as any).en || (bName as any).default || b.slug;
       });
       setBrands(brandMap);
 
-      // Filter by brand if ID is provided in URL
+      // Fetch models
+      let modelNodes: any[] = [];
       if (brandId) {
-        setModels(allModels.filter(m => m.data?.parent_brand_id === brandId));
+        // Fetch only models linked to this brand via "has_model" link type
+        const neighborsResponse = await graphClient.getNeighbors({
+          nodeId: brandId,
+          linkTypes: ["has_model"]
+        });
+        modelNodes = neighborsResponse.nodes || [];
       } else {
-        setModels(allModels);
+        // Fetch all models
+        const modelsResponse = await graphClient.searchNodes({
+          query: "",
+          types: ["model"],
+          limit: 1000,
+          vector: []
+        });
+        modelNodes = modelsResponse.nodes || [];
       }
+
+      const mappedModels: EntityNode[] = modelNodes.map(n => ({
+        id: n.id,
+        type: n.type,
+        slug: n.slug,
+        name: n.name || {},
+        description: n.description || {},
+        tags: n.tags || [],
+        metadata: n.metadata || {},
+        data: n.data || {},
+        created_at: "",
+        updated_at: n.updatedAt
+      }));
+
+      setModels(mappedModels);
     } catch (err) {
       console.error("Failed to load models:", err);
     } finally {
@@ -127,7 +159,7 @@ const ModelRegistryPage = () => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: idx * 0.03 }}
                   whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.02)" }}
-                  onClick={() => router.push(`/console/brands/model/variant?modelId=${model.id}`)}
+                  onClick={() => router.push(`/console/brands/model/details?modelId=${model.id}`)}
                   className="group cursor-pointer relative bg-white/[0.01] border border-white/[0.03] p-8 rounded-[2.5rem] transition-all hover:border-white/10 shadow-xl"
                 >
                   <div className="space-y-6">

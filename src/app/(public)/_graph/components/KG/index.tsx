@@ -8,10 +8,8 @@ import { nodeGroups, defaultNodeOptions } from "../design/nodes";
 import { edgeOptions, relationshipStyles } from "../design/relationships";
 import SearchHUD from "../layout/search";
 import RightSidebar from "../layout/sidebar/right";
-import { entityApi, EntityNode } from "@lib/v1/graph/entity";
-import { edgeApi, GraphLink } from "@lib/v1/graph/edge";
-
-import { publicApi, PublicNode, PublicLink } from "@lib/v1/graph/public";
+import { graphClient } from "@lib/core";
+import type { Node as GraphNode, Link as GraphLink } from "@lib/core";
 
 const groupColors: Record<string, string> = {
   brand: "#5EEAD4",

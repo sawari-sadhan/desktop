@@ -77,7 +77,10 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          <form action={logoutAction}>
+          <form action={async () => {
+            "use server";
+            await logoutAction();
+          }}>
             <button
               type="submit"
               className="px-5 py-3 rounded-2xl bg-white/5 border border-white/5 text-xs font-bold uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-rose-400 transition-all flex items-center gap-2 cursor-pointer"

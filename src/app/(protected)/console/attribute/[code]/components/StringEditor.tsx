@@ -1,16 +1,27 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, Check, X, Search, Loader2, CheckCircle2, Workflow, Activity, Lock } from "lucide-react";
+import { Plus, Edit2, Trash2, Check, X, Loader2, CheckCircle2, Workflow, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { entityApi, EntityNode } from "@lib/v1/graph/entity";
+import { graphClient, EntityNode } from "@lib/core";
 import { InlineDeleteConfirmation } from "@/app/components/confirmation/delete";
 
 interface StringEditorProps {
   attributeCode: string;
   name: string;
 }
+
+const mapNodeToEntityNode = (n: any): EntityNode => ({
+  id: n.id,
+  type: n.type,
+  slug: n.slug,
+  name: n.name as any,
+  description: n.description as any,
+  tags: n.tags,
+  metadata: n.metadata as any,
+  data: n.data as any
+});
 
 export const StringEditor = ({ attributeCode, name }: StringEditorProps) => {
   const [items, setItems] = useState<EntityNode[]>([]);
@@ -31,24 +42,31 @@ export const StringEditor = ({ attributeCode, name }: StringEditorProps) => {
     setIsLoading(true);
     try {
       // 1. Load Registry Nodes
-      const nodes = await entityApi.listByType(attributeCode);
+      const searchRes = await graphClient.searchNodes({
+        query: "",
+        types: [attributeCode],
+        limit: 1000
+      });
+      const nodes = (searchRes.nodes || []).map(mapNodeToEntityNode);
       setItems(nodes);
 
-      // 2. Count Active Deployments across all Releases
-      const allReleases = await entityApi.listByType('release');
+      // 2. Count Active Deployments via graph queries in parallel
       const counts: Record<string, number> = {};
-      
-      allReleases.forEach(release => {
-        if (!release.data) return;
-        Object.values(release.data).forEach((section: any) => {
-          if (!section || typeof section !== 'object') return;
-          const val = section[attributeCode];
-          if (val !== undefined && val !== null) {
-            const valStr = val.toString();
-            counts[valStr] = (counts[valStr] || 0) + 1;
+      await Promise.all(
+        (searchRes.nodes || []).map(async (item) => {
+          try {
+            const neighborsRes = await graphClient.getNeighbors({
+              nodeId: item.id,
+              linkTypes: ["has_attribute"]
+            });
+            const nameObj = item.name as any;
+            const nameStr = String(typeof nameObj === 'object' ? (nameObj?.en ?? "") : (nameObj ?? ""));
+            counts[nameStr] = (neighborsRes.nodes || []).length;
+          } catch (e) {
+            console.error("Failed to get neighbors for:", item.id, e);
           }
-        });
-      });
+        })
+      );
       setItemCounts(counts);
     } catch (err) {
       console.error("Failed to load nodes:", err);
@@ -66,17 +84,22 @@ export const StringEditor = ({ attributeCode, name }: StringEditorProps) => {
     setIsSubmitting(true);
     try {
       const slug = `${attributeCode}-${newItem.toLowerCase().replace(/\s+/g, '-')}-${Date.now().toString().slice(-4)}`;
-      const newNode = await entityApi.create({
+      const res = await graphClient.createNode({
         type: attributeCode,
         slug: slug,
-        name: { en: newItem.trim() },
-        description: { en: `Instance of ${name}` }
+        name: { en: newItem.trim() } as any,
+        description: { en: `Instance of ${name}` } as any,
+        tags: ["attribute", attributeCode],
+        metadata: { value: newItem.trim(), display: newItem.trim() } as any,
+        data: {}
       });
-      setItems([...items, newNode]);
-      setNewItem("");
-      setSuccessMessage(`"${newItem}" added to registry`);
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      if (res.node) {
+        setItems([...items, mapNodeToEntityNode(res.node)]);
+        setNewItem("");
+        setSuccessMessage(`"${newItem}" added to registry`);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      }
     } catch (err) {
       console.error("Failed to create node:", err);
     } finally {
@@ -86,16 +109,25 @@ export const StringEditor = ({ attributeCode, name }: StringEditorProps) => {
 
   const handleSave = async (id: string) => {
     if (!editValue.trim()) return;
+    const existing = items.find(item => item.id === id);
+    if (!existing) return;
     setIsSubmitting(true);
     try {
-      await entityApi.update(id, {
-        name: { en: editValue.trim() }
+      const res = await graphClient.updateNode({
+        id: id,
+        name: { en: editValue.trim() } as any,
+        description: existing.description as any,
+        tags: existing.tags,
+        metadata: { ...existing.metadata, value: editValue.trim(), display: editValue.trim() } as any,
+        data: existing.data as any
       });
-      setItems(items.map(item => item.id === id ? { ...item, name: { ...item.name, en: editValue.trim() } } : item));
-      setEditingId(null);
-      setSuccessMessage(`Entry updated to "${editValue}"`);
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
+      if (res.node) {
+        setItems(items.map(item => item.id === id ? mapNodeToEntityNode(res.node!) : item));
+        setEditingId(null);
+        setSuccessMessage(`Entry updated to "${editValue}"`);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      }
     } catch (err) {
       console.error("Failed to update node:", err);
     } finally {
@@ -105,7 +137,7 @@ export const StringEditor = ({ attributeCode, name }: StringEditorProps) => {
 
   const handleConfirmDelete = async (id: string) => {
     try {
-      await entityApi.delete(id);
+      await graphClient.deleteNode({ id });
       setItems(items.filter(item => item.id !== id));
       setSuccessMessage("Entry removed from registry");
       setShowSuccess(true);
@@ -175,97 +207,100 @@ export const StringEditor = ({ attributeCode, name }: StringEditorProps) => {
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
-            {items.map((item) => (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-4 flex flex-col group hover:border-white/10 transition-all"
-              >
-                <div className="flex items-center justify-between w-full">
-                  {editingId === item.id ? (
-                    <div className="flex-1 flex gap-2">
-                      <input
-                        type="text"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        className="flex-1 bg-white/10 border border-white/20 rounded-xl py-1 px-3 text-sm text-white focus:outline-none"
-                        autoFocus
-                      />
-                      <button onClick={() => handleSave(item.id)} className="p-2 text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-all">
-                        <Check className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => setEditingId(null)} className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <Link 
-                        href={`/console/attribute/${attributeCode}/list?value=${encodeURIComponent(typeof item.name === 'object' ? (item.name?.en || "") : (item.name || ""))}`}
-                        className="flex flex-col flex-1 group/item cursor-pointer"
-                      >
-                        <span className="text-sm text-slate-300 font-medium group-hover/item:text-emerald-400 transition-colors">
-                          {typeof item.name === 'object' ? (item.name?.en || "Unnamed") : (item.name || "Unnamed")}
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-500 uppercase mt-1">{item.slug}</span>
-                      </Link>
-                      <div className="w-24 flex justify-end items-center relative">
-                        {/* Deployment Count (Visible by default) */}
-                        <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/5 rounded-full border border-emerald-500/10 group-hover:hidden transition-all">
-                          <Workflow className="w-3.5 h-3.5 text-emerald-500" />
-                          <span className="text-xs font-black text-emerald-400 uppercase tracking-widest">
-                            {itemCounts[typeof item.name === 'object' ? (item.name?.en || "") : (item.name || "")] || 0}
-                          </span>
-                        </div>
-
-                        {/* Actions (Visible on hover) */}
-                        <div className="hidden group-hover:flex items-center gap-1">
-                          {(itemCounts[typeof item.name === 'object' ? (item.name?.en || "") : (item.name || "")] || 0) === 0 ? (
-                            <>
-                              <button 
-                                onClick={() => {
-                                  setEditingId(item.id);
-                                  setEditValue(typeof item.name === 'object' ? (item.name?.en || "") : (item.name || ""));
-                                  setItemToDeleteId(null);
-                                }} 
-                                className="p-2 text-slate-500 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-                              >
-                                <Edit2 className="w-3.5 h-3.5" />
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  setItemToDeleteId(itemToDeleteId === item.id ? null : item.id);
-                                  setEditingId(null);
-                                }} 
-                                className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-400/5 rounded-lg transition-all"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </>
-                          ) : (
-                            <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/5 text-[8px] font-black uppercase tracking-widest text-slate-600">
-                              <Lock className="w-2.5 h-2.5" />
-                              Protected
-                            </div>
-                          )}
-                        </div>
+            {items.map((item) => {
+              const itemNameStr = typeof item.name === 'object' ? (item.name?.en || "Unnamed") : (item.name || "Unnamed");
+              return (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-4 flex flex-col group hover:border-white/10 transition-all"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    {editingId === item.id ? (
+                      <div className="flex-1 flex gap-2">
+                        <input
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="flex-1 bg-white/10 border border-white/20 rounded-xl py-1 px-3 text-sm text-white focus:outline-none"
+                          autoFocus
+                        />
+                        <button onClick={() => handleSave(item.id)} className="p-2 text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-all">
+                          <Check className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => setEditingId(null)} className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all">
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
-                    </>
-                  )}
-                </div>
+                    ) : (
+                      <>
+                        <Link 
+                          href={`/console/attribute/${attributeCode}/list?value=${encodeURIComponent(itemNameStr)}`}
+                          className="flex flex-col flex-1 group/item cursor-pointer"
+                        >
+                          <span className="text-sm text-slate-300 font-medium group-hover/item:text-emerald-400 transition-colors">
+                            {itemNameStr}
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-500 uppercase mt-1">{item.slug}</span>
+                        </Link>
+                        <div className="w-24 flex justify-end items-center relative">
+                          {/* Deployment Count (Visible by default) */}
+                          <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/5 rounded-full border border-emerald-500/10 group-hover:hidden transition-all">
+                            <Workflow className="w-3.5 h-3.5 text-emerald-500" />
+                            <span className="text-xs font-black text-emerald-400 uppercase tracking-widest">
+                              {itemCounts[itemNameStr] || 0}
+                            </span>
+                          </div>
 
-                {itemToDeleteId === item.id && (
-                  <InlineDeleteConfirmation 
-                    itemName={typeof item.name === 'object' ? (item.name?.en || item.slug) : (item.name || item.slug)}
-                    onConfirm={() => handleConfirmDelete(item.id)}
-                    onCancel={() => setItemToDeleteId(null)}
-                  />
-                )}
-              </motion.div>
-            ))}
+                          {/* Actions (Visible on hover) */}
+                          <div className="hidden group-hover:flex items-center gap-1">
+                            {(itemCounts[itemNameStr] || 0) === 0 ? (
+                              <>
+                                <button 
+                                  onClick={() => {
+                                    setEditingId(item.id);
+                                    setEditValue(itemNameStr);
+                                    setItemToDeleteId(null);
+                                  }} 
+                                  className="p-2 text-slate-500 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    setItemToDeleteId(itemToDeleteId === item.id ? null : item.id);
+                                    setEditingId(null);
+                                  }} 
+                                  className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-400/5 rounded-lg transition-all"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            ) : (
+                              <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/5 text-[8px] font-black uppercase tracking-widest text-slate-600">
+                                <Lock className="w-2.5 h-2.5" />
+                                Protected
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {itemToDeleteId === item.id && (
+                    <InlineDeleteConfirmation 
+                      itemName={itemNameStr}
+                      onConfirm={() => handleConfirmDelete(item.id)}
+                      onCancel={() => setItemToDeleteId(null)}
+                    />
+                  )}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         )}
       </div>

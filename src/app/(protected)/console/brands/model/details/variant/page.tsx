@@ -23,17 +23,108 @@ import {
   RefreshCw,
   Plus
 } from "lucide-react";
-import { entityApi, EntityNode } from "@lib/v1/graph/entity";
-import { typesApi, TypeBlueprint } from "@lib/v1/graph/types/index";
+import { graphClient, EntityNode, TypeBlueprint } from "@lib/core";
 
-const ReleaseDetailsPage = () => {
+
+const getVariantValue = (variant: any, sectionKey: string, fieldKey: string, fieldConfig: any) => {
+  if (!variant?.data) return undefined;
+  
+  if (variant.data[sectionKey]?.[fieldKey] !== undefined) {
+    return variant.data[sectionKey][fieldKey];
+  }
+  
+  const specs = variant.data.specifications;
+  if (!specs) return undefined;
+  
+  const label = fieldConfig.label;
+  if (label) {
+    const cleanedLabel = label.toLowerCase();
+    for (const k of Object.keys(specs)) {
+      if (k.toLowerCase() === cleanedLabel) {
+        return specs[k];
+      }
+    }
+  }
+  
+  return undefined;
+};
+
+const formatValue = (val: any) => {
+  if (val === null || val === undefined) return undefined;
+  if (typeof val === 'object') {
+    if (val.value !== undefined) {
+      return val.value;
+    }
+  }
+  return val;
+};
+
+const DEFAULT_BLUEPRINT = {
+  engine_transmission: {
+    engine_type: { label: "Engine Type", type: "string" },
+    displacement: { label: "Displacement", type: "number", unit: "cc" },
+    max_power: { label: "Max Power", type: "string" },
+    max_torque: { label: "Max Torque", type: "string" },
+    cylinders: { label: "No. of Cylinders", type: "number" },
+    valves_per_cylinder: { label: "Valves Per Cylinder", type: "number" },
+    transmission_type: { label: "Transmission Type", type: "string" },
+    gearbox: { label: "Gearbox", type: "string" },
+    drive_type: { label: "Drive Type", type: "string" }
+  },
+  fuel_performance: {
+    fuel_type: { label: "Fuel Type", type: "string" },
+    fuel_tank_capacity: { label: "Petrol Fuel Tank Capacity", type: "number", unit: "Litres" },
+    highway_mileage: { label: "Petrol Highway Mileage", type: "number", unit: "kmpl" },
+    top_speed: { label: "Top Speed", type: "number", unit: "kmph" },
+    acceleration: { label: "Acceleration 0-100kmph", type: "number", unit: "s" }
+  },
+  suspension_steering_brakes: {
+    front_suspension: { label: "Front Suspension", type: "string" },
+    rear_suspension: { label: "Rear Suspension", type: "string" },
+    steering_type: { label: "Steering Type", type: "string" },
+    steering_column: { label: "Steering Column", type: "string" },
+    turning_radius: { label: "Turning Radius", type: "number", unit: "m" },
+    front_brake_type: { label: "Front Brake Type", type: "string" },
+    rear_brake_type: { label: "Rear Brake Type", type: "string" }
+  },
+  dimension_capacity: {
+    length: { label: "Length", type: "number", unit: "mm" },
+    width: { label: "Width", type: "number", unit: "mm" },
+    height: { label: "Height", type: "number", unit: "mm" },
+    seating_capacity: { label: "Seating Capacity", type: "number" },
+    wheel_base: { label: "Wheel Base", type: "number", unit: "mm" },
+    ground_clearance: { label: "Ground Clearance Unladen", type: "number", unit: "mm" },
+    kerb_weight: { label: "Kerb Weight", type: "number", unit: "kg" }
+  },
+  comfort_convenience: {
+    power_steering: { label: "Power Steering", type: "boolean" },
+    air_conditioner: { label: "Air Conditioner", type: "boolean" },
+    heater: { label: "Heater", type: "boolean" },
+    automatic_climate_control: { label: "Automatic Climate Control", type: "boolean" },
+    cruise_control: { label: "Cruise Control", type: "boolean" },
+    parking_sensors: { label: "Parking Sensors", type: "string" },
+    keyless_entry: { label: "KeyLess Entry", type: "boolean" },
+    engine_start_stop: { label: "Engine Start/Stop Button", type: "boolean" }
+  },
+  safety: {
+    abs: { label: "Anti-lock Braking System (ABS)", type: "boolean" },
+    brake_assist: { label: "Brake Assist", type: "boolean" },
+    central_locking: { label: "Central Locking", type: "boolean" },
+    airbags: { label: "No. of Airbags", type: "number" },
+    tpms: { label: "Tyre Pressure Monitoring System (TPMS)", type: "boolean" },
+    esc: { label: "Electronic Stability Control (ESC)", type: "boolean" },
+    hill_assist: { label: "Hill Assist", type: "boolean" },
+    camera_360: { label: "360 View Camera", type: "boolean" }
+  }
+};
+
+const VariantDetailsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const releaseId = searchParams.get("releaseId");
+  const variantId = searchParams.get("variantId");
 
-  const [release, setRelease] = useState<EntityNode | null>(null);
-  const [model, setModel] = useState<EntityNode | null>(null);
   const [variant, setVariant] = useState<EntityNode | null>(null);
+  const [model, setModel] = useState<EntityNode | null>(null);
   const [brand, setBrand] = useState<EntityNode | null>(null);
   const [blueprint, setBlueprint] = useState<TypeBlueprint | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,47 +134,77 @@ const ReleaseDetailsPage = () => {
   const [attributeSearchTerm, setAttributeSearchTerm] = useState("");
 
   const loadData = async () => {
-    if (!releaseId) return;
+    if (!variantId) return;
     setIsLoading(true);
     try {
-      // 1. Fetch Release
-      const allReleases = await entityApi.listByType('release');
-      const currentRelease = allReleases.find(r => r.id === releaseId);
-      if (!currentRelease) throw new Error("Release not found");
-      setRelease(currentRelease);
+      // 1. Fetch Variant
+      const variantRes = await graphClient.getNode({ id: variantId, slug: "" });
+      if (!variantRes.node) throw new Error("Variant not found");
+      const mappedVariant: EntityNode = {
+        id: variantRes.node.id,
+        type: variantRes.node.type,
+        slug: variantRes.node.slug,
+        name: variantRes.node.name || {},
+        description: variantRes.node.description || {},
+        tags: variantRes.node.tags || [],
+        metadata: variantRes.node.metadata || {},
+        data: variantRes.node.data || {},
+        created_at: "",
+        updated_at: variantRes.node.updatedAt
+      };
+      setVariant(mappedVariant);
 
-      // 2. Fetch Variant
-      const variantId = currentRelease.data?.parent_variant_id;
-      if (variantId) {
-        const allVariants = await entityApi.listByType('variant');
-        const currentVariant = allVariants.find(v => v.id === variantId);
-        setVariant(currentVariant || null);
-      }
-
-      // 3. Fetch Model
-      const modelId = currentRelease.data?.parent_model_id;
+      // 2. Fetch Model
+      const modelId = (variantRes.node.data?.parent_model_id || variantRes.node.metadata?.parent_model_id) as string;
+      let mappedModel: EntityNode | null = null;
       if (modelId) {
-        const allModels = await entityApi.listByType('model');
-        const currentModel = allModels.find(m => m.id === modelId);
-        setModel(currentModel || null);
-
-        // 4. Fetch Brand
-        const brandId = currentModel?.data?.parent_brand_id;
-        if (brandId) {
-          const allBrands = await entityApi.listByType('brand');
-          const currentBrand = allBrands.find(b => b.id === brandId);
-          setBrand(currentBrand || null);
-        }
-
-        // 5. Fetch Blueprint based on model's vehicle_type
-        const vType = currentModel?.data?.vehicle_type;
-        if (vType) {
-          const bp = await typesApi.getBlueprint(vType);
-          setBlueprint(bp);
+        const modelRes = await graphClient.getNode({ id: modelId, slug: "" });
+        if (modelRes.node) {
+          mappedModel = {
+            id: modelRes.node.id,
+            type: modelRes.node.type,
+            slug: modelRes.node.slug,
+            name: modelRes.node.name || {},
+            description: modelRes.node.description || {},
+            tags: modelRes.node.tags || [],
+            metadata: modelRes.node.metadata || {},
+            data: modelRes.node.data || {},
+            created_at: "",
+            updated_at: modelRes.node.updatedAt
+          };
+          setModel(mappedModel);
         }
       }
+
+      // 3. Fetch Brand
+      const brandId = (mappedModel?.data?.parent_brand_id || mappedModel?.metadata?.parent_brand_id) as string;
+      if (brandId) {
+        const brandRes = await graphClient.getNode({ id: brandId, slug: "" });
+        if (brandRes.node) {
+          setBrand({
+            id: brandRes.node.id,
+            type: brandRes.node.type,
+            slug: brandRes.node.slug,
+            name: brandRes.node.name || {},
+            description: brandRes.node.description || {},
+            tags: brandRes.node.tags || [],
+            metadata: brandRes.node.metadata || {},
+            data: brandRes.node.data || {},
+            created_at: "",
+            updated_at: brandRes.node.updatedAt
+          });
+        }
+      }
+
+      // 4. Load Blueprint directly
+      setBlueprint({
+        code: "automotive",
+        name: "Automotive Technical Blueprint",
+        blueprint: DEFAULT_BLUEPRINT,
+        metadata: {}
+      });
     } catch (err) {
-      console.error("Failed to load release details:", err);
+      console.error("Failed to load variant details:", err);
     } finally {
       setIsLoading(false);
     }
@@ -91,37 +212,76 @@ const ReleaseDetailsPage = () => {
 
   useEffect(() => {
     loadData();
-  }, [releaseId]);
+  }, [variantId]);
 
   const handleEditClick = async (section: string, field: string) => {
     setEditingField({ section, field });
     setAvailableNodes([]);
     try {
-      // Fetch nodes from the attribute registry (the field code is the type)
-      const data = await entityApi.listByType(field);
-      setAvailableNodes(data);
+      const res = await graphClient.searchNodes({
+        query: "",
+        types: [field],
+        limit: 1000,
+        vector: []
+      });
+      const mapped = (res.nodes || []).map(n => ({
+        id: n.id,
+        type: n.type,
+        slug: n.slug,
+        name: n.name || {},
+        description: n.description || {},
+        tags: n.tags || [],
+        metadata: n.metadata || {},
+        data: n.data || {},
+        created_at: "",
+        updated_at: n.updatedAt
+      }));
+      setAvailableNodes(mapped);
     } catch (err) {
       console.error("Failed to fetch attribute nodes:", err);
     }
   };
 
   const handleSaveEdit = async (section: string, field: string, node: EntityNode) => {
-    if (!release) return;
+    if (!variant) return;
     setIsUpdating(true);
     try {
-      const updatedData = { ...release.data };
-      if (!updatedData[section]) updatedData[section] = {};
+      const updatedData = { ...variant.data };
+      if (!updatedData.specifications) updatedData.specifications = {};
       
-      // Use the raw value for numeric nodes, otherwise the display name
       const valueToSave = node.data?.value !== undefined ? node.data.value : node.name.en;
-      updatedData[section][field] = valueToSave;
+      
+      const fieldConfig = blueprint?.blueprint?.[section]?.[field];
+      let targetKey = fieldConfig?.label || field.replace(/_/g, " ");
+      const cleanedKey = targetKey.toLowerCase();
+      for (const k of Object.keys(updatedData.specifications)) {
+        if (k.toLowerCase() === cleanedKey) {
+          targetKey = k;
+          break;
+        }
+      }
 
-      await entityApi.update(release.id, {
-        data: updatedData
+      const oldVal = updatedData.specifications[targetKey];
+      if (oldVal && typeof oldVal === 'object' && oldVal.unit !== undefined) {
+        updatedData.specifications[targetKey] = {
+          value: valueToSave,
+          unit: oldVal.unit
+        };
+      } else {
+        updatedData.specifications[targetKey] = valueToSave;
+      }
+
+      await graphClient.updateNode({
+        id: variant.id,
+        name: variant.name,
+        description: variant.description,
+        tags: variant.tags,
+        metadata: variant.metadata,
+        data: updatedData,
+        embedding: []
       });
 
-      // Update local state
-      setRelease({ ...release, data: updatedData });
+      setVariant({ ...variant, data: updatedData });
       setEditingField(null);
     } catch (err) {
       console.error("Failed to update attribute:", err);
@@ -132,39 +292,61 @@ const ReleaseDetailsPage = () => {
   };
 
   const handleToggleBoolean = async (section: string, field: string, currentValue: any) => {
-    if (!release || isUpdating) return;
+    if (!variant || isUpdating) return;
     setIsUpdating(true);
     try {
       const isCurrentlyTrue = currentValue === true || currentValue === "Yes" || currentValue === "true";
       const targetValue = !isCurrentlyTrue;
 
-      // In our Single-Node Architecture, the 'link' is represented by the 'true' state in JSONB.
-      // The BooleanEditor discovers these links by scanning the release data.
       if (targetValue === true) {
-        // Ensure the attribute node exists in the registry
-        const existingNodes = await entityApi.listByType(field);
-        const matchingNode = existingNodes.find(n => n.slug === field);
+        const existingNodesRes = await graphClient.searchNodes({
+          query: "",
+          types: [field],
+          limit: 100,
+          vector: []
+        });
+        const matchingNode = (existingNodesRes.nodes || []).find(n => n.slug === field);
 
         if (!matchingNode) {
-          await entityApi.create({
+          await graphClient.createNode({
             type: field,
-            slug: field, // Slug matches the code exactly
+            slug: field,
             name: { en: "Yes" },
-            data: { value: true }
+            description: {},
+            tags: [field],
+            metadata: {},
+            data: { value: true },
+            embedding: []
           });
         }
       }
 
-      // Update the release data - this effectively 'adds' or 'removes' the logical link
-      const updatedData = { ...release.data };
-      if (!updatedData[section]) updatedData[section] = {};
-      updatedData[section][field] = targetValue;
+      const updatedData = { ...variant.data };
+      if (!updatedData.specifications) updatedData.specifications = {};
+      
+      const fieldConfig = blueprint?.blueprint?.[section]?.[field];
+      let targetKey = fieldConfig?.label || field.replace(/_/g, " ");
+      const cleanedKey = targetKey.toLowerCase();
+      for (const k of Object.keys(updatedData.specifications)) {
+        if (k.toLowerCase() === cleanedKey) {
+          targetKey = k;
+          break;
+        }
+      }
+      
+      updatedData.specifications[targetKey] = targetValue ? "Yes" : "No";
 
-      await entityApi.update(release.id, {
-        data: updatedData
+      await graphClient.updateNode({
+        id: variant.id,
+        name: variant.name,
+        description: variant.description,
+        tags: variant.tags,
+        metadata: variant.metadata,
+        data: updatedData,
+        embedding: []
       });
 
-      setRelease({ ...release, data: updatedData });
+      setVariant({ ...variant, data: updatedData });
     } catch (err) {
       console.error("Failed to toggle boolean:", err);
     } finally {
@@ -173,11 +355,10 @@ const ReleaseDetailsPage = () => {
   };
 
   const handleQuickCreate = async (section: string, field: string, type: string) => {
-    if (!attributeSearchTerm.trim() || !release) return;
+    if (!attributeSearchTerm.trim() || !variant) return;
     setIsUpdating(true);
     try {
       const name = attributeSearchTerm.trim();
-      // Generate a reasonably unique slug
       const randomSuffix = Math.random().toString(36).substring(7);
       const slug = `${field}-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${randomSuffix}`;
       
@@ -187,14 +368,32 @@ const ReleaseDetailsPage = () => {
         if (!isNaN(num)) data.value = num;
       }
 
-      const newNode = await entityApi.create({
+      const res = await graphClient.createNode({
         type: field,
         slug,
         name: { en: name },
-        data
+        description: {},
+        tags: [field],
+        metadata: {},
+        data,
+        embedding: []
       });
 
-      // After creation, immediately save this as the release's value
+      if (!res.node) throw new Error("Failed to create node");
+
+      const newNode: EntityNode = {
+        id: res.node.id,
+        type: res.node.type,
+        slug: res.node.slug,
+        name: res.node.name || {},
+        description: res.node.description || {},
+        tags: res.node.tags || [],
+        metadata: res.node.metadata || {},
+        data: res.node.data || {},
+        created_at: "",
+        updated_at: res.node.updatedAt
+      };
+
       await handleSaveEdit(section, field, newNode);
       setAttributeSearchTerm("");
     } catch (err) {
@@ -208,23 +407,22 @@ const ReleaseDetailsPage = () => {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-slate-950">
         <div className="flex flex-col items-center gap-6">
-          <RefreshCwIcon className="w-12 h-12 text-slate-700 animate-spin" />
+          <RefreshCw className="w-12 h-12 text-slate-700 animate-spin" />
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Decrypting Graph Nodes</p>
         </div>
       </div>
     );
   }
 
-  if (!release) {
+  if (!variant) {
     return (
       <div className="flex-1 flex items-center justify-center h-screen bg-slate-950">
-        <p className="text-slate-500 uppercase tracking-widest text-xs font-bold">Release Discovery Failed</p>
+        <p className="text-slate-500 uppercase tracking-widest text-xs font-bold">Variant Discovery Failed</p>
       </div>
     );
   }
 
-  const releaseName = typeof release.name === 'object' ? (release.name as any).en : release.name;
-  const variantName = variant ? (typeof variant.name === 'object' ? (variant.name as any).en : variant.name) : "---";
+  const variantName = typeof variant.name === 'object' ? (variant.name as any).en : variant.name;
   const modelName = model ? (typeof model.name === 'object' ? (model.name as any).en : model.name) : "---";
   const brandName = brand ? (typeof brand.name === 'object' ? (brand.name as any).en : brand.name) : "---";
 
@@ -240,7 +438,7 @@ const ReleaseDetailsPage = () => {
               className="flex items-center gap-3 text-slate-500 hover:text-white transition-colors group"
             >
               <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Return to Timeline</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Return to Model</span>
             </button>
             
             <div className="space-y-3">
@@ -259,7 +457,7 @@ const ReleaseDetailsPage = () => {
                 {model && (
                   <>
                     <button 
-                      onClick={() => router.push(`/console/brands/model?brandId=${brand?.id}`)}
+                      onClick={() => router.push(`/console/brands/model/details?modelId=${model?.id}`)}
                       className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors truncate"
                     >
                       {modelName}
@@ -268,16 +466,13 @@ const ReleaseDetailsPage = () => {
                   </>
                 )}
                 {variant && (
-                  <button 
-                    onClick={() => router.push(`/console/brands/model/variant?modelId=${model?.id}`)}
-                    className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors truncate"
-                  >
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 truncate">
                     {variantName}
-                  </button>
+                  </span>
                 )}
               </div>
               <h1 className="text-2xl lg:text-4xl font-black text-white tracking-tighter leading-tight max-w-4xl uppercase">
-                {brandName} {modelName} <span className="text-slate-500">-</span> <span className="text-slate-400 font-normal ml-1">{variantName} {release.data?.year || releaseName}</span>
+                {brandName} {modelName} <span className="text-slate-500">-</span> <span className="text-slate-400 font-normal ml-1">{variantName}</span>
               </h1>
             </div>
           </div>
@@ -361,7 +556,8 @@ const ReleaseDetailsPage = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                       {filteredFields.map(([fieldKey, fieldConfig]) => {
-                        const value = release.data?.[sectionKey]?.[fieldKey];
+                        const rawValue = getVariantValue(variant, sectionKey, fieldKey, fieldConfig);
+                        const value = formatValue(rawValue);
                         return (
                           <div key={fieldKey} className="group bg-white/[0.01] border border-white/[0.03] p-6 rounded-3xl hover:bg-white/[0.02] transition-all hover:border-white/10 flex items-center justify-between gap-4 relative overflow-hidden">
                           {editingField?.section === sectionKey && editingField?.field === fieldKey ? (
@@ -432,16 +628,6 @@ const ReleaseDetailsPage = () => {
                                 ) : !attributeSearchTerm.trim() && (
                                   <div className="flex flex-col items-center gap-3 py-6">
                                     <p className="text-[10px] text-slate-600 uppercase font-black text-center">No nodes found in registry</p>
-                                    <button 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        window.open(`/console/attribute/${fieldKey}`, '_blank');
-                                      }}
-                                      className="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest text-emerald-400 transition-all flex items-center gap-2"
-                                    >
-                                      <RefreshCw className="w-3 h-3" />
-                                      Configure Nodes
-                                    </button>
                                   </div>
                                 )}
                               </div>
@@ -531,8 +717,4 @@ const ReleaseDetailsPage = () => {
   );
 };
 
-const RefreshCwIcon = (props: any) => (
-  <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
-);
-
-export default ReleaseDetailsPage;
+export default VariantDetailsPage;

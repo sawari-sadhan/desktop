@@ -18,6 +18,19 @@ const coreTransport = createConnectTransport({
 export const graphClient = createClient(GraphService, coreTransport);
 export const obdClient = createClient(OBDService, coreTransport);
 
+export interface EntityNode {
+  id: string;
+  type: string;
+  slug: string;
+  name: Record<string, any>;
+  description: Record<string, any>;
+  tags: string[];
+  metadata: Record<string, any>;
+  data: Record<string, any>;
+  created_at?: string;
+  updated_at?: string;
+}
+
 // Re-export request/response types for convenience
 export type {
   GetNodeRequest,
@@ -40,6 +53,9 @@ export type {
   GetNeighborsResponse,
   SearchNodesRequest,
   SearchNodesResponse,
+  ListNodeTypesRequest,
+  ListNodeTypesResponse,
+  NodeType,
 } from "../gen/graph_auto_pb";
 
 export type {

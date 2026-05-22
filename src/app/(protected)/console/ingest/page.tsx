@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import { Save, Database, Info, CheckCircle2, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { entityApi } from "@lib/v1/graph/entity";
-import { edgeApi } from "@lib/v1/graph/edge";
+import { graphClient } from "@lib/core";
 
 const IngestPage = () => {
   const [isSaving, setIsSaving] = useState(false);
@@ -27,8 +26,12 @@ const IngestPage = () => {
   React.useEffect(() => {
     const loadBrands = async () => {
       try {
-        const data = await entityApi.getBrands();
-        setBrands(data.map(b => ({ id: b.id, name: b.name, slug: b.slug })));
+        const res = await graphClient.searchNodes({
+          query: "",
+          types: ["brand"],
+          limit: 1000
+        });
+        setBrands((res.nodes || []).map(b => ({ id: b.id, name: b.name, slug: b.slug })));
       } catch (err) {
         console.error("Failed to load brands:", err);
       }
@@ -41,9 +44,13 @@ const IngestPage = () => {
     if ((formData.type === "variant" || formData.type === "model" || formData.type === "release") && formData.brandId) {
       const loadModels = async () => {
         try {
-          const allModels = await entityApi.listByType('model');
-          const filtered = allModels
-            .filter(m => m.data?.parent_brand_id === formData.brandId)
+          const res = await graphClient.searchNodes({
+            query: "",
+            types: ["model"],
+            limit: 1000
+          });
+          const filtered = (res.nodes || [])
+            .filter(m => (m.data as any)?.parent_brand_id === formData.brandId)
             .map(m => ({ id: m.id, name: m.name, slug: m.slug }));
           setModels(filtered);
         } catch (err) {
@@ -59,9 +66,13 @@ const IngestPage = () => {
     if (formData.type === "release" && formData.modelId) {
       const loadVariants = async () => {
         try {
-          const allVariants = await entityApi.listByType('variant');
-          const filtered = allVariants
-            .filter(v => v.data?.parent_model_id === formData.modelId)
+          const res = await graphClient.searchNodes({
+            query: "",
+            types: ["variant"],
+            limit: 1000
+          });
+          const filtered = (res.nodes || [])
+            .filter(v => (v.data as any)?.parent_model_id === formData.modelId)
             .map(v => ({ id: v.id, name: v.name, slug: v.slug }));
           setVariants(filtered);
         } catch (err) {
@@ -134,43 +145,46 @@ const IngestPage = () => {
     setStatus({ type: null, message: "" });
 
     try {
-      const payload = {
+      const res = await graphClient.createNode({
         type: formData.type,
         slug: formData.slug,
-        name: { en: formData.name_en },
-        description: { en: formData.desc_en },
+        name: { en: formData.name_en } as any,
+        description: { en: formData.desc_en } as any,
+        tags: [formData.type],
+        metadata: {} as any,
         data: { 
           icon: formData.type, 
           source: "Manual_Ingest",
           ...(formData.type === "model" && { parent_brand_id: formData.brandId, vehicle_type: formData.vehicle_type }),
           ...(formData.type === "variant" && { parent_model_id: formData.modelId, parent_brand_id: formData.brandId }),
           ...(formData.type === "release" && { parent_variant_id: formData.variantId, parent_model_id: formData.modelId, parent_brand_id: formData.brandId })
-        }
-      };
+        } as any
+      });
 
-      const newNode = await entityApi.create(payload as any);
+      const newNode = res.node;
+      if (!newNode) throw new Error("Failed to create node: response was empty");
       
       // Establish formal Graph Edges (Connections)
       if (formData.type === "model" && formData.brandId) {
-        await edgeApi.createLink({
-          source_id: newNode.id,
-          target_id: formData.brandId,
-          type: "MADE_BY",
-          data: { context: "Manual_Ingest_Hierarchy" }
+        await graphClient.addLink({
+          sourceId: newNode.id,
+          targetId: formData.brandId,
+          linkType: "MADE_BY",
+          metadata: { context: "Manual_Ingest_Hierarchy" } as any
         });
       } else if (formData.type === "variant" && formData.modelId) {
-        await edgeApi.createLink({
-          source_id: newNode.id,
-          target_id: formData.modelId,
-          type: "VARIANT_OF",
-          data: { context: "Manual_Ingest_Hierarchy" }
+        await graphClient.addLink({
+          sourceId: newNode.id,
+          targetId: formData.modelId,
+          linkType: "VARIANT_OF",
+          metadata: { context: "Manual_Ingest_Hierarchy" } as any
         });
       } else if (formData.type === "release" && formData.variantId) {
-        await edgeApi.createLink({
-          source_id: newNode.id,
-          target_id: formData.variantId,
-          type: "VERSION_OF",
-          data: { context: "Manual_Ingest_Hierarchy" }
+        await graphClient.addLink({
+          sourceId: newNode.id,
+          targetId: formData.variantId,
+          linkType: "VERSION_OF",
+          metadata: { context: "Manual_Ingest_Hierarchy" } as any
         });
       }
       

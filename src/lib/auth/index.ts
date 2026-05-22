@@ -1,7 +1,6 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { CONSOLE_AUTH } from "@lib/secrets/auth";
 import { authClient, AccountContext } from "@lib/config";
 
 /**
@@ -10,19 +9,6 @@ import { authClient, AccountContext } from "@lib/config";
 export async function consoleLoginAction(formData: FormData) {
   const mobile = formData.get("mobile")?.toString();
   const password = formData.get("password")?.toString();
-
-  // 1. Static fallback bypass for Console Access
-  if (mobile === CONSOLE_AUTH.mobile && password === CONSOLE_AUTH.password) {
-    const cookieStore = await cookies();
-    cookieStore.set("console_auth", "true", {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      sameSite: "lax",
-    });
-    return { success: true };
-  }
 
   // 2. Database verification via authClient.login for Console users
   if (!mobile || !password) {
