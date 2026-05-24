@@ -64,6 +64,8 @@ export type {
   ListNodeTypesRequest,
   ListNodeTypesResponse,
   NodeType,
+  Node,
+  Link,
 } from "../gen/graph_auto_pb";
 
 export type {

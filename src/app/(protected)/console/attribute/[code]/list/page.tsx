@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -224,4 +224,10 @@ const AttributeLinkedVehiclesPage = () => {
   );
 };
 
-export default AttributeLinkedVehiclesPage;
+const AttributeLinkedVehiclesPageWithSuspense = () => (
+  <Suspense fallback={<div className="flex-1 flex items-center justify-center min-h-screen text-slate-400">Loading Linked Vehicles...</div>}>
+    <AttributeLinkedVehiclesPage />
+  </Suspense>
+);
+
+export default AttributeLinkedVehiclesPageWithSuspense;

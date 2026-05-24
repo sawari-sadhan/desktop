@@ -57,11 +57,15 @@ const KnowledgeGraph = () => {
     setNebulae(newNebulae);
   }, []);
 
-  const formatNode = (node: PublicNode) => {
+  const formatNode = (node: GraphNode) => {
     let nodeName = "UNKNOWN";
-    if (typeof node.name === 'string') nodeName = node.name;
-    else if (node.name?.en) nodeName = node.name.en;
-    else if (node.slug) nodeName = node.slug;
+    if (typeof node.name === 'string') {
+      nodeName = node.name;
+    } else if (node.name && (node.name as any).en) {
+      nodeName = (node.name as any).en;
+    } else if (node.slug) {
+      nodeName = node.slug;
+    }
 
     return {
       id: node.id,
@@ -72,7 +76,7 @@ const KnowledgeGraph = () => {
     };
   };
 
-  const formatEdge = (link: PublicLink) => {
+  const formatEdge = (link: { source_id: string; target_id: string; type: string }) => {
     const style = (relationshipStyles as any)[link.type] || { color: "rgba(255,255,255,0.1)", width: 0.5 };
     return {
       id: `${link.source_id}-${link.target_id}-${link.type}`,
@@ -112,11 +116,16 @@ const KnowledgeGraph = () => {
     }
 
     try {
-      const data = await publicApi.expandNode(nodeId);
+      const data = await graphClient.getNeighbors({ nodeId, linkTypes: [] });
+      const mappedLinks = data.links.map(l => ({
+        source_id: l.sourceId,
+        target_id: l.targetId,
+        type: l.linkType,
+      }));
       
       // Filter out existing nodes/edges
       const newNodes = data.nodes.filter(n => !nodesDataSetRef.current.get(n.id));
-      const newEdges = data.links.filter(l => !edgesDataSetRef.current.get(`${l.source_id}-${l.target_id}-${l.type}`));
+      const newEdges = mappedLinks.filter(l => !edgesDataSetRef.current.get(`${l.source_id}-${l.target_id}-${l.type}`));
 
       if (newNodes.length > 0) {
         nodesDataSetRef.current.add(newNodes.map(formatNode));
@@ -141,9 +150,14 @@ const KnowledgeGraph = () => {
         setLoading(true);
         
         // 1. Fetch Initial Layer (Brands)
-        const initialData = await publicApi.getInitialGraph();
+        const response = await graphClient.searchNodes({
+          query: "",
+          types: ["brand"],
+          vector: [],
+          limit: 100,
+        });
 
-        const styledNodes = initialData.nodes.map(formatNode);
+        const styledNodes = response.nodes.map(formatNode);
         nodesDataSetRef.current.clear();
         nodesDataSetRef.current.add(styledNodes);
         edgesDataSetRef.current.clear();

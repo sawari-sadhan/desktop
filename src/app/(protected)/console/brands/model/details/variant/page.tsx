@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -721,4 +721,10 @@ const VariantDetailsPage = () => {
   );
 };
 
-export default VariantDetailsPage;
+const VariantDetailsPageWithSuspense = () => (
+  <Suspense fallback={<div className="flex-1 flex items-center justify-center min-h-screen text-slate-400">Loading Variant Details...</div>}>
+    <VariantDetailsPage />
+  </Suspense>
+);
+
+export default VariantDetailsPageWithSuspense;

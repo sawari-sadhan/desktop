@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -677,4 +677,10 @@ const ModelDetailsPage = () => {
   );
 };
 
-export default ModelDetailsPage;
+const ModelDetailsPageWithSuspense = () => (
+  <Suspense fallback={<div className="flex-1 flex items-center justify-center min-h-screen text-slate-400">Loading Model Details...</div>}>
+    <ModelDetailsPage />
+  </Suspense>
+);
+
+export default ModelDetailsPageWithSuspense;
