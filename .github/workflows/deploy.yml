@@ -9,7 +9,7 @@ env:
   USER: ${{ secrets.USER }}
   HOST: ${{ secrets.HOST }}
   SSH_KEY: ${{ secrets.SSH_KEY }}
-  PROJECT_PATH: projects/sawarisadhan/desktop
+  PROJECT_PATH: projects/sawarisadhan.com/desktop
 
 jobs:
   deploy:
@@ -53,8 +53,8 @@ jobs:
             echo '🚀 Starting Deployment for Sawari Sadhan Desktop...'
             cd ${{ env.PROJECT_PATH }} &&
             
-            echo '🛡️ Configuring firewall for Port 5110...'
-            (command -v ufw >/dev/null 2>&1 && sudo ufw allow 5110/tcp comment 'Sawari Sadhan Desktop service' 2>/dev/null && sudo ufw reload 2>/dev/null || true)
+            echo '🛡️ Configuring firewall for Port 5111...'
+            (command -v ufw >/dev/null 2>&1 && sudo ufw allow 5111/tcp comment 'Sawari Sadhan Desktop service' 2>/dev/null && sudo ufw reload 2>/dev/null || true)
             
             echo '🏗️ Rebuilding and starting Sawari Sadhan Desktop container...'
             DEPLOY_TIMESTAMP=\$(date -u +%Y%m%d%H%M%S) &&

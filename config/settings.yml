@@ -9,7 +9,7 @@ service:
   display_name: "Sawari Sadhan Desktop HUD"
   description: "Next.js technical terminal dashboard, attribute registry manager, and vehicle graph console."
   version: "0.1.0-alpha"
-  port: 5110
+  port: 5111
   runtime: "NodeJS / Next.js v15"
   framework: "React v19"
   language: "TypeScript"
@@ -22,7 +22,7 @@ api_connections:
     endpoint: "http://localhost:5102"
     description: "Core Vehicle Information Graph engine"
   media:
-    endpoint: "http://localhost:5106"
+    endpoint: "http://localhost:5100"
     description: "Media uploads manager"
 
 build_settings:

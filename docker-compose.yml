@@ -4,14 +4,18 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_GRAPH_API_URL=https://graph.sawarisadhan.com
-        - NEXT_PUBLIC_AGENT_API_URL=https://agent.sawarisadhan.com
+        - NEXT_PUBLIC_AUTH_API_URL=https://auth.sawarisadhan.com
+        - NEXT_PUBLIC_CORE_API_URL=https://core.sawarisadhan.com
+        - NEXT_PUBLIC_MEDIA_API_URL=https://media.sawarisadhan.com
     container_name: sawari-desktop
     restart: always
     ports:
-      - "5110:3000"
+      - "5111:3000"
     environment:
       - NODE_ENV=production
+      - NEXT_PUBLIC_AUTH_API_URL=http://localhost:5101
+      - NEXT_PUBLIC_CORE_API_URL=http://localhost:5102
+      - NEXT_PUBLIC_MEDIA_API_URL=http://localhost:5100
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
       interval: 30s
