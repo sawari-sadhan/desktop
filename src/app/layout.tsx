@@ -4,6 +4,7 @@ import './globals.css';
 import Header from './components/layout/header';
 import Footer from './components/layout/footer';
 import Background from './components/layout/background';
+import ImageProtection from './components/ImageProtection';
 
 const josefin = Josefin_Sans({
   subsets: ['latin'],
@@ -40,6 +41,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`h-screen text-foreground bg-background font-sans antialiased flex flex-col ${josefin.variable} ${firaCode.variable}`}
       >
+        <ImageProtection />
         <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {children}
         </main>

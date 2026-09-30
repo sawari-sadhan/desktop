@@ -1,6 +1,7 @@
 "use client";
 
 import { PUBLIC_NAV_ITEMS } from "@lib/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -12,8 +13,8 @@ const Header = () => {
       <div className="container mx-auto max-w-7xl px-8 relative z-10">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center gap-10">
-            <Link href="/" className="text-slate-900 text-sm font-bold tracking-tight">
-              SAWARI SADHAN
+            <Link href="/" className="flex items-center">
+              <Image src="/logo.png" alt="Sawari Sadhan" width={120} height={40} className="object-contain h-10 w-auto" priority />
             </Link>
             
             <nav className="hidden md:flex items-center gap-8">
