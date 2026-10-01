@@ -10,7 +10,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-full h-full flex flex-col bg-slate-50 relative z-10 overflow-hidden">
+    <div className="w-full h-full flex flex-col bg-slate-50 relative z-10 overflow-hidden [font-family:var(--font-clash)]">
       {/* Header stays locked at the top, outside the scroll context */}
       <Header />
       

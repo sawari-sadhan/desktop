@@ -161,13 +161,13 @@ const IngestPage = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center py-8 px-8 lg:px-12 min-h-screen bg-slate-950/20">
-      <div className="w-full max-w-7xl space-y-8">
+    <div className="flex-1 p-12 min-h-screen bg-slate-50">
+      <div className="w-full space-y-8">
         
         {/* Unified Console Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/[0.03] pb-8 gap-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-8 gap-6">
           <div className="space-y-1">
-            <h1 className="text-3xl font-black text-white tracking-tight">
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
               Node <span className="text-slate-500 text-xl ml-2 font-bold tracking-widest uppercase">Ingestion</span>
             </h1>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Add new nodes to the automotive knowledge graph</p>
@@ -181,8 +181,8 @@ const IngestPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className={`p-5 rounded-2xl flex items-start gap-4 backdrop-blur-xl border ${
               status.type === 'success' 
-                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' 
-                : 'bg-rose-500/10 text-rose-300 border-rose-500/20'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                : 'bg-rose-50 text-rose-700 border-rose-200'
             }`}
           >
             {status.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" /> : <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />}
@@ -194,8 +194,8 @@ const IngestPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
           {/* Left Column (Identity) */}
-          <div className="bg-slate-950/40 border border-white/[0.03] p-8 rounded-[2.5rem] space-y-8 backdrop-blur-md">
-            <h2 className="text-sm font-black text-white uppercase tracking-[0.25em] border-l-2 border-teal-500/30 pl-4">
+          <div className="bg-white border border-slate-200 p-8 rounded-[2.5rem] space-y-8 backdrop-blur-md shadow-sm">
+            <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.25em] border-l-2 border-teal-500/30 pl-4">
               Node Identity
             </h2>
 
@@ -208,11 +208,11 @@ const IngestPage = () => {
                 <select 
                   value={formData.type}
                   onChange={(e) => setFormData({...formData, type: e.target.value, brandId: "", modelId: ""})}
-                  className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-bold text-slate-100 focus:ring-1 focus:ring-white/20 transition-all rounded-2xl cursor-pointer hover:bg-white/[0.04]"
+                  className="w-full bg-white border border-slate-200 p-4 text-xs font-bold text-slate-900 focus:ring-1 focus:ring-slate-200 transition-all rounded-2xl cursor-pointer hover:bg-slate-50 focus:bg-white"
                 >
-                  <option value="brand" className="bg-[#1a1c23] text-slate-300">Brand / Manufacturer</option>
-                  <option value="model" className="bg-[#1a1c23] text-slate-300">Vehicle Model</option>
-                  <option value="variant" className="bg-[#1a1c23] text-slate-300">Technical Variant</option>
+                  <option value="brand" className="bg-white text-slate-900">Brand / Manufacturer</option>
+                  <option value="model" className="bg-white text-slate-900">Vehicle Model</option>
+                  <option value="variant" className="bg-white text-slate-900">Technical Variant</option>
                 </select>
               </div>
             </div>
@@ -229,7 +229,7 @@ const IngestPage = () => {
                 value={formData.name_en}
                 onChange={handleNameChange}
                 autoComplete="off"
-                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-sm font-bold text-slate-100 placeholder:text-slate-700 focus:ring-1 focus:ring-white/20 transition-all rounded-2xl hover:bg-white/[0.04]"
+                className="w-full bg-white border border-slate-200 p-4 text-sm font-bold text-slate-900 placeholder:text-slate-400 focus:ring-1 focus:ring-slate-200 transition-all rounded-2xl hover:bg-slate-50 focus:bg-white"
                 placeholder="e.g. Tesla Motors"
               />
             </div>
@@ -244,16 +244,16 @@ const IngestPage = () => {
                 type="text"
                 value={formData.slug}
                 onChange={(e) => setFormData({...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-')})}
-                className="w-full bg-white/[0.02] border border-white/[0.05] p-4 text-xs font-mono text-slate-400 focus:ring-1 focus:ring-white/20 transition-all rounded-2xl hover:bg-white/[0.04]"
+                className="w-full bg-white border border-slate-200 p-4 text-xs font-mono text-slate-600 focus:ring-1 focus:ring-slate-200 transition-all rounded-2xl hover:bg-slate-50 focus:bg-white"
                 placeholder="tesla-motors"
               />
             </div>
           </div>
 
           {/* Right Column (Hierarchy) */}
-          <div className="bg-slate-950/40 border border-white/[0.03] p-8 rounded-[2.5rem] space-y-8 backdrop-blur-md flex flex-col justify-between">
+          <div className="bg-white border border-slate-200 p-8 rounded-[2.5rem] space-y-8 backdrop-blur-md flex flex-col justify-between shadow-sm">
             <div className="space-y-8">
-              <h2 className="text-sm font-black text-white uppercase tracking-[0.25em] border-l-2 border-teal-500/30 pl-4">
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.25em] border-l-2 border-teal-500/30 pl-4">
                 Hierarchy & Context
               </h2>
 
@@ -267,8 +267,8 @@ const IngestPage = () => {
                   <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] px-1">
                     4. Select Brand
                   </label>
-                  <div className="bg-white/[0.01] border border-white/[0.03] rounded-3xl p-5 hover:bg-white/[0.02] transition-all">
-                    <div className="flex flex-wrap gap-2.5 max-h-32 overflow-y-auto px-1 pr-2 custom-scrollbar py-0.5">
+                  <div className="bg-slate-50 border border-slate-200 rounded-3xl px-5 py-2 transition-all">
+                    <div className="flex flex-wrap gap-2.5 max-h-32 overflow-y-auto px-1 pr-2 custom-scrollbar py-1 my-4">
                       {brands.map((brand, idx) => {
                         const isSelected = formData.brandId === brand.id;
                         const displayName = brand.name?.en || brand.name;
@@ -281,8 +281,8 @@ const IngestPage = () => {
                             onClick={() => setFormData(prev => ({ ...prev, brandId: isSelected ? "" : brand.id, modelId: "" }))}
                             className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 border ${
                               isSelected 
-                                ? "bg-teal-500/10 text-teal-400 border-teal-500/30 shadow-lg scale-105" 
-                                : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-slate-200"
+                                ? "bg-teal-50 text-teal-700 border-teal-200 shadow-lg scale-105" 
+                                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900 hover:shadow-sm"
                             }`}
                           >
                             {displayName}
@@ -304,8 +304,8 @@ const IngestPage = () => {
                   <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.3em] px-1">
                     5. Select Model
                   </label>
-                  <div className="bg-white/[0.01] border border-white/[0.03] rounded-3xl p-5 hover:bg-white/[0.02] transition-all">
-                    <div className="flex flex-wrap gap-2.5 max-h-32 overflow-y-auto px-1 pr-2 custom-scrollbar py-0.5">
+                  <div className="bg-slate-50 border border-slate-200 rounded-3xl px-5 py-2 transition-all">
+                    <div className="flex flex-wrap gap-2.5 max-h-32 overflow-y-auto px-1 pr-2 custom-scrollbar py-1 my-4">
                       {models.length > 0 ? models.map((model, idx) => {
                         const isSelected = formData.modelId === model.id;
                         const displayName = model.name?.en || model.name;
@@ -318,8 +318,8 @@ const IngestPage = () => {
                             onClick={() => setFormData(prev => ({ ...prev, modelId: isSelected ? "" : model.id }))}
                             className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 border ${
                               isSelected 
-                                ? "bg-teal-500/10 text-teal-400 border-teal-500/30 shadow-lg scale-105" 
-                                : "bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:text-slate-200"
+                                ? "bg-teal-50 text-teal-700 border-teal-200 shadow-lg scale-105" 
+                                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900 hover:shadow-sm"
                             }`}
                           >
                             {displayName}
@@ -343,7 +343,7 @@ const IngestPage = () => {
                 <textarea 
                   value={formData.desc_en}
                   onChange={(e) => setFormData({...formData, desc_en: e.target.value})}
-                  className="w-full bg-white/[0.02] border border-white/[0.05] p-5 text-xs font-medium text-slate-300 placeholder:text-slate-700 focus:ring-1 focus:ring-white/20 transition-all rounded-2xl resize-none leading-relaxed hover:bg-white/[0.04] min-h-[120px]"
+                  className="w-full bg-white border border-slate-200 p-5 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:ring-1 focus:ring-slate-200 transition-all rounded-2xl resize-none leading-relaxed hover:bg-slate-50 focus:bg-white min-h-[120px]"
                   placeholder="Technical specifications or operational context..."
                 />
               </div>
@@ -359,11 +359,11 @@ const IngestPage = () => {
                 }
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center gap-3 py-5 bg-slate-100 text-slate-950 font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all rounded-2xl disabled:opacity-5 disabled:bg-white/10 shadow-2xl relative overflow-hidden group/btn cursor-pointer"
+                className="w-full flex items-center justify-center gap-3 py-5 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest hover:bg-slate-800 transition-all rounded-2xl disabled:opacity-50 disabled:bg-slate-100 disabled:text-slate-400 shadow-2xl relative overflow-hidden group/btn cursor-pointer"
               >
                 {isSaving ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-slate-950/20 border-t-slate-950 rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-slate-900/20 border-t-slate-900 rounded-full animate-spin" />
                     <span>Processing Node...</span>
                   </>
                 ) : (

@@ -34,14 +34,14 @@ const AttributeRegistryPage = () => {
   );
 
   return (
-    <div className="flex-1 flex flex-col items-center py-8 px-8 lg:px-12 min-h-screen">
-      <div className="w-full max-w-7xl space-y-8">
+    <div className="flex-1 p-12 min-h-screen">
+      <div className="w-full space-y-8">
         
         {/* Simplified Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/[0.03] pb-8 gap-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-8 gap-6">
           <div className="space-y-1">
-            <h1 className="text-3xl font-black text-white tracking-tight">
-              Technical <span className="text-slate-500 text-xl ml-2 font-bold tracking-widest uppercase">Attributes</span>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+              Technical <span className="text-slate-400 text-xl ml-2 font-bold tracking-widest uppercase">Attributes</span>
             </h1>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Managing {attributes.length} technical features in Knowledge Graph</p>
           </div>
@@ -53,13 +53,13 @@ const AttributeRegistryPage = () => {
                 placeholder="Search attributes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/[0.03] border border-white/[0.05] rounded-2xl py-3 pl-10 pr-6 text-xs text-white focus:ring-1 focus:ring-white/20 transition-all w-full md:w-64 hover:bg-white/[0.05]"
+                className="bg-white border border-slate-200 shadow-sm rounded-2xl py-3 pl-10 pr-6 text-xs text-slate-900 focus:ring-1 focus:ring-slate-300 transition-all w-full md:w-64 hover:bg-slate-50 placeholder-slate-400 outline-none"
               />
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
             </div>
             <button 
               onClick={loadAttributes}
-              className="p-3 bg-white/5 border border-white/10 rounded-2xl text-slate-400 hover:text-white hover:bg-white/10 transition-all shrink-0"
+              className="p-3 bg-white border border-slate-200 shadow-sm rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all shrink-0"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </button>
@@ -71,7 +71,7 @@ const AttributeRegistryPage = () => {
           <AnimatePresence mode="popLayout">
             {isLoading ? (
               Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="bg-white/[0.01] border border-white/[0.03] rounded-[2rem] h-56 animate-pulse" />
+                <div key={i} className="bg-slate-50 border border-slate-200 rounded-[2rem] h-56 animate-pulse" />
               ))
             ) : filteredAttributes.length > 0 ? (
               filteredAttributes.map((attr, idx) => {
@@ -85,11 +85,11 @@ const AttributeRegistryPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: idx * 0.005 }}
-                    whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.03)" }}
+                    whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,1)" }}
                     onClick={() => router.push(`/console/attribute/${attr.code}`)}
-                    className="group cursor-pointer relative bg-white/[0.01] border border-white/[0.03] p-7 rounded-[2rem] transition-all hover:border-white/10 shadow-xl overflow-hidden"
+                    className="group cursor-pointer relative bg-white border border-slate-200 p-7 rounded-[2rem] transition-all hover:border-blue-200 shadow-sm hover:shadow-md overflow-hidden"
                   >
-                    <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-32 h-32 bg-white/[0.02] rounded-full blur-3xl group-hover:bg-white/[0.05] transition-all" />
+                    <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-32 h-32 bg-slate-50 rounded-full blur-3xl group-hover:bg-blue-50 transition-all" />
                     
                     {attrType === "boolean" && nodeCount > 0 && (
                       <motion.div 
@@ -102,15 +102,15 @@ const AttributeRegistryPage = () => {
                     
                     <div className="space-y-6 relative">
                       <div className="flex-1 min-w-0">
-                        <p className="text-[12px] text-slate-500 mb-1 font-mono tracking-widest uppercase">
+                        <p className="text-[12px] text-slate-400 mb-1 font-mono tracking-widest uppercase">
                           {attr.code}
                         </p>
-                        <h3 className="text-lg font-black text-white group-hover:text-slate-300 transition-colors line-clamp-1">
+                        <h3 className="text-lg font-black text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                           {attr.name}
                         </h3>
                       </div>
 
-                      <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {attrType === "string" && (
                             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-300/80">String {nodeCount > 0 ? `(${nodeCount})` : ""}</span>
@@ -132,7 +132,7 @@ const AttributeRegistryPage = () => {
               })
             ) : (
               <div className="col-span-full py-20 text-center space-y-4">
-                <Search className="w-12 h-12 text-slate-700 mx-auto" />
+                <Search className="w-12 h-12 text-slate-300 mx-auto" />
                 <p className="text-slate-500 font-bold tracking-widest uppercase text-xs">No matching attributes found</p>
               </div>
             )}

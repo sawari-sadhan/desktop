@@ -98,8 +98,8 @@ const AttributeLinkedVehiclesPage = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center py-12 px-8 lg:px-12 min-h-screen">
-      <div className="w-full max-w-4xl space-y-10">
+    <div className="flex-1 p-12 min-h-screen">
+      <div className="w-full space-y-10">
         
         {/* Navigation Header */}
         <div className="flex items-center justify-between">

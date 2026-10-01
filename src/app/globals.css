@@ -1,8 +1,10 @@
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap');
 @import "tailwindcss";
 
 :root {
+  --font-clash: 'Clash Display', var(--font-josefin), ui-sans-serif, system-ui, sans-serif;
   --font-josefin: var(--font-josefin);
-  --font-sans: var(--font-josefin), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Clash Display', var(--font-josefin), ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Exact copy of github/esona/web/app/theme/styles/globals.css */
@@ -75,35 +77,48 @@ textarea {
   border-radius: 4px;
 }
 
-/* 🧪 PREMIUM SOLARIN SCROLLBAR */
+/* 🧪 LIGHT THEME SCROLLBAR (Blends perfectly) */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+  width: 12px;
+  /* Wider to accommodate transparent borders */
+  height: 12px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 10px;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, rgba(45, 212, 191, 0.1), rgba(45, 212, 191, 0.2));
-  border-radius: 10px;
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: transparent;
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  /* 3px gap on left/right */
+  border-top-width: 12px;
+  /* 12px gap from top */
+  border-bottom-width: 12px;
+  /* 12px gap from bottom */
+  border-radius: 9999px;
+  /* Creates perfectly rounded inner pill */
+  transition: background-color 0.3s ease;
 }
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, rgba(45, 212, 191, 0.3), rgba(45, 212, 191, 0.5));
+  background-color: rgba(148, 163, 184, 0.4);
+  /* subtle slate */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #2dd4bf, #14b8a6);
-  box-shadow: 0 0 10px rgba(45, 212, 191, 0.4);
+  background-color: rgba(148, 163, 184, 0.7);
 }
 
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(45, 212, 191, 0.3) rgba(255, 255, 255, 0.02);
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+.custom-scrollbar:hover {
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
 }
 
 /* Hide spin buttons for number inputs */
@@ -125,5 +140,6 @@ img {
   -moz-user-drag: none;
   -o-user-drag: none;
   user-select: none;
-  pointer-events: auto; /* allows click on wrappers */
+  pointer-events: auto;
+  /* allows click on wrappers */
 }

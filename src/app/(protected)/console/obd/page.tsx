@@ -23,7 +23,7 @@ const SEVERITY_CONFIG: Record<string, { label: string; color: string; icon: Reac
   critical: { label: "Critical", color: "text-red-400 bg-red-500/10 border-red-500/20", icon: ShieldAlert },
   high:     { label: "High",     color: "text-orange-400 bg-orange-500/10 border-orange-500/20", icon: AlertTriangle },
   medium:   { label: "Medium",   color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/20", icon: Zap },
-  low:      { label: "Low",      color: "text-slate-400 bg-white/5 border-white/10", icon: Info },
+  low:      { label: "Low",      color: "text-slate-500 bg-slate-100 border-slate-200", icon: Info },
 };
 
 const getSeverityConfig = (severity: string) =>
@@ -70,14 +70,14 @@ const OBDPage = () => {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="flex-1 flex flex-col items-center py-8 px-8 lg:px-12 min-h-screen">
-      <div className="w-full max-w-7xl space-y-8">
+    <div className="flex-1 p-12 min-h-screen">
+      <div className="w-full space-y-8">
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/[0.03] pb-8">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-8">
           <div className="space-y-1">
-            <h1 className="text-3xl font-black text-white tracking-tight">
-              OBD-II <span className="text-slate-500 text-xl ml-2 font-bold tracking-widest uppercase">Codes</span>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+              OBD-II <span className="text-slate-400 text-xl ml-2 font-bold tracking-widest uppercase">Codes</span>
             </h1>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
               {total > 0 ? `${total.toLocaleString()} diagnostic trouble codes` : "Diagnostic Trouble Code Registry"}
@@ -91,13 +91,13 @@ const OBDPage = () => {
                 placeholder="Search code or title..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/[0.03] border border-white/[0.05] rounded-2xl py-3 pl-10 pr-6 text-xs text-white focus:ring-1 focus:ring-white/20 transition-all w-72 hover:bg-white/[0.05] outline-none"
+                className="bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-6 text-xs text-slate-900 focus:ring-1 focus:ring-slate-300 transition-all w-72 shadow-sm hover:bg-slate-50 outline-none"
               />
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
             </div>
             <button
               onClick={loadCodes}
-              className="p-3 bg-white/5 border border-white/10 rounded-2xl text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+              className="p-3 bg-white border border-slate-200 shadow-sm rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
             </button>
@@ -108,7 +108,7 @@ const OBDPage = () => {
         <div className="w-full min-h-[60vh] space-y-4">
           
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-white/[0.03]">
+          <div className="grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">
             <div className="col-span-2">Code</div>
             <div className="col-span-6">Description</div>
             <div className="col-span-2 text-center">Severity</div>
@@ -120,11 +120,11 @@ const OBDPage = () => {
             <AnimatePresence mode="popLayout">
               {isLoading ? (
                 Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="grid grid-cols-12 gap-4 items-center p-5 rounded-2xl border border-white/[0.03] bg-white/[0.01] h-20 animate-pulse">
-                    <div className="col-span-2 h-8 bg-white/5 rounded-xl w-24" />
-                    <div className="col-span-6 h-5 bg-white/5 rounded-lg w-3/4" />
-                    <div className="col-span-2 h-8 bg-white/5 rounded-xl w-24 mx-auto" />
-                    <div className="col-span-2 h-8 bg-white/5 rounded-xl w-20 ml-auto" />
+                  <div key={i} className="grid grid-cols-12 gap-4 items-center p-5 rounded-2xl border border-slate-200 bg-slate-50 h-20 animate-pulse">
+                    <div className="col-span-2 h-8 bg-slate-200 rounded-xl w-24" />
+                    <div className="col-span-6 h-5 bg-slate-200 rounded-lg w-3/4" />
+                    <div className="col-span-2 h-8 bg-slate-200 rounded-xl w-24 mx-auto" />
+                    <div className="col-span-2 h-8 bg-slate-200 rounded-xl w-20 ml-auto" />
                   </div>
                 ))
               ) : codes.length > 0 ? (
@@ -144,18 +144,18 @@ const OBDPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.97 }}
                         transition={{ delay: idx * 0.025 }}
-                        className="group grid grid-cols-12 gap-4 items-center p-5 rounded-2xl border bg-white/[0.01] border-white/[0.03] hover:bg-white/[0.03] hover:border-white/[0.07] transition-all"
+                        className="group grid grid-cols-12 gap-4 items-center p-5 rounded-2xl border bg-white border-slate-200 hover:bg-slate-50 hover:border-blue-200 transition-all shadow-sm hover:shadow-md"
                       >
                         {/* Code badge */}
                         <div className="col-span-2 flex items-center">
-                          <span className="font-mono font-black text-slate-100 text-sm tracking-wider bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl group-hover:bg-white/10 transition-colors">
+                          <span className="font-mono font-black text-slate-900 text-sm tracking-wider bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl group-hover:bg-white group-hover:border-blue-200 transition-colors">
                             {code.code}
                           </span>
                         </div>
 
                         {/* Title */}
                         <div className="col-span-6 min-w-0 flex items-center">
-                          <span className="text-sm font-semibold text-slate-200 group-hover:text-white transition-colors truncate block">
+                          <span className="text-sm font-semibold text-slate-600 group-hover:text-blue-600 transition-colors truncate block">
                             {code.title || "—"}
                           </span>
                         </div>
@@ -170,7 +170,7 @@ const OBDPage = () => {
 
                         {/* Sections Count */}
                         <div className="col-span-2 flex justify-end items-center">
-                          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest bg-white/[0.02] border border-white/[0.05] px-2.5 py-1.5 rounded-xl group-hover:text-slate-300 group-hover:border-white/10 transition-all">
+                          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl group-hover:text-blue-600 group-hover:border-blue-200 transition-all">
                             {code.details?.length ?? 0} section{code.details?.length !== 1 ? "s" : ""}
                           </span>
                         </div>
@@ -180,7 +180,7 @@ const OBDPage = () => {
                 })
               ) : (
                 <div className="py-20 text-center space-y-4">
-                  <CircleDot className="w-10 h-10 text-slate-700 mx-auto" />
+                  <CircleDot className="w-10 h-10 text-slate-300 mx-auto" />
                   <p className="text-slate-500 font-bold tracking-widest uppercase text-xs">
                     No OBD codes found
                   </p>
@@ -190,22 +190,22 @@ const OBDPage = () => {
 
             {/* Pagination */}
             {!isLoading && totalPages > 1 && (
-              <div className="flex items-center justify-between pt-4 border-t border-white/[0.03]">
-                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                   Page {page + 1} of {totalPages}
                 </p>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setPage((p) => Math.max(0, p - 1))}
                     disabled={page === 0}
-                    className="p-2 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="p-2 bg-white border border-slate-200 shadow-sm rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                     disabled={page >= totalPages - 1}
-                    className="p-2 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="p-2 bg-white border border-slate-200 shadow-sm rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

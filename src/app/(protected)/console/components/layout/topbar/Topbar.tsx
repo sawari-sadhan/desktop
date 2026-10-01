@@ -16,9 +16,9 @@ export const Topbar = () => {
     <header className="h-24 flex items-center justify-between px-12 relative z-30">
       {/* Breadcrumbs / Path Info */}
       <div className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-[0.3em]">
-        <span className="text-slate-500">Registry Control</span>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-700" />
-        <span className="text-slate-100 bg-white/10 px-4 py-2 rounded-xl border border-white/5 shadow-sm">
+        <span className="text-slate-400">Registry Control</span>
+        <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+        <span className="text-slate-900 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
           {pathname.split('/').pop()?.replace(/-/g, ' ') || 'Dashboard'}
         </span>
       </div>
@@ -26,12 +26,12 @@ export const Topbar = () => {
       {/* Simplified Actions */}
       <div className="flex items-center gap-6">
         {/* Notifications */}
-        <div className="relative p-3 rounded-2xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] cursor-pointer transition-all">
-          <Bell className="w-5 h-5 text-slate-300" />
-          <span className="absolute top-3.5 right-3.5 w-1.5 h-1.5 bg-slate-400 rounded-full border border-slate-900" />
+        <div className="relative p-3 rounded-2xl bg-white border border-slate-200 shadow-sm hover:bg-slate-50 cursor-pointer transition-all">
+          <Bell className="w-5 h-5 text-slate-600" />
+          <span className="absolute top-3.5 right-3.5 w-1.5 h-1.5 bg-blue-500 rounded-full border border-white" />
         </div>
 
-        <div className="w-[1px] h-8 bg-white/[0.05]" />
+        <div className="w-[1px] h-8 bg-slate-200" />
 
         {/* Logout Action */}
         <button 

@@ -431,8 +431,8 @@ const VariantDetailsPage = () => {
   const brandName = brand ? (typeof brand.name === 'object' ? (brand.name as any).en : brand.name) : "---";
 
   return (
-    <div className="flex-1 flex flex-col items-center py-12 px-8 lg:px-16 min-h-screen">
-      <div className="w-full max-w-7xl space-y-12">
+    <div className="flex-1 p-12 min-h-screen">
+      <div className="w-full space-y-12">
         
         {/* Top Navigation & Title */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/[0.03] pb-12">

@@ -26,7 +26,7 @@ export const CONFIG = {
     NAME: "Media Service",
     API_URL: process.env.NEXT_PUBLIC_MEDIA_API_URL || (IS_PRODUCTION
       ? "https://media.sawarisadhan.com"
-      : "http://localhost:5100"),
+      : "http://localhost:5051"),
   },
   APP: {
     NAME: "Sawari Sadhan Desktop",

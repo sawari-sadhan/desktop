@@ -8,7 +8,8 @@ import {
   Info,
   Search,
   Shield,
-  Activity
+  Activity,
+  Star
 } from "lucide-react";
 
 /**
@@ -45,6 +46,12 @@ export const CONSOLE_NAV_ITEMS = [
     href: "/console/obd",
     icon: Activity,
     description: "OBD-II diagnostic trouble code registry"
+  },
+  {
+    name: "Highlights",
+    href: "/console/highlights",
+    icon: Star,
+    description: "Curate featured homepage content"
   },
 ];
 

@@ -10,6 +10,7 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import { CONFIG } from "../config";
 import { AutoService } from "../gen/graph_auto_pb";
 import { OBDService } from "../gen/graph_obd_pb";
+import { FocusService } from "../gen/focus_pb";
 
 const coreTransport = createConnectTransport({
   baseUrl: CONFIG.CORE.API_URL,
@@ -17,6 +18,7 @@ const coreTransport = createConnectTransport({
 
 export const graphClient = createClient(AutoService, coreTransport);
 export const obdClient = createClient(OBDService, coreTransport);
+export const focusClient = createClient(FocusService, coreTransport);
 
 export interface EntityNode {
   id: string;
@@ -27,6 +29,7 @@ export interface EntityNode {
   tags: string[];
   metadata: Record<string, any>;
   data: Record<string, any>;
+  media?: any[];
   created_at?: string;
   updated_at?: string;
 }
@@ -74,3 +77,15 @@ export type {
   SearchObdCodesRequest,
   SearchObdCodesResponse,
 } from "../gen/graph_obd_pb";
+
+export type {
+  GetHighlightRequest,
+  GetHighlightResponse,
+  ListHighlightsRequest,
+  ListHighlightsResponse,
+  SaveHighlightRequest,
+  SaveHighlightResponse,
+  DeleteHighlightRequest,
+  DeleteHighlightResponse,
+  Highlight
+} from "../gen/focus_pb";
