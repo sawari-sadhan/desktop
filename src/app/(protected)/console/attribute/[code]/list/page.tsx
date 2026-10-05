@@ -190,7 +190,7 @@ const AttributeLinkedVehiclesPage = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.03 }}
-                      onClick={() => router.push(`/console/brands/model/details/variant?variantId=${vehicle.id}`)}
+                      onClick={() => router.push(`/console/brand/model/${vehicle.data?.parent_model_slug || '_'}/variant?variantId=${vehicle.id}`)}
                       className="group bg-white/[0.02] border border-white/5 rounded-2xl p-6 flex items-center justify-between hover:bg-emerald-500/[0.03] hover:border-emerald-500/20 transition-all cursor-pointer relative overflow-hidden"
                     >
                       <div className="flex-1 min-w-0">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Shield } from "lucide-react";
+import { Phone, Shield, User, KeyRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { consoleLoginAction as loginAction } from "@lib/auth";
 import {
@@ -71,17 +71,26 @@ export default function LoginPage() {
     >
       <form onSubmit={handleSubmit} className="space-y-8 max-w-md relative z-10">
         <InputField
-          name="mobile"
-          type="tel"
+          name="identifier"
+          type="text"
           required
-          placeholder="98XXXXXXXX"
-          label="Mobile Identifier"
-          icon={Phone}
+          placeholder="admin@domain.com or 98XXXXXXXX"
+          label="Email or Mobile Identifier"
+          icon={User}
           theme="console"
           sizeVariant="lg"
         />
 
-        <PinInput theme="console" />
+        <InputField
+          name="password"
+          type="password"
+          required
+          placeholder="Enter your password"
+          label="Password"
+          icon={KeyRound}
+          theme="console"
+          sizeVariant="lg"
+        />
 
         <ErrorBanner error={error} />
 

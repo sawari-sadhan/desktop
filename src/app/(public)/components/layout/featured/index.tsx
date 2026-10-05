@@ -6,6 +6,7 @@ import { focusClient, graphClient } from "@/lib/core";
 import Link from "next/link";
 import { toJson } from "@bufbuild/protobuf";
 import { ListValueSchema, StructSchema } from "@bufbuild/protobuf/wkt";
+import { SmartImage } from "@components";
 
 const getImageUrl = (url?: string) => {
   if (!url) return null;
@@ -183,7 +184,13 @@ export function FeaturedVehicles() {
             <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden transition-all">
               <div className="h-48 bg-slate-100 relative overflow-hidden">
                 {car.image ? (
-                  <img src={car.image} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <SmartImage 
+                    src={car.image} 
+                    alt={car.name} 
+                    variant="thumbnail"
+                    fill
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
                 ) : (
                   <div className="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400 font-bold">No Image</div>
                 )}

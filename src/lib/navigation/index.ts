@@ -9,7 +9,8 @@ import {
   Search,
   Shield,
   Activity,
-  Star
+  Star,
+  Users
 } from "lucide-react";
 
 /**
@@ -31,7 +32,7 @@ export const CONSOLE_NAV_ITEMS = [
   },
   { 
     name: "Brands", 
-    href: "/console/brands", 
+    href: "/console/brand", 
     icon: Shield,
     description: "Vehicle manufacturer registry"
   },
@@ -52,6 +53,12 @@ export const CONSOLE_NAV_ITEMS = [
     href: "/console/highlights",
     icon: Star,
     description: "Curate featured homepage content"
+  },
+  {
+    name: "Access",
+    href: "/console/access",
+    icon: Users,
+    description: "Manage console administrative access"
   },
 ];
 

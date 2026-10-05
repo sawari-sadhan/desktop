@@ -1,10 +1,96 @@
 "use client";
 
 import React, { useState } from "react";
+import NextImage, { ImageProps as NextImageProps } from "next/image";
+import { Loader2, ImageOff, X, ExternalLink, Trash2, Image as ImageIcon, Star } from "lucide-react";
+import { CONFIG } from "@lib/config";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ExternalLink, Trash2, Image as ImageIcon, Star } from "lucide-react";
-import Image from "next/image";
+import { InlineDeleteConfirmation } from "../confirmation/delete";
 
+// ==========================================
+// Smart Image (Responsive / Optimized)
+// ==========================================
+export interface SmartImageProps extends Omit<NextImageProps, 'src' | 'alt' | 'sizes'> {
+  src: string;
+  alt: string;
+  variant?: 'thumbnail' | 'medium' | 'large' | 'full';
+  className?: string;
+  fallbackSrc?: string;
+}
+
+const variantSizes = {
+  thumbnail: "(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw", // For small grid cards
+  medium: "(max-width: 768px) 100vw, 50vw", // For half-screen images
+  large: "(max-width: 1024px) 100vw, 75vw", // For hero or featured sections
+  full: "100vw", // Full screen widths
+};
+
+export const SmartImage = ({ 
+  src, 
+  alt, 
+  variant = 'medium', 
+  className = "", 
+  fallbackSrc,
+  ...props 
+}: SmartImageProps) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  const sizes = variantSizes[variant];
+
+  const isExternal = src.startsWith('http://') || src.startsWith('https://') || src.startsWith('blob:') || src.startsWith('data:');
+  const finalSrc = isExternal ? src : `${CONFIG.MEDIA.API_URL}${src.startsWith('/') ? '' : '/'}${src}`;
+
+  if (hasError) {
+    if (fallbackSrc) {
+      return (
+        <NextImage 
+          src={fallbackSrc}
+          alt={alt}
+          sizes={sizes}
+          className={`object-cover ${className}`}
+          {...props}
+        />
+      );
+    }
+    return (
+      <div className={`flex flex-col items-center justify-center bg-slate-100 text-slate-400 ${className}`}>
+        <ImageOff className="w-6 h-6 mb-2 opacity-50" />
+        <span className="text-[10px] font-black uppercase tracking-widest">Image Unavailable</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`relative overflow-hidden ${props.fill ? 'w-full h-full' : ''} ${className}`}>
+      {isLoading && (
+        <div className="absolute inset-0 bg-slate-100 animate-pulse flex items-center justify-center z-10">
+          <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />
+        </div>
+      )}
+      
+      <NextImage
+        src={finalSrc}
+        alt={alt}
+        sizes={sizes}
+        unoptimized={finalSrc.includes('localhost') || finalSrc.includes('127.0.0.1')}
+        onLoad={() => setIsLoading(false)}
+        onError={() => {
+          setIsLoading(false);
+          setHasError(true);
+        }}
+        className={`transition-opacity duration-500 object-cover ${
+          isLoading ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+        }`}
+        {...props}
+      />
+    </div>
+  );
+};
+
+// ==========================================
+// Media Preview Gallery
+// ==========================================
 export interface MediaItem {
   id: string;
   url: string;
@@ -27,6 +113,7 @@ export function MediaPreview({
   gridClassName = "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
 }: MediaPreviewProps) {
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<MediaItem | null>(null);
 
   if (!items || items.length === 0) {
     return (
@@ -57,11 +144,12 @@ export function MediaPreview({
                 className="w-full h-full bg-slate-100 cursor-pointer"
                 onClick={() => setSelectedItem(item)}
               >
-                <img 
+                <SmartImage 
                   src={item.url} 
                   alt={item.name || "Media item"} 
+                  variant="thumbnail"
+                  fill
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
                 />
               </div>
 
@@ -86,7 +174,7 @@ export function MediaPreview({
                 )}
                 {onRemove && (
                   <button 
-                    onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
+                    onClick={(e) => { e.stopPropagation(); setItemToDelete(item); }}
                     className="p-2 bg-red-500/80 hover:bg-red-500 backdrop-blur-md rounded-xl text-white transition-colors"
                     title="Remove"
                   >
@@ -134,11 +222,15 @@ export function MediaPreview({
               </div>
 
               <div className="flex-1 min-h-0 bg-black flex items-center justify-center p-8">
-                <img 
-                  src={selectedItem.url} 
-                  alt={selectedItem.name || "Preview"} 
-                  className="max-w-full max-h-[70vh] object-contain rounded-lg"
-                />
+                <div className="relative w-full h-[70vh]">
+                  <SmartImage 
+                    src={selectedItem.url} 
+                    alt={selectedItem.name || "Preview"} 
+                    variant="full"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
               </div>
 
               {selectedItem.name && (
@@ -148,6 +240,33 @@ export function MediaPreview({
                 </div>
               )}
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {itemToDelete && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-slate-900/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-12"
+            onClick={() => setItemToDelete(null)}
+          >
+            <div 
+              className="relative w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <InlineDeleteConfirmation
+                itemName={itemToDelete.name || "Media"}
+                onCancel={() => setItemToDelete(null)}
+                onConfirm={() => {
+                  if (onRemove) onRemove(itemToDelete.id);
+                  setItemToDelete(null);
+                }}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -116,7 +116,7 @@ export const BooleanEditor = ({ attributeCode, name }: BooleanEditorProps) => {
               return (
                 <div 
                   key={v.id}
-                  onClick={() => router.push(`/console/brands/model/details/variant?variantId=${v.id}`)}
+                  onClick={() => router.push(`/console/brand/model/${v.data?.parent_model_slug || '_'}/variant?variantId=${v.id}`)}
                   className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 flex items-center justify-between group hover:bg-emerald-500/[0.03] hover:border-emerald-500/20 transition-all cursor-pointer"
                 >
                   <div className="flex-1 min-w-0">

@@ -103,7 +103,7 @@ const BrandRegistryPage = () => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: idx * 0.03 }}
                   whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.03)" }}
-                  onClick={() => router.push(`/console/brands/model?brandId=${brand.id}`)}
+                  onClick={() => router.push(`/console/brand/${brand.slug}`)}
                   className="group cursor-pointer relative bg-white border border-slate-200 p-7 rounded-[2rem] transition-all hover:border-blue-200 shadow-sm hover:shadow-md overflow-hidden"
                 >
                   {/* Decorative Background Element */}

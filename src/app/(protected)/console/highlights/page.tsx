@@ -5,6 +5,7 @@ import { focusClient, graphClient, Highlight, EntityNode } from "@lib/core";
 import { Star, Search, Trash2, Plus, ArrowRight, Settings, MapPin, Fuel, Calendar, Zap, LayoutTemplate, Image as ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CONFIG } from "@/lib/config";
+import { SmartImage } from "@/app/components";
 
 const FOCUS_TYPES = [
   { id: "hero_slider", label: "Hero Sliders", icon: ImageIcon },
@@ -244,7 +245,7 @@ export default function HighlightsPage() {
                     <div key={node.id} className="bg-white border border-slate-200 rounded-2xl p-4 flex gap-4 items-center hover:border-blue-300 transition-colors shadow-sm group">
                       <div className="w-16 h-16 rounded-xl bg-slate-100 shrink-0 overflow-hidden border border-slate-200 flex items-center justify-center">
                         {thumb ? (
-                          <img src={thumb} className="w-full h-full object-cover" alt="thumb" />
+                          <SmartImage src={thumb} alt="thumb" variant="thumbnail" fill className="w-full h-full object-cover" />
                         ) : (
                           <ImageIcon className="w-6 h-6 text-slate-300" />
                         )}

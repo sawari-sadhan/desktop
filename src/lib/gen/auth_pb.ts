@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file auth.proto.
  */
 export const file_auth: GenFile = /*@__PURE__*/
-  fileDesc("CgphdXRoLnByb3RvIlYKDExvZ2luUmVxdWVzdBISCgppZGVudGlmaWVyGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJEiAKB2NvbnRleHQYAyABKA4yDy5BY2NvdW50Q29udGV4dCI9CgtVc2VyUHJvZmlsZRIRCgltZW1iZXJfaWQYASABKAkSDQoFZW1haWwYAiABKAkSDAoEbmFtZRgDIAEoCSJcCg1Mb2dpblJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCRINCgV0b2tlbhgDIAEoCRIaCgR1c2VyGAQgASgLMgwuVXNlclByb2ZpbGUioAEKD1JlZ2lzdGVyUmVxdWVzdBISCgpmaXJzdF9uYW1lGAEgASgJEhMKC21pZGRsZV9uYW1lGAIgASgJEhEKCWxhc3RfbmFtZRgDIAEoCRINCgVlbWFpbBgEIAEoCRIOCgZtb2JpbGUYBSABKAkSEAoIcGFzc3dvcmQYBiABKAkSIAoHY29udGV4dBgHIAEoDjIPLkFjY291bnRDb250ZXh0Il8KEFJlZ2lzdGVyUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIPCgdtZXNzYWdlGAIgASgJEg0KBXRva2VuGAMgASgJEhoKBHVzZXIYBCABKAsyDC5Vc2VyUHJvZmlsZSIsChtSZXF1ZXN0UGFzc3dvcmRSZXNldFJlcXVlc3QSDQoFZW1haWwYASABKAkiQAocUmVxdWVzdFBhc3N3b3JkUmVzZXRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAkiOwoUUmVzZXRQYXNzd29yZFJlcXVlc3QSDQoFdG9rZW4YASABKAkSFAoMbmV3X3Bhc3N3b3JkGAIgASgJIjkKFVJlc2V0UGFzc3dvcmRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAkqbQoOQWNjb3VudENvbnRleHQSHwobQUNDT1VOVF9DT05URVhUX1VOU1BFQ0lGSUVEEAASGwoXQUNDT1VOVF9DT05URVhUX0NPTlNPTEUQARIdChlBQ0NPVU5UX0NPTlRFWFRfREFTSEJPQVJEEAIy+wEKC0F1dGhTZXJ2aWNlEiYKBUxvZ2luEg0uTG9naW5SZXF1ZXN0Gg4uTG9naW5SZXNwb25zZRIvCghSZWdpc3RlchIQLlJlZ2lzdGVyUmVxdWVzdBoRLlJlZ2lzdGVyUmVzcG9uc2USUwoUUmVxdWVzdFBhc3N3b3JkUmVzZXQSHC5SZXF1ZXN0UGFzc3dvcmRSZXNldFJlcXVlc3QaHS5SZXF1ZXN0UGFzc3dvcmRSZXNldFJlc3BvbnNlEj4KDVJlc2V0UGFzc3dvcmQSFS5SZXNldFBhc3N3b3JkUmVxdWVzdBoWLlJlc2V0UGFzc3dvcmRSZXNwb25zZUIoWiZnaXRodWIuY29tL3Nhd2FyaS1zYWRoYW4vYXV0aC9nZW47YXV0aGIGcHJvdG8z");
+  fileDesc("CgphdXRoLnByb3RvIlYKDExvZ2luUmVxdWVzdBISCgppZGVudGlmaWVyGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJEiAKB2NvbnRleHQYAyABKA4yDy5BY2NvdW50Q29udGV4dCI9CgtVc2VyUHJvZmlsZRIRCgltZW1iZXJfaWQYASABKAkSDQoFZW1haWwYAiABKAkSDAoEbmFtZRgDIAEoCSJcCg1Mb2dpblJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCRINCgV0b2tlbhgDIAEoCRIaCgR1c2VyGAQgASgLMgwuVXNlclByb2ZpbGUioAEKD1JlZ2lzdGVyUmVxdWVzdBISCgpmaXJzdF9uYW1lGAEgASgJEhMKC21pZGRsZV9uYW1lGAIgASgJEhEKCWxhc3RfbmFtZRgDIAEoCRINCgVlbWFpbBgEIAEoCRIOCgZtb2JpbGUYBSABKAkSEAoIcGFzc3dvcmQYBiABKAkSIAoHY29udGV4dBgHIAEoDjIPLkFjY291bnRDb250ZXh0Il8KEFJlZ2lzdGVyUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIPCgdtZXNzYWdlGAIgASgJEg0KBXRva2VuGAMgASgJEhoKBHVzZXIYBCABKAsyDC5Vc2VyUHJvZmlsZSIsChtSZXF1ZXN0UGFzc3dvcmRSZXNldFJlcXVlc3QSDQoFZW1haWwYASABKAkiQAocUmVxdWVzdFBhc3N3b3JkUmVzZXRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAkiOwoUUmVzZXRQYXNzd29yZFJlcXVlc3QSDQoFdG9rZW4YASABKAkSFAoMbmV3X3Bhc3N3b3JkGAIgASgJIjkKFVJlc2V0UGFzc3dvcmRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAkiNwoTTGlzdEFjY291bnRzUmVxdWVzdBIgCgdjb250ZXh0GAEgASgOMg8uQWNjb3VudENvbnRleHQiZAoOQWNjb3VudFN1bW1hcnkSEQoJbWVtYmVyX2lkGAEgASgJEgwKBG5hbWUYAiABKAkSDQoFZW1haWwYAyABKAkSDgoGbW9iaWxlGAQgASgJEhIKCmNyZWF0ZWRfYXQYBSABKAkiOQoUTGlzdEFjY291bnRzUmVzcG9uc2USIQoIYWNjb3VudHMYASADKAsyDy5BY2NvdW50U3VtbWFyeSImChFHZXRBY2NvdW50UmVxdWVzdBIRCgltZW1iZXJfaWQYASABKAkiugEKDUFjY291bnREZXRhaWwSEQoJbWVtYmVyX2lkGAEgASgJEhIKCmZpcnN0X25hbWUYAiABKAkSEwoLbWlkZGxlX25hbWUYAyABKAkSEQoJbGFzdF9uYW1lGAQgASgJEg0KBWVtYWlsGAUgASgJEg4KBm1vYmlsZRgGIAEoCRISCgpjcmVhdGVkX2F0GAcgASgJEhIKCnVwZGF0ZWRfYXQYCCABKAkSEwoLbWVtYmVyX3R5cGUYCSABKAkiNQoSR2V0QWNjb3VudFJlc3BvbnNlEh8KB2FjY291bnQYASABKAsyDi5BY2NvdW50RGV0YWlsIkUKGkFkbWluQ2hhbmdlUGFzc3dvcmRSZXF1ZXN0EhEKCW1lbWJlcl9pZBgBIAEoCRIUCgxuZXdfcGFzc3dvcmQYAiABKAkiPwobQWRtaW5DaGFuZ2VQYXNzd29yZFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSptCg5BY2NvdW50Q29udGV4dBIfChtBQ0NPVU5UX0NPTlRFWFRfVU5TUEVDSUZJRUQQABIbChdBQ0NPVU5UX0NPTlRFWFRfQ09OU09MRRABEh0KGUFDQ09VTlRfQ09OVEVYVF9EQVNIQk9BUkQQAjLBAwoLQXV0aFNlcnZpY2USJgoFTG9naW4SDS5Mb2dpblJlcXVlc3QaDi5Mb2dpblJlc3BvbnNlEi8KCFJlZ2lzdGVyEhAuUmVnaXN0ZXJSZXF1ZXN0GhEuUmVnaXN0ZXJSZXNwb25zZRJTChRSZXF1ZXN0UGFzc3dvcmRSZXNldBIcLlJlcXVlc3RQYXNzd29yZFJlc2V0UmVxdWVzdBodLlJlcXVlc3RQYXNzd29yZFJlc2V0UmVzcG9uc2USPgoNUmVzZXRQYXNzd29yZBIVLlJlc2V0UGFzc3dvcmRSZXF1ZXN0GhYuUmVzZXRQYXNzd29yZFJlc3BvbnNlEjsKDExpc3RBY2NvdW50cxIULkxpc3RBY2NvdW50c1JlcXVlc3QaFS5MaXN0QWNjb3VudHNSZXNwb25zZRI1CgpHZXRBY2NvdW50EhIuR2V0QWNjb3VudFJlcXVlc3QaEy5HZXRBY2NvdW50UmVzcG9uc2USUAoTQWRtaW5DaGFuZ2VQYXNzd29yZBIbLkFkbWluQ2hhbmdlUGFzc3dvcmRSZXF1ZXN0GhwuQWRtaW5DaGFuZ2VQYXNzd29yZFJlc3BvbnNlQihaJmdpdGh1Yi5jb20vc2F3YXJpLXNhZGhhbi9hdXRoL2dlbjthdXRoYgZwcm90bzM");
 
 /**
  * @generated from message LoginRequest
@@ -265,6 +265,212 @@ export const ResetPasswordResponseSchema: GenMessage<ResetPasswordResponse> = /*
   messageDesc(file_auth, 8);
 
 /**
+ * @generated from message ListAccountsRequest
+ */
+export type ListAccountsRequest = Message<"ListAccountsRequest"> & {
+  /**
+   * @generated from field: AccountContext context = 1;
+   */
+  context: AccountContext;
+};
+
+/**
+ * Describes the message ListAccountsRequest.
+ * Use `create(ListAccountsRequestSchema)` to create a new message.
+ */
+export const ListAccountsRequestSchema: GenMessage<ListAccountsRequest> = /*@__PURE__*/
+  messageDesc(file_auth, 9);
+
+/**
+ * @generated from message AccountSummary
+ */
+export type AccountSummary = Message<"AccountSummary"> & {
+  /**
+   * @generated from field: string member_id = 1;
+   */
+  memberId: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string email = 3;
+   */
+  email: string;
+
+  /**
+   * @generated from field: string mobile = 4;
+   */
+  mobile: string;
+
+  /**
+   * @generated from field: string created_at = 5;
+   */
+  createdAt: string;
+};
+
+/**
+ * Describes the message AccountSummary.
+ * Use `create(AccountSummarySchema)` to create a new message.
+ */
+export const AccountSummarySchema: GenMessage<AccountSummary> = /*@__PURE__*/
+  messageDesc(file_auth, 10);
+
+/**
+ * @generated from message ListAccountsResponse
+ */
+export type ListAccountsResponse = Message<"ListAccountsResponse"> & {
+  /**
+   * @generated from field: repeated AccountSummary accounts = 1;
+   */
+  accounts: AccountSummary[];
+};
+
+/**
+ * Describes the message ListAccountsResponse.
+ * Use `create(ListAccountsResponseSchema)` to create a new message.
+ */
+export const ListAccountsResponseSchema: GenMessage<ListAccountsResponse> = /*@__PURE__*/
+  messageDesc(file_auth, 11);
+
+/**
+ * @generated from message GetAccountRequest
+ */
+export type GetAccountRequest = Message<"GetAccountRequest"> & {
+  /**
+   * @generated from field: string member_id = 1;
+   */
+  memberId: string;
+};
+
+/**
+ * Describes the message GetAccountRequest.
+ * Use `create(GetAccountRequestSchema)` to create a new message.
+ */
+export const GetAccountRequestSchema: GenMessage<GetAccountRequest> = /*@__PURE__*/
+  messageDesc(file_auth, 12);
+
+/**
+ * @generated from message AccountDetail
+ */
+export type AccountDetail = Message<"AccountDetail"> & {
+  /**
+   * @generated from field: string member_id = 1;
+   */
+  memberId: string;
+
+  /**
+   * @generated from field: string first_name = 2;
+   */
+  firstName: string;
+
+  /**
+   * @generated from field: string middle_name = 3;
+   */
+  middleName: string;
+
+  /**
+   * @generated from field: string last_name = 4;
+   */
+  lastName: string;
+
+  /**
+   * @generated from field: string email = 5;
+   */
+  email: string;
+
+  /**
+   * @generated from field: string mobile = 6;
+   */
+  mobile: string;
+
+  /**
+   * @generated from field: string created_at = 7;
+   */
+  createdAt: string;
+
+  /**
+   * @generated from field: string updated_at = 8;
+   */
+  updatedAt: string;
+
+  /**
+   * @generated from field: string member_type = 9;
+   */
+  memberType: string;
+};
+
+/**
+ * Describes the message AccountDetail.
+ * Use `create(AccountDetailSchema)` to create a new message.
+ */
+export const AccountDetailSchema: GenMessage<AccountDetail> = /*@__PURE__*/
+  messageDesc(file_auth, 13);
+
+/**
+ * @generated from message GetAccountResponse
+ */
+export type GetAccountResponse = Message<"GetAccountResponse"> & {
+  /**
+   * @generated from field: AccountDetail account = 1;
+   */
+  account?: AccountDetail;
+};
+
+/**
+ * Describes the message GetAccountResponse.
+ * Use `create(GetAccountResponseSchema)` to create a new message.
+ */
+export const GetAccountResponseSchema: GenMessage<GetAccountResponse> = /*@__PURE__*/
+  messageDesc(file_auth, 14);
+
+/**
+ * @generated from message AdminChangePasswordRequest
+ */
+export type AdminChangePasswordRequest = Message<"AdminChangePasswordRequest"> & {
+  /**
+   * @generated from field: string member_id = 1;
+   */
+  memberId: string;
+
+  /**
+   * @generated from field: string new_password = 2;
+   */
+  newPassword: string;
+};
+
+/**
+ * Describes the message AdminChangePasswordRequest.
+ * Use `create(AdminChangePasswordRequestSchema)` to create a new message.
+ */
+export const AdminChangePasswordRequestSchema: GenMessage<AdminChangePasswordRequest> = /*@__PURE__*/
+  messageDesc(file_auth, 15);
+
+/**
+ * @generated from message AdminChangePasswordResponse
+ */
+export type AdminChangePasswordResponse = Message<"AdminChangePasswordResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message AdminChangePasswordResponse.
+ * Use `create(AdminChangePasswordResponseSchema)` to create a new message.
+ */
+export const AdminChangePasswordResponseSchema: GenMessage<AdminChangePasswordResponse> = /*@__PURE__*/
+  messageDesc(file_auth, 16);
+
+/**
  * AccountContext defines the application environment (Console vs Dashboard).
  *
  * @generated from enum AccountContext
@@ -337,6 +543,36 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof ResetPasswordRequestSchema;
     output: typeof ResetPasswordResponseSchema;
+  },
+  /**
+   * ListAccounts returns members registered under a given account context.
+   *
+   * @generated from rpc AuthService.ListAccounts
+   */
+  listAccounts: {
+    methodKind: "unary";
+    input: typeof ListAccountsRequestSchema;
+    output: typeof ListAccountsResponseSchema;
+  },
+  /**
+   * GetAccount returns details of a specific account by ID.
+   *
+   * @generated from rpc AuthService.GetAccount
+   */
+  getAccount: {
+    methodKind: "unary";
+    input: typeof GetAccountRequestSchema;
+    output: typeof GetAccountResponseSchema;
+  },
+  /**
+   * AdminChangePassword allows an admin to change an account's password directly.
+   *
+   * @generated from rpc AuthService.AdminChangePassword
+   */
+  adminChangePassword: {
+    methodKind: "unary";
+    input: typeof AdminChangePasswordRequestSchema;
+    output: typeof AdminChangePasswordResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_auth, 0);

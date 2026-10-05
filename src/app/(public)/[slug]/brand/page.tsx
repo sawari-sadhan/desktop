@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toJson } from "@bufbuild/protobuf";
+import { SmartImage } from "@/app/components";
 import { ListValueSchema } from "@bufbuild/protobuf/wkt";
 
 /** Helper to extract image URL safely */
@@ -115,13 +116,44 @@ export function BrandView({ node }: { node: EntityNode }) {
   let logoUrl: string | null = null;
   if (node.media) {
     try {
-      const mediaArr = (toJson(ListValueSchema, node.media as any) as any[]) || [];
-      if (mediaArr.length > 0) {
-        const cover = mediaArr.find((m: any) => m.isCover === true) || mediaArr[0];
-        logoUrl = getImageUrl(cover?.url);
+      const extractUrl = (obj: any): string | null => {
+        if (!obj) return null;
+        if (typeof obj === "string") return obj;
+        if (obj.url) return obj.url;
+        if (obj.kind?.value?.fields?.url?.kind?.value) return obj.kind.value.fields.url.kind.value;
+        if (obj.structValue?.fields?.url?.stringValue) return obj.structValue.fields.url.stringValue;
+        if (obj.fields?.url?.stringValue) return obj.fields.url.stringValue;
+        return null;
+      };
+
+      let items: any[] = [];
+      if (Array.isArray(node.media)) {
+        items = node.media;
+      } else if ((node.media as any).values && Array.isArray((node.media as any).values)) {
+        items = (node.media as any).values;
+      } else {
+        try {
+          items = (toJson(ListValueSchema, node.media as any) as any[]) || [];
+        } catch {
+          items = (node.media as any).listValue?.values || [];
+        }
       }
-    } catch {
-      // ignore
+
+      if (items.length > 0) {
+        // Find cover or fallback to first
+        let cover = items.find((m: any) => {
+          if (m?.isCover) return true;
+          if (m?.kind?.value?.fields?.isCover?.kind?.value === true) return true;
+          if (m?.structValue?.fields?.isCover?.boolValue === true) return true;
+          if (m?.fields?.isCover?.boolValue === true) return true;
+          return false;
+        });
+        if (!cover) cover = items[0];
+
+        logoUrl = getImageUrl(extractUrl(cover));
+      }
+    } catch (e) {
+      console.error("Failed to parse node.media:", e);
     }
   }
 
@@ -238,8 +270,8 @@ export function BrandView({ node }: { node: EntityNode }) {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10">
             <div className="flex items-center gap-6">
               {logoUrl ? (
-                <div className="w-24 h-24 rounded-2xl bg-white p-3 flex items-center justify-center shrink-0 shadow-lg">
-                  <img src={logoUrl} alt={brandName} className="w-full h-full object-contain" />
+                <div className="w-24 h-24 rounded-2xl bg-white p-3 flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden">
+                  <SmartImage src={logoUrl} alt={brandName} variant="thumbnail" fill className="w-full h-full object-contain" />
                 </div>
               ) : (
                 <div className="w-24 h-24 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-3xl font-black text-white shrink-0 uppercase tracking-wider">
@@ -339,9 +371,11 @@ export function BrandView({ node }: { node: EntityNode }) {
               >
                 <div className="h-56 bg-slate-50 relative overflow-hidden flex items-center justify-center p-6">
                   {model.image ? (
-                    <img
+                    <SmartImage
                       src={model.image}
                       alt={model.name}
+                      variant="medium"
+                      fill
                       className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (

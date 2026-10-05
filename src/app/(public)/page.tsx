@@ -9,6 +9,7 @@ import { theme } from "./theme";
 import SearchBar from "./components/search";
 import { HeroSlider } from "./components/layout/hero-slider";
 import { FeaturedVehicles } from "./components/layout/featured";
+import { SmartImage } from "@components";
 
 const DUMMY_LATEST = [
   { id: 1, name: "Toyota Corolla 2019", price: "Rs.1,20,548", mileage: "30,000 Miles", fuel: "Hybrid", trans: "Auto", year: "2019", image: "/images/auto/corolla.jpg" },
@@ -108,7 +109,7 @@ export default function Home() {
           {DUMMY_LATEST.map((car) => (
             <div key={car.id} className="flex flex-col sm:flex-row bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200 group">
               <div className="w-full sm:w-1/2 h-64 sm:h-auto bg-gray-100 relative">
-                <img src={car.image} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <SmartImage src={car.image} alt={car.name} variant="large" fill className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="w-full sm:w-1/2 bg-[#050B20] p-8 flex flex-col justify-between text-white">
                 <div>
@@ -137,8 +138,8 @@ export default function Home() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {BRANDS.map((brand, i) => (
             <div key={i} className="bg-white border border-gray-200 rounded-2xl h-32 flex flex-col items-center justify-center gap-3 hover:shadow-md hover:border-[#B40003] transition-all cursor-pointer group">
-              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden p-2">
-                <img src={brand.image} alt={brand.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
+              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden p-2 relative">
+                <SmartImage src={brand.image} alt={brand.name} variant="thumbnail" fill className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
               </div>
               <span className="font-bold text-sm text-[#050B20] group-hover:text-[#B40003] transition-colors">{brand.name}</span>
             </div>
@@ -201,7 +202,7 @@ export default function Home() {
           {DUMMY_BLOGS.map((blog) => (
             <div key={blog.id} className="group cursor-pointer">
               <div className="h-48 bg-slate-100 rounded-2xl overflow-hidden mb-4 relative">
-                <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <SmartImage src={blog.image} alt={blog.title} variant="medium" fill className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
               <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
                 <span className="font-bold text-[#B40003] bg-red-50 px-2 py-1 rounded-md">{blog.cat}</span>

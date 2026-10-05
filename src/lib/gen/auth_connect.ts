@@ -5,7 +5,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, RequestPasswordResetRequest, RequestPasswordResetResponse, ResetPasswordRequest, ResetPasswordResponse } from "./auth_pb";
+import { AdminChangePasswordRequest, AdminChangePasswordResponse, GetAccountRequest, GetAccountResponse, ListAccountsRequest, ListAccountsResponse, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, RequestPasswordResetRequest, RequestPasswordResetResponse, ResetPasswordRequest, ResetPasswordResponse } from "./auth_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -58,6 +58,39 @@ export const AuthService = {
       name: "ResetPassword",
       I: ResetPasswordRequest,
       O: ResetPasswordResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * ListAccounts returns members registered under a given account context.
+     *
+     * @generated from rpc AuthService.ListAccounts
+     */
+    listAccounts: {
+      name: "ListAccounts",
+      I: ListAccountsRequest,
+      O: ListAccountsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * GetAccount returns details of a specific account by ID.
+     *
+     * @generated from rpc AuthService.GetAccount
+     */
+    getAccount: {
+      name: "GetAccount",
+      I: GetAccountRequest,
+      O: GetAccountResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * AdminChangePassword allows an admin to change an account's password directly.
+     *
+     * @generated from rpc AuthService.AdminChangePassword
+     */
+    adminChangePassword: {
+      name: "AdminChangePassword",
+      I: AdminChangePasswordRequest,
+      O: AdminChangePasswordResponse,
       kind: MethodKind.Unary,
     },
   }

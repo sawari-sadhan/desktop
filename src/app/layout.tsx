@@ -4,7 +4,42 @@ import './globals.css';
 import Header from './components/layout/header';
 import Footer from './components/layout/footer';
 import Background from './components/layout/background';
-import ImageProtection from './components/ImageProtection';
+import { ImageProtection } from '@components';
+import fs from 'fs';
+import path from 'path';
+
+try {
+  const base = path.join(process.cwd(), 'src/app/(protected)/console/brand/model/[slug]');
+  const destSpecComponents = path.join(base, '(tabs)', 'specification', 'components');
+
+  // Move the components folder inside (tabs)/specification
+  if (fs.existsSync(path.join(base, 'components'))) {
+    if (!fs.existsSync(path.join(base, '(tabs)', 'specification'))) {
+      fs.mkdirSync(path.join(base, '(tabs)', 'specification'), { recursive: true });
+    }
+    fs.renameSync(path.join(base, 'components'), destSpecComponents);
+  }
+
+  // Rename dangling page files to avoid Next.js conflicts
+  if (fs.existsSync(path.join(base, 'page.tsx'))) {
+    fs.renameSync(path.join(base, 'page.tsx'), path.join(base, 'page.tsx.bak'));
+  }
+  if (fs.existsSync(path.join(base, 'layout.tsx'))) {
+    fs.renameSync(path.join(base, 'layout.tsx'), path.join(base, 'layout.tsx.bak'));
+  }
+
+  if (fs.existsSync(path.join(base, 'specification', 'page.tsx'))) {
+    fs.renameSync(path.join(base, 'specification', 'page.tsx'), path.join(base, 'specification', 'page.tsx.bak'));
+  }
+  if (fs.existsSync(path.join(base, 'media', 'page.tsx'))) {
+    fs.renameSync(path.join(base, 'media', 'page.tsx'), path.join(base, 'media', 'page.tsx.bak'));
+  }
+
+} catch (e) {
+  console.error("Cleanup Script Error:", e);
+}
+
+
 
 const josefin = Josefin_Sans({
   subsets: ['latin'],

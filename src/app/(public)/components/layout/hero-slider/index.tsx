@@ -7,6 +7,7 @@ import Link from "next/link";
 import { toJson } from "@bufbuild/protobuf";
 import { ListValueSchema, StructSchema } from "@bufbuild/protobuf/wkt";
 import { HeroSliderSpecification } from "./specification";
+import { SmartImage } from "@components";
 
 const getImageUrl = (url?: string) => {
   if (!url) return null;
@@ -187,7 +188,7 @@ export function HeroSlider() {
             className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
           >
             {s.image ? (
-              <img src={s.image} alt={s.name} className="w-full h-full object-cover" />
+              <SmartImage src={s.image} alt={s.name} variant="large" fill className="w-full h-full object-cover" priority />
             ) : (
               <div className="w-full h-full bg-slate-900" />
             )}

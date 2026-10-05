@@ -55,6 +55,8 @@ export default function SlugPage() {
         const rawData = (res.node.data as any) || {};
         const data: Record<string, any> = rawData?.fields ? unwrapStruct(rawData) : rawData;
 
+        console.log("DEBUG res.node.media:", JSON.stringify(res.node.media));
+
         setNode({
           id: res.node.id,
           type: res.node.type,

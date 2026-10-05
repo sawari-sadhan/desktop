@@ -44,7 +44,7 @@ export function SubmitButton({ loading, theme, text, ...props }: SubmitButtonPro
 
   const themeClass =
     theme === "console"
-      ? "bg-slate-100 text-slate-950 hover:bg-white"
+      ? "bg-slate-900 text-white hover:bg-slate-800 shadow-md"
       : "bg-teal-500 text-slate-950 hover:bg-teal-400 hover:shadow-[0_0_20px_rgba(45,212,191,0.2)]";
 
   return (
@@ -95,13 +95,13 @@ export function InputField({
   // Theme styles
   const themeInputClass =
     theme === "console"
-      ? "bg-white/[0.02] border-white/[0.05] text-slate-200 placeholder:text-slate-700 focus:border-white/10 focus:bg-white/[0.04]"
+      ? "bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-slate-400 focus:ring-1 focus:ring-slate-200 shadow-sm"
       : "bg-white/[0.01] border-white/[0.04] text-slate-200 placeholder:text-slate-700 focus:border-teal-500/30 focus:bg-teal-500/[0.01] shadow-inner";
 
   const themeIconClass =
     theme === "console"
-      ? "group-focus-within:text-slate-200"
-      : "group-focus-within:text-teal-400";
+      ? "text-slate-400 group-focus-within:text-slate-900"
+      : "text-slate-600 group-focus-within:text-teal-400";
 
   return (
     <div className="space-y-2">
@@ -235,27 +235,30 @@ export function AuthCardLayout({
   footerContent,
 }: AuthCardLayoutProps) {
   // Page container styles
-  const bgClass = theme === "console" ? "bg-[#0f1117]" : "bg-[#121218]";
+  const bgClass = theme === "console" ? "bg-slate-50" : "bg-[#121218]";
   const heightClass = scrollable
     ? "min-h-screen overflow-y-auto py-12 md:py-20"
     : "h-screen overflow-hidden";
 
   // Glow element colors
   const glowTopClass =
-    theme === "console" ? "bg-blue-500/[0.03]" : "bg-teal-500/[0.03]";
+    theme === "console" ? "bg-blue-500/[0.05]" : "bg-teal-500/[0.03]";
   const glowBottomClass =
-    theme === "console" ? "bg-slate-400/[0.02]" : "bg-cyan-500/[0.03]";
+    theme === "console" ? "bg-slate-400/[0.05]" : "bg-cyan-500/[0.03]";
 
   // Card classes
   const cardBgClass =
     theme === "console"
-      ? "bg-slate-900/40 backdrop-blur-sm p-12 md:p-20"
-      : "bg-slate-950/40 backdrop-blur-md p-8 md:p-16";
+      ? "bg-white border border-slate-200 shadow-xl p-12 md:p-20"
+      : "bg-slate-950/40 backdrop-blur-md p-8 md:p-16 border border-white/[0.03]";
 
-  const badgeTextClass = theme === "console" ? "text-slate-300" : "text-teal-300";
+  const badgeTextClass = theme === "console" ? "text-slate-500 bg-slate-100 border-slate-200" : "text-teal-300 bg-white/5 border-white/5";
+  const titleClass = theme === "console" ? "text-slate-900" : "text-slate-100";
+  const subtitleClass = theme === "console" ? "text-slate-500" : "text-slate-400";
+  const containerTextClass = theme === "console" ? "text-slate-600" : "text-slate-400";
 
   return (
-    <div className={`flex text-slate-400 font-sans relative ${heightClass} ${bgClass}`}>
+    <div className={`flex font-sans relative ${heightClass} ${bgClass} ${containerTextClass}`}>
       {/* 🌌 Atmospheric Glow Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
@@ -279,7 +282,7 @@ export function AuthCardLayout({
               : { opacity: 1, y: 0 }
           }
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className={`w-full max-w-2xl rounded-[2.5rem] border border-white/[0.03] shadow-2xl relative overflow-hidden ${cardBgClass}`}
+          className={`w-full max-w-2xl rounded-[2.5rem] shadow-2xl relative overflow-hidden ${cardBgClass}`}
         >
           {/* Decorative Top Accent line (dashboard only) */}
           {theme === "dashboard" && (
@@ -291,14 +294,14 @@ export function AuthCardLayout({
             <div>
               <div className="flex items-center gap-2">
                 {BadgeIcon && BadgeIcon}
-                <h1 className="text-3xl font-black text-slate-100 tracking-tight">{title}</h1>
+                <h1 className={`text-3xl font-black tracking-tight ${titleClass}`}>{title}</h1>
               </div>
-              <p className="text-slate-400 text-xs mt-2 uppercase tracking-[0.2em] font-bold">
+              <p className={`text-xs mt-2 uppercase tracking-[0.2em] font-bold ${subtitleClass}`}>
                 {subtitle}
               </p>
             </div>
             <div
-              className={`px-3.5 py-1.5 bg-white/5 rounded-xl border border-white/5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 ${badgeTextClass}`}
+              className={`px-3.5 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 ${badgeTextClass}`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full animate-pulse ${

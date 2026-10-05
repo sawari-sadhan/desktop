@@ -13,6 +13,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toJson } from "@bufbuild/protobuf";
 import { ListValueSchema } from "@bufbuild/protobuf/wkt";
+import { SmartImage } from "@components";
 
 const getImageUrl = (url?: string) => {
   if (!url) return null;
@@ -205,10 +206,35 @@ export function ModelView({ node, brandName, brandSlug }: { node: EntityNode; br
   let images: string[] = [];
   if (node.media) {
     try {
-      const mediaArr = (toJson(ListValueSchema, node.media as any) as any[]) || [];
-      images = mediaArr.map((m: any) => getImageUrl(m.url)).filter((url): url is string => Boolean(url));
-    } catch {
-      // ignore
+      const extractUrl = (obj: any): string | null => {
+        if (!obj) return null;
+        if (typeof obj === "string") return obj;
+        if (obj.url) return obj.url;
+        if (obj.kind?.value?.fields?.url?.kind?.value) return obj.kind.value.fields.url.kind.value;
+        if (obj.structValue?.fields?.url?.stringValue) return obj.structValue.fields.url.stringValue;
+        if (obj.fields?.url?.stringValue) return obj.fields.url.stringValue;
+        return null;
+      };
+
+      let items: any[] = [];
+      if (Array.isArray(node.media)) {
+        items = node.media;
+      } else if ((node.media as any).values && Array.isArray((node.media as any).values)) {
+        items = (node.media as any).values;
+      } else {
+        try {
+          items = (toJson(ListValueSchema, node.media as any) as any[]) || [];
+        } catch {
+          items = (node.media as any).listValue?.values || [];
+        }
+      }
+
+      images = items
+        .map(extractUrl)
+        .map(url => getImageUrl(url))
+        .filter((url): url is string => Boolean(url));
+    } catch (e) {
+      console.error("Failed to parse node.media:", e);
     }
   }
 
@@ -325,19 +351,25 @@ export function ModelView({ node, brandName, brandSlug }: { node: EntityNode; br
 
           {/* Left: Images */}
           <div className="lg:col-span-8 flex flex-col md:flex-row gap-6">
-            <div className="flex-1 bg-slate-50 rounded-[2rem] overflow-hidden relative aspect-[4/3] md:aspect-auto flex items-center justify-center">
+            <div className="flex-1 bg-slate-50 rounded-[2rem] overflow-hidden relative aspect-[4/3] md:aspect-[16/9] flex items-center justify-center">
               {images.length > 0 ? (
                 <AnimatePresence mode="wait">
-                  <motion.img
+                  <motion.div
                     key={activeImageIndex}
-                    src={images[activeImageIndex]}
-                    alt={modelName}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="w-full h-full object-contain mix-blend-multiply"
-                  />
+                    className="w-full h-full absolute inset-0 mix-blend-multiply"
+                  >
+                    <SmartImage
+                      src={images[activeImageIndex]}
+                      alt={modelName}
+                      variant="large"
+                      fill
+                      className="object-contain"
+                    />
+                  </motion.div>
                 </AnimatePresence>
               ) : (
                 <div className="text-slate-300 text-sm font-medium">No images available</div>
@@ -352,7 +384,7 @@ export function ModelView({ node, brandName, brandSlug }: { node: EntityNode; br
                     onClick={() => setActiveImageIndex(idx)}
                     className={`w-24 h-24 md:w-32 md:h-24 rounded-2xl overflow-hidden shrink-0 bg-slate-50 border-2 transition-all relative ${activeImageIndex === idx ? 'border-[#C61B1E] ring-4 ring-[#C61B1E]/10' : 'border-slate-100 hover:border-slate-300'}`}
                   >
-                    <img src={imgUrl} alt="Thumbnail" className="w-full h-full object-cover mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity" />
+                    <SmartImage src={imgUrl} alt="Thumbnail" variant="thumbnail" fill className="w-full h-full object-cover mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity" />
                   </button>
                 ))}
               </div>

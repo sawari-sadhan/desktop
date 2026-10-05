@@ -450,7 +450,7 @@ const VariantDetailsPage = () => {
                 {brand && (
                   <>
                     <button 
-                      onClick={() => router.push('/console/brands')}
+                      onClick={() => router.push('/console/brand')}
                       className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors truncate"
                     >
                       {brandName}
@@ -461,7 +461,7 @@ const VariantDetailsPage = () => {
                 {model && (
                   <>
                     <button 
-                      onClick={() => router.push(`/console/brands/model/details?modelId=${model?.id}`)}
+                      onClick={() => router.push(`/console/brand/model/${model?.slug}`)}
                       className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors truncate"
                     >
                       {modelName}

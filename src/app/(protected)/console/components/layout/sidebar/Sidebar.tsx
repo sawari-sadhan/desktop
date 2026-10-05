@@ -1,19 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
   Zap,
   User,
-  Settings
+  Settings,
+  LogOut,
+  Loader2
 } from "lucide-react";
 import { CONSOLE_NAV_ITEMS } from "@lib/navigation";
+import { getConsoleUserAction, consoleLogoutAction } from "@lib/auth";
 
 export const Sidebar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const navItems = CONSOLE_NAV_ITEMS;
+  
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    getConsoleUserAction().then(res => {
+      if (res && res.name) {
+        setUser(res);
+      } else {
+        setUser({ name: "User", email: "" });
+      }
+    }).catch(() => {
+      setUser({ name: "User", email: "" });
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await consoleLogoutAction();
+    router.push("/console-login");
+    router.refresh();
+  };
 
   return (
     <aside className="w-72 bg-white z-20 flex flex-col relative border-r border-slate-200 shadow-sm">
@@ -57,18 +83,26 @@ export const Sidebar = () => {
 
       {/* User Profile / Status */}
       <div className="p-6 border-t border-slate-200">
-        <div className="bg-slate-50 rounded-3xl p-5 flex items-center gap-4 border border-slate-200 shadow-sm">
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-slate-200">
-            <User className="w-5 h-5 text-slate-600" />
+        <div className="bg-slate-50 rounded-3xl p-5 flex flex-col gap-4 border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-slate-200 shadow-sm text-slate-700 font-black text-xs uppercase">
+              {user?.name ? user.name.substring(0, 2) : <User className="w-5 h-5 text-slate-400" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[11px] font-bold text-slate-900 truncate">
+                {user?.name || "Loading..."}
+              </p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold text-slate-900 truncate">Administrator</p>
-            <p className="text-[9px] text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              Sync Active
-            </p>
-          </div>
-          <Settings className="w-4 h-4 text-slate-400 hover:text-slate-700 cursor-pointer transition-colors" />
+          
+          <button 
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-2xl bg-white border border-slate-200 text-rose-500 hover:bg-rose-50 hover:border-rose-200 transition-colors text-[10px] font-bold uppercase tracking-widest disabled:opacity-50"
+          >
+            {isLoggingOut ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LogOut className="w-3.5 h-3.5" />}
+            {isLoggingOut ? "Logging Out..." : "Sign Out"}
+          </button>
         </div>
       </div>
     </aside>

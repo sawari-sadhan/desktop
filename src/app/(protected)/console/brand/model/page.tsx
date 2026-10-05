@@ -105,7 +105,7 @@ const ModelRegistryPage = () => {
           <div className="flex items-center gap-6">
             {brandId && (
               <button 
-                onClick={() => router.push('/console/brands')}
+                onClick={() => router.push('/console/brand')}
                 className="p-3 bg-white border border-slate-200 shadow-sm rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -159,7 +159,7 @@ const ModelRegistryPage = () => {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ delay: idx * 0.03 }}
                   whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,1)" }}
-                  onClick={() => router.push(`/console/brands/model/details?modelId=${model.id}`)}
+                  onClick={() => router.push(`/console/brand/model/${model.slug}`)}
                   className="group cursor-pointer relative bg-white border border-slate-200 p-8 rounded-[2.5rem] transition-all hover:border-blue-200 shadow-sm hover:shadow-md"
                 >
                   <div className="space-y-6">
