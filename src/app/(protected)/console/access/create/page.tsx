@@ -74,24 +74,7 @@ export default function CreateConsoleAccessPage() {
   return (
     <div className="flex-1 p-12 min-h-screen">
       <div className="w-full max-w-3xl space-y-8">
-        <div className="border-b border-slate-200 pb-8 space-y-4">
-          <Link
-            id="access-back"
-            href="/console/access"
-            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Access
-          </Link>
-          <div className="space-y-1">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-              Grant <span className="text-slate-400 text-xl ml-2 font-bold tracking-widest uppercase">Console Access</span>
-            </h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-              New administrator can sign in via /console-login
-            </p>
-          </div>
-        </div>
+
 
         <div className="bg-white border border-slate-200 rounded-[2rem] shadow-sm p-10">
           <AnimatePresence mode="wait">

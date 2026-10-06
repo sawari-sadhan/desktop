@@ -21,7 +21,8 @@ const ModelContext = createContext<ModelContextType | undefined>(undefined);
 
 export function ModelProvider({ children }: { children: ReactNode }) {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = (params.modelSlug || params.slug) as string;
+  const brandSlug = params.slug as string;
 
   const [model, setModel] = useState<EntityNode | null>(null);
   const [brand, setBrand] = useState<EntityNode | null>(null);

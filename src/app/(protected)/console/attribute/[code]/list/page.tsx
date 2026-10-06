@@ -54,16 +54,48 @@ const AttributeLinkedVehiclesPage = () => {
           linkTypes: ["has_attribute"]
         });
 
-        // Cast nodes to EntityNode for consistent rendering
-        const linked = (neighborsRes.nodes || []).map(n => ({
-          id: n.id,
-          type: n.type,
-          slug: n.slug,
-          name: n.name as any,
-          description: n.description as any,
-          tags: n.tags,
-          metadata: n.metadata as any,
-          data: n.data as any
+        // Cast nodes to EntityNode for consistent rendering and fetch missing model/brand slugs
+        const linked = await Promise.all((neighborsRes.nodes || []).map(async (n) => {
+          let fullNode = n;
+          // If metadata is sparse or missing parent_model_id, try fetching the full node
+          if (!n.data?.parent_model_slug && !n.metadata?.parent_model_id) {
+            try {
+              const fullNodeRes = await graphClient.getNode({ id: n.id, slug: "" });
+              if (fullNodeRes.node) fullNode = fullNodeRes.node;
+            } catch (err) {}
+          }
+          
+          let modelSlug = fullNode.data?.parent_model_slug;
+          let brandSlug = fullNode.data?.parent_brand_slug;
+          if (!modelSlug || !brandSlug) {
+            const modelId = fullNode.data?.parent_model_id || fullNode.metadata?.parent_model_id;
+            if (modelId) {
+              try {
+                const modelRes = await graphClient.getNode({ id: modelId as string, slug: "" });
+                if (modelRes.node) {
+                  modelSlug = modelRes.node.slug;
+                  brandSlug = brandSlug || modelRes.node.data?.parent_brand_slug;
+                  if (!brandSlug) {
+                    const brandId = modelRes.node.data?.parent_brand_id || modelRes.node.metadata?.parent_brand_id;
+                    if (brandId) {
+                      const brandRes = await graphClient.getNode({ id: brandId as string, slug: "" });
+                      if (brandRes.node) brandSlug = brandRes.node.slug;
+                    }
+                  }
+                }
+              } catch (err) {}
+            }
+          }
+          return {
+            id: n.id,
+            type: n.type,
+            slug: n.slug,
+            name: n.name as any,
+            description: n.description as any,
+            tags: n.tags,
+            metadata: fullNode.metadata as any,
+            data: { ...(fullNode.data || {}), parent_model_slug: modelSlug || '_', parent_brand_slug: brandSlug || '' } as any
+          };
         }));
 
         setVehicles(linked);
@@ -190,7 +222,7 @@ const AttributeLinkedVehiclesPage = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.03 }}
-                      onClick={() => router.push(`/console/brand/model/${vehicle.data?.parent_model_slug || '_'}/variant?variantId=${vehicle.id}`)}
+                      onClick={() => router.push(vehicle.data?.parent_brand_slug ? `/console/brand/${vehicle.data.parent_brand_slug}/model/${vehicle.data?.parent_model_slug || '_'}/variant/${vehicle.slug}` : `/console/brand/model/${vehicle.data?.parent_model_slug || '_'}/variant/${vehicle.slug}`)}
                       className="group bg-white/[0.02] border border-white/5 rounded-2xl p-6 flex items-center justify-between hover:bg-emerald-500/[0.03] hover:border-emerald-500/20 transition-all cursor-pointer relative overflow-hidden"
                     >
                       <div className="flex-1 min-w-0">

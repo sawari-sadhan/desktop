@@ -170,7 +170,7 @@ export function FeaturedVehicles() {
   if (vehicles.length === 0) return null;
 
   return (
-    <section className="container mx-auto max-w-7xl px-4 sm:px-8 pt-20 pb-16">
+    <section className="container mx-auto max-w-7xl px-4 sm:px-8 pt-12 pb-16">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-['Clash_Display'] font-bold text-[#050B20]">Popular Deals</h2>
         <Link href="/inventory" className="flex items-center gap-1 text-sm font-bold text-gray-500 hover:text-[#B40003] transition-colors">

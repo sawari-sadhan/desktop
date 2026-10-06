@@ -1,0 +1,37 @@
+export const theme = {
+  layout: {
+    pageContainer: "flex-1 p-12 min-h-screen bg-slate-50/50",
+    contentWrapper: "w-full space-y-8",
+    headerWrapper: "flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-8 gap-6",
+    grid: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20",
+    listWrapper: "w-full min-h-[60vh] space-y-4",
+    tableHeader: "grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200",
+    listContent: "space-y-3",
+  },
+  typography: {
+    h1: "text-3xl font-black text-slate-900 tracking-tight",
+    h1Highlight: "text-slate-400 text-xl ml-2 font-bold tracking-widest uppercase",
+    subtitle: "text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]",
+    detailTitle: "text-4xl md:text-5xl font-black text-slate-900 tracking-tighter leading-none",
+    cardTitle: "text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1",
+    cardSubtitle: "text-xs text-slate-500 mt-2 font-medium line-clamp-2",
+  },
+  components: {
+    searchInput: "bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-6 text-xs text-slate-900 focus:ring-1 focus:ring-slate-300 transition-all w-full md:w-64 hover:bg-slate-50 placeholder-slate-400 outline-none",
+    iconButton: "p-3 bg-white border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all shrink-0",
+    card: "group cursor-pointer relative bg-white border border-slate-200 p-7 rounded-[2rem] transition-all hover:border-blue-200 overflow-hidden",
+    cardDecorativeBg: "absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-32 h-32 bg-slate-50 rounded-full blur-3xl group-hover:bg-blue-50 transition-all",
+    cardIconContainer: "w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-900 font-black text-xl border border-slate-200 group-hover:border-blue-200 transition-all",
+    cardBadge: "px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-[8px] font-black uppercase tracking-tighter text-slate-500",
+    cardFooter: "pt-4 border-t border-slate-100 flex items-center justify-between",
+    cardFooterItem: "flex items-center gap-2 text-slate-500",
+    cardFooterText: "text-[10px] font-bold uppercase tracking-widest",
+    listItem: "group grid grid-cols-12 gap-4 items-center p-5 rounded-2xl border bg-white border-slate-200 hover:bg-slate-50 hover:border-blue-200 transition-all",
+    paginationWrapper: "flex items-center justify-between pt-4 border-t border-slate-200",
+    backButton: "group flex items-center gap-3 px-5 py-2.5 bg-white border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all",
+    detailHero: "relative bg-white border border-slate-200 rounded-[3rem] p-12 overflow-hidden",
+    detailHeroBadge: "w-24 h-24 rounded-3xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-900 text-3xl font-black uppercase",
+    sectionWrapper: "bg-white border border-slate-200 rounded-[3rem] p-10",
+    badgeLabel: "flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-full border border-slate-200",
+  }
+};

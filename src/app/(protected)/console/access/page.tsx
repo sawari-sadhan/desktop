@@ -46,36 +46,8 @@ export default function ConsoleAccessPage() {
   return (
     <div className="flex-1 p-12 min-h-screen">
       <div className="w-full space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 pb-8">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-              Console <span className="text-slate-400 text-xl ml-2 font-bold tracking-widest uppercase">Access</span>
-            </h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-              {accounts.length} administrators with console access
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <input
-                id="access-search"
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-6 text-xs text-slate-900 focus:ring-1 focus:ring-slate-300 transition-all w-64 shadow-sm hover:bg-slate-50 placeholder-slate-400"
-              />
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-            </div>
-            <button
-              id="access-refresh"
-              onClick={load}
-              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-500 shadow-sm hover:text-slate-900 hover:bg-slate-50 transition-all"
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-            </button>
+        {/* Actions */}
+        <div className="flex justify-end mb-4">
             <Link
               id="access-create"
               href="/console/access/create"
@@ -84,7 +56,6 @@ export default function ConsoleAccessPage() {
               <UserPlus className="w-4 h-4" />
               Grant Access
             </Link>
-          </div>
         </div>
 
         {error && (

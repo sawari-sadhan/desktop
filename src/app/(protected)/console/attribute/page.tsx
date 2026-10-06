@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, RefreshCw, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { graphClient, NodeType } from "@lib/core";
+import { theme } from "../theme";
+import { PageLayout, PageHeader, PageTitle, PageActions, PageContent } from "../components";
 
 const AttributeRegistryPage = () => {
   const router = useRouter();
@@ -28,50 +30,20 @@ const AttributeRegistryPage = () => {
     loadAttributes();
   }, []);
 
-  const filteredAttributes = (attributes || []).filter(attr => 
-    attr.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    attr.code.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAttributes = (attributes || []).filter(attr => {
+    const nameStr = (typeof attr.name === 'object' ? (attr.name as any)?.text || (attr.name as any)?.en || "" : (attr.name || "")).toString().toLowerCase();
+    return nameStr.includes(searchTerm.toLowerCase()) || attr.code.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   return (
-    <div className="flex-1 p-12 min-h-screen">
-      <div className="w-full space-y-8">
-        
-        {/* Simplified Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/10 pb-8 gap-6">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-black text-white tracking-tight">
-              Technical <span className="text-slate-400 text-xl ml-2 font-bold tracking-widest uppercase">Attributes</span>
-            </h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Managing {attributes.length} technical features in Knowledge Graph</p>
-          </div>
-
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative flex-1 md:flex-none">
-              <input 
-                type="text"
-                placeholder="Search attributes..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/5 border border-white/10 shadow-sm rounded-2xl py-3 pl-10 pr-6 text-xs text-white focus:ring-1 focus:ring-white/20 transition-all w-full md:w-64 hover:bg-white/10 placeholder-slate-400 outline-none"
-              />
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-            </div>
-            <button 
-              onClick={loadAttributes}
-              className="p-3 bg-white/5 border border-white/10 shadow-sm rounded-2xl text-slate-400 hover:text-white hover:bg-white/10 transition-all shrink-0"
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-        </div>
-
+    <PageLayout>
+      <PageContent>
         {/* Attribute Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-20">
+        <div className={theme.layout.grid}>
           <AnimatePresence mode="popLayout">
             {isLoading ? (
               Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="bg-white/[0.02] border border-white/5 rounded-[2rem] h-56 animate-pulse" />
+                <div key={i} className="bg-slate-50 border border-slate-200 rounded-[2rem] h-56 animate-pulse" />
               ))
             ) : filteredAttributes.length > 0 ? (
               filteredAttributes.map((attr, idx) => {
@@ -85,11 +57,11 @@ const AttributeRegistryPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ delay: idx * 0.005 }}
-                    whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.04)" }}
+                    whileHover={{ y: -4, backgroundColor: "rgba(0,0,0,0.02)" }}
                     onClick={() => router.push(`/console/attribute/${attr.code}`)}
-                    className="group cursor-pointer relative bg-white/[0.02] border border-white/5 p-7 rounded-[2rem] transition-all hover:border-white/20 shadow-sm hover:shadow-md overflow-hidden"
+                    className={theme.components.card}
                   >
-                    <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all" />
+                    <div className={theme.components.cardDecorativeBg} />
                     
                     {attrType === "boolean" && nodeCount > 0 && (
                       <motion.div 
@@ -100,30 +72,35 @@ const AttributeRegistryPage = () => {
                       />
                     )}
                     
-                    <div className="space-y-6 relative">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[12px] text-slate-400 mb-1 font-mono tracking-widest uppercase">
+                    <div className="space-y-8 relative">
+                      <div className="flex items-start justify-between">
+                        <div className={theme.components.cardIconContainer}>
+                          {(typeof attr.name === 'object' ? (attr.name as any)?.text || (attr.name as any)?.en || "?" : (attr.name || "?"))[0].toUpperCase()}
+                        </div>
+                        <div className={theme.components.cardBadge}>
                           {attr.code}
-                        </p>
-                        <h3 className="text-lg font-black text-white group-hover:text-blue-400 transition-colors line-clamp-1">
-                          {attr.name}
-                        </h3>
+                        </div>
                       </div>
 
-                      <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {attrType === "string" && (
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-400/80">String {nodeCount > 0 ? `(${nodeCount})` : ""}</span>
-                          )}
-                          {attrType === "number" && (
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400/80">Number {nodeCount > 0 ? `(${nodeCount})` : ""}</span>
-                          )}
-                          {attrType === "boolean" && (
-                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-400/80">Boolean {nodeCount > 0 ? `(${nodeCount})` : ""}</span>
-                          )}
+                      <div>
+                        <h3 className={theme.typography.cardTitle}>
+                          {typeof attr.name === 'object' ? (attr.name as any)?.text || (attr.name as any)?.en || "Unnamed Attribute" : (attr.name || "Unnamed Attribute")}
+                        </h3>
+                        <p className={theme.typography.cardSubtitle}>
+                          {typeof attr.description === 'object' ? (attr.description as any)?.text || (attr.description as any)?.en || "Attribute for vehicle specifications" : (attr.description || "Attribute for vehicle specifications")}
+                        </p>
+                      </div>
+
+                      <div className={theme.components.cardFooter}>
+                        <div className={theme.components.cardFooterItem}>
+                          <span className={theme.components.cardFooterText}>
+                            Type: <span className="uppercase">{attrType}</span>
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2 text-slate-500 group-hover:text-white/70">
-                          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                        <div className={theme.components.cardFooterItem}>
+                          <span className={theme.components.cardFooterText}>
+                            Nodes: {nodeCount}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -139,8 +116,8 @@ const AttributeRegistryPage = () => {
           </AnimatePresence>
         </div>
 
-      </div>
-    </div>
+      </PageContent>
+    </PageLayout>
   );
 };
 

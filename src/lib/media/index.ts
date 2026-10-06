@@ -32,7 +32,9 @@ export async function uploadMediaFiles(files: File[], mediaType: string = "auto"
     });
 
     if (!response.ok) {
-      throw new Error(`Media upload failed: ${response.statusText}`);
+      const errorBody = await response.text();
+      console.error("Backend upload error:", errorBody);
+      throw new Error(`Media upload failed: ${response.statusText}. Details: ${errorBody}`);
     }
 
     const data = await response.json();

@@ -45,62 +45,40 @@ const ModelLayoutContent = ({ children }: { children: React.ReactNode }) => {
     <div className="flex-1 p-12 min-h-screen">
       <div className="w-full space-y-12">
         
-        {/* Navigation & Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-200 pb-12">
-          <div className="space-y-6">
-            <button 
-              onClick={() => brand ? router.push(`/console/brand/${brand.slug}`) : router.push('/console/brand/model')}
-              className="flex items-center gap-3 text-slate-500 hover:text-slate-900 transition-colors group"
-            >
-              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Return to Models</span>
-            </button>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <span className="text-blue-600 font-black text-sm uppercase tracking-[0.3em]">{brandName}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-                <span className="text-slate-500 text-xs font-bold font-mono">{model.slug}</span>
-              </div>
-              <h1 className="text-5xl font-black text-slate-900 tracking-tight leading-none">
-                {modelName}
-              </h1>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-6">
-            <button 
-              onClick={loadData}
-              className="p-4 bg-white border border-slate-200 shadow-sm rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all flex items-center gap-2 cursor-pointer"
+
+        {/* Tab Navigation & Actions */}
+        <div className="flex items-center justify-between border-b border-slate-200 pb-px">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push(brand ? `/console/brand/${brand.slug}/model/${slug}/specification` : `/console/brand/model/${slug}/specification`)}
+              className={`px-6 py-3 text-xs font-black uppercase tracking-widest border-b-2 transition-colors ${
+                isSpecsActive
+                  ? "border-blue-600 text-blue-600" 
+                  : "border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300"
+              }`}
             >
-              <RefreshCw className="w-4 h-4" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Sync</span>
+              Specifications
+            </button>
+            <button
+              onClick={() => router.push(brand ? `/console/brand/${brand.slug}/model/${slug}/media` : `/console/brand/model/${slug}/media`)}
+              className={`px-6 py-3 text-xs font-black uppercase tracking-widest border-b-2 transition-colors flex items-center gap-2 ${
+                isMediaActive
+                  ? "border-blue-600 text-blue-600" 
+                  : "border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300"
+              }`}
+            >
+              <ImageIcon className="w-4 h-4" />
+              Media & Assets
             </button>
           </div>
-        </div>
 
-        {/* Tab Navigation */}
-        <div className="flex items-center gap-4 border-b border-slate-200 pb-px">
-          <button
-            onClick={() => router.push(`/console/brand/model/${slug}/specification`)}
-            className={`px-6 py-3 text-xs font-black uppercase tracking-widest border-b-2 transition-colors ${
-              isSpecsActive
-                ? "border-blue-600 text-blue-600" 
-                : "border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300"
-            }`}
+          <button 
+            onClick={loadData}
+            className="mb-2 p-3 bg-white border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all flex items-center gap-2 cursor-pointer"
           >
-            Specifications
-          </button>
-          <button
-            onClick={() => router.push(`/console/brand/model/${slug}/media`)}
-            className={`px-6 py-3 text-xs font-black uppercase tracking-widest border-b-2 transition-colors flex items-center gap-2 ${
-              isMediaActive
-                ? "border-blue-600 text-blue-600" 
-                : "border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300"
-            }`}
-          >
-            <ImageIcon className="w-4 h-4" />
-            Media & Assets
+            <RefreshCw className="w-4 h-4" />
+            <span className="text-[10px] font-bold uppercase tracking-wider hidden md:inline">Sync Data</span>
           </button>
         </div>
 

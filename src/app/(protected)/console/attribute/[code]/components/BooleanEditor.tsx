@@ -52,15 +52,47 @@ export const BooleanEditor = ({ attributeCode, name }: BooleanEditorProps) => {
           linkTypes: ["has_attribute"]
         });
 
-        const linked = (neighborsRes.nodes || []).map(n => ({
-          id: n.id,
-          type: n.type,
-          slug: n.slug,
-          name: n.name as any,
-          description: n.description as any,
-          tags: n.tags,
-          metadata: n.metadata as any,
-          data: n.data as any
+        const linked = await Promise.all((neighborsRes.nodes || []).map(async (n) => {
+          let fullNode = n;
+          // If metadata is sparse or missing parent_model_id, try fetching the full node
+          if (!n.data?.parent_model_slug && !n.metadata?.parent_model_id) {
+            try {
+              const fullNodeRes = await graphClient.getNode({ id: n.id, slug: "" });
+              if (fullNodeRes.node) fullNode = fullNodeRes.node;
+            } catch (err) {}
+          }
+          
+          let modelSlug = fullNode.data?.parent_model_slug;
+          let brandSlug = fullNode.data?.parent_brand_slug;
+          if (!modelSlug || !brandSlug) {
+            const modelId = fullNode.data?.parent_model_id || fullNode.metadata?.parent_model_id;
+            if (modelId) {
+              try {
+                const modelRes = await graphClient.getNode({ id: modelId as string, slug: "" });
+                if (modelRes.node) {
+                  modelSlug = modelRes.node.slug;
+                  brandSlug = brandSlug || modelRes.node.data?.parent_brand_slug;
+                  if (!brandSlug) {
+                    const brandId = modelRes.node.data?.parent_brand_id || modelRes.node.metadata?.parent_brand_id;
+                    if (brandId) {
+                      const brandRes = await graphClient.getNode({ id: brandId as string, slug: "" });
+                      if (brandRes.node) brandSlug = brandRes.node.slug;
+                    }
+                  }
+                }
+              } catch (err) {}
+            }
+          }
+          return {
+            id: n.id,
+            type: n.type,
+            slug: n.slug,
+            name: n.name as any,
+            description: n.description as any,
+            tags: n.tags,
+            metadata: fullNode.metadata as any,
+            data: { ...(fullNode.data || {}), parent_model_slug: modelSlug || '_', parent_brand_slug: brandSlug || '' } as any
+          };
         }));
 
         setVehicles(linked);
@@ -81,7 +113,7 @@ export const BooleanEditor = ({ attributeCode, name }: BooleanEditorProps) => {
   if (isLoadingVehicles && vehicles.length === 0) {
     return (
       <div className="py-20 flex flex-col items-center gap-4">
-        <Loader2 className="w-8 h-8 text-slate-700 animate-spin" />
+        <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Scanning Graph for Connectivity...</p>
       </div>
     );
@@ -92,13 +124,13 @@ export const BooleanEditor = ({ attributeCode, name }: BooleanEditorProps) => {
 
       {/* Active Deployments List */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between border-t border-white/5 pt-10">
-          <h2 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+        <div className="flex items-center justify-between border-t border-slate-200 pt-10">
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
             Active Deployments
           </h2>
           <div className="flex items-center gap-2 px-3 py-1 bg-emerald-500/5 rounded-full border border-emerald-500/10">
-            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
               {isLoadingVehicles ? "Syncing..." : `${vehicles.length} Enabled`}
             </span>
           </div>
@@ -106,7 +138,7 @@ export const BooleanEditor = ({ attributeCode, name }: BooleanEditorProps) => {
 
         {isLoadingVehicles ? (
           <div className="py-12 flex flex-col items-center gap-4">
-            <Loader2 className="w-6 h-6 text-slate-700 animate-spin" />
+            <Loader2 className="w-6 h-6 text-slate-400 animate-spin" />
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Scanning releases...</p>
           </div>
         ) : vehicles.length > 0 ? (
@@ -116,17 +148,17 @@ export const BooleanEditor = ({ attributeCode, name }: BooleanEditorProps) => {
               return (
                 <div 
                   key={v.id}
-                  onClick={() => router.push(`/console/brand/model/${v.data?.parent_model_slug || '_'}/variant?variantId=${v.id}`)}
-                  className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 flex items-center justify-between group hover:bg-emerald-500/[0.03] hover:border-emerald-500/20 transition-all cursor-pointer"
+                  onClick={() => router.push(v.data?.parent_brand_slug ? `/console/brand/${v.data.parent_brand_slug}/model/${v.data?.parent_model_slug || '_'}/variant/${v.slug}` : `/console/brand/model/${v.data?.parent_model_slug || '_'}/variant/${v.slug}`)}
+                  className="bg-white border border-slate-200 rounded-2xl p-5 flex items-center justify-between group hover:bg-emerald-50 hover:border-emerald-200 transition-all cursor-pointer"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-mono font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-[0.2em] truncate">
+                    <p className="text-[10px] font-mono font-black text-slate-900 group-hover:text-emerald-600 transition-colors uppercase tracking-[0.2em] truncate">
                       {displayName}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-700 group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                     </div>
                   </div>
@@ -135,11 +167,11 @@ export const BooleanEditor = ({ attributeCode, name }: BooleanEditorProps) => {
             })}
           </div>
         ) : (
-          <div className="bg-white/[0.01] border border-dashed border-white/5 rounded-[2.5rem] py-16 flex flex-col items-center gap-4">
-            <ShieldCheck className="w-10 h-10 text-slate-800" />
+          <div className="bg-slate-50 border border-dashed border-slate-200 rounded-[2.5rem] py-16 flex flex-col items-center gap-4">
+            <ShieldCheck className="w-10 h-10 text-slate-300" />
             <div className="text-center space-y-1">
               <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">No active deployments</p>
-              <p className="text-[9px] text-slate-700 font-medium">This feature is currently disabled across all releases.</p>
+              <p className="text-[9px] text-slate-500 font-medium">This feature is currently disabled across all releases.</p>
             </div>
           </div>
         )}

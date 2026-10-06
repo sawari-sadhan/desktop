@@ -100,48 +100,6 @@ const ModelRegistryPage = () => {
     <div className="flex-1 p-12 min-h-screen">
       <div className="w-full space-y-8">
         
-        {/* Navigation Breadcrumb / Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 pb-8">
-          <div className="flex items-center gap-6">
-            {brandId && (
-              <button 
-                onClick={() => router.push('/console/brand')}
-                className="p-3 bg-white border border-slate-200 shadow-sm rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-            )}
-            <div className="space-y-1">
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                {brandId ? brands[brandId] || "Loading..." : "Vehicle"}{" "}
-                <span className="text-slate-400 text-xl font-bold tracking-widest uppercase">Models</span>
-              </h1>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-                {brandId ? `Viewing models for brand: ${brands[brandId] || '...'}` : `Managing ${models.length} vehicle models across all brands`}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <input 
-                type="text"
-                placeholder="Search models..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-6 text-xs text-slate-900 focus:ring-1 focus:ring-slate-300 transition-all w-64 shadow-sm hover:bg-slate-50 placeholder-slate-400"
-              />
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-            </div>
-            <button 
-              onClick={loadData}
-              className="p-3 bg-white border border-slate-200 shadow-sm rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all"
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
-        </div>
-
         {/* Model Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
           <AnimatePresence mode="popLayout">
@@ -160,7 +118,7 @@ const ModelRegistryPage = () => {
                   transition={{ delay: idx * 0.03 }}
                   whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,1)" }}
                   onClick={() => router.push(`/console/brand/model/${model.slug}`)}
-                  className="group cursor-pointer relative bg-white border border-slate-200 p-8 rounded-[2.5rem] transition-all hover:border-blue-200 shadow-sm hover:shadow-md"
+                  className="group cursor-pointer relative bg-white border border-slate-200 p-8 rounded-[2.5rem] transition-all hover:border-blue-200"
                 >
                   <div className="space-y-6">
                     <div className="flex items-start justify-between">

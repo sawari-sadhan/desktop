@@ -72,24 +72,7 @@ export default function ConsoleAccountDetailPage({ params }: { params: Promise<{
   return (
     <div className="flex-1 p-12 min-h-screen">
       <div className="w-full max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="border-b border-slate-200 pb-8 space-y-4">
-          <Link
-            href="/console/access"
-            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Access List
-          </Link>
-          <div className="space-y-1">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-              Account <span className="text-slate-400 text-xl ml-2 font-bold tracking-widest uppercase">Details</span>
-            </h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-              Administrator Profile Information
-            </p>
-          </div>
-        </div>
+
 
         {error && (
           <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl text-red-700 text-sm">

@@ -164,15 +164,7 @@ const IngestPage = () => {
     <div className="flex-1 p-12 min-h-screen bg-slate-50">
       <div className="w-full space-y-8">
         
-        {/* Unified Console Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-8 gap-6">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-              Node <span className="text-slate-500 text-xl ml-2 font-bold tracking-widest uppercase">Ingestion</span>
-            </h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Add new nodes to the automotive knowledge graph</p>
-          </div>
-        </div>
+
 
         {/* Status Message */}
         {status.type && (
@@ -282,7 +274,7 @@ const IngestPage = () => {
                             className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 border ${
                               isSelected 
                                 ? "bg-teal-50 text-teal-700 border-teal-200 shadow-lg scale-105" 
-                                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900 hover:shadow-sm"
+                                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900"
                             }`}
                           >
                             {displayName}
@@ -319,7 +311,7 @@ const IngestPage = () => {
                             className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-300 border ${
                               isSelected 
                                 ? "bg-teal-50 text-teal-700 border-teal-200 shadow-lg scale-105" 
-                                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900 hover:shadow-sm"
+                                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900"
                             }`}
                           >
                             {displayName}

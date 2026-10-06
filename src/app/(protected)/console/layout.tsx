@@ -19,8 +19,8 @@ const ConsoleLayout = ({ children }: { children: React.ReactNode }) => {
         <Topbar />
         
         {/* Workspace Canvas */}
-        <div className="flex-1 relative bg-white m-4 rounded-[2.5rem] border border-slate-200 shadow-sm backdrop-blur-sm flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto custom-scrollbar my-8">
+        <div className="flex-1 relative bg-white rounded-none flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
             {children}
           </div>
         </div>

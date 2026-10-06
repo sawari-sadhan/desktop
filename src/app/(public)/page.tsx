@@ -6,9 +6,7 @@ import Link from "next/link";
 import { Search, MapPin, ChevronRight, Fuel, Calendar, Settings, ArrowRight, ShieldCheck, Banknote, PenTool, CheckCircle, ChevronLeft } from "lucide-react";
 import { theme } from "./theme";
 
-import SearchBar from "./components/search";
-import { HeroSlider } from "./components/layout/hero-slider";
-import { FeaturedVehicles } from "./components/layout/featured";
+import { SearchBar, HeroSlider, FeaturedVehicles } from "./components";
 import { SmartImage } from "@components";
 
 const DUMMY_LATEST = [
@@ -41,9 +39,12 @@ export default function Home() {
       {/* 1. Hero Section Slider */}
       <section className="relative w-full h-[600px] md:h-[700px] bg-slate-900">
         <HeroSlider />
-
-        <SearchBar />
       </section>
+
+      {/* Search Bar Wrapper in Normal Flow */}
+      <div className="relative z-30 -mt-10">
+        <SearchBar />
+      </div>
 
       {/* 2. Popular Deals (Featured Vehicles from backend focusClient) */}
       <FeaturedVehicles />

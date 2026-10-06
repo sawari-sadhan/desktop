@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   const hasDashboardAuth = !!request.cookies.get("dashboard_auth")?.value;
 
   // Protect Console routes
-  if (path.startsWith("/console")) {
+  if (path.startsWith("/console") && !path.startsWith("/console-login")) {
     if (!hasConsoleAuth) {
       return NextResponse.redirect(new URL("/console-login", request.url));
     }
@@ -33,12 +33,4 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = {
-  matcher: [
-    "/console/:path*",
-    "/dashboard/:path*",
-    "/console-login",
-    "/login",
-    "/register",
-  ],
-};
+

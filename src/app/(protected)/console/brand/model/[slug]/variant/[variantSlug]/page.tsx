@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, 
@@ -120,8 +120,8 @@ const DEFAULT_BLUEPRINT = {
 
 const VariantDetailsPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const variantId = searchParams.get("variantId");
+  const params = useParams();
+  const variantSlug = params.variantSlug as string;
 
   const [variant, setVariant] = useState<EntityNode | null>(null);
   const [model, setModel] = useState<EntityNode | null>(null);
@@ -134,11 +134,11 @@ const VariantDetailsPage = () => {
   const [attributeSearchTerm, setAttributeSearchTerm] = useState("");
 
   const loadData = async () => {
-    if (!variantId) return;
+    if (!variantSlug) return;
     setIsLoading(true);
     try {
       // 1. Fetch Variant
-      const variantRes = await graphClient.getNode({ id: variantId, slug: "" });
+      const variantRes = await graphClient.getNode({ id: "", slug: variantSlug });
       if (!variantRes.node) throw new Error("Variant not found");
       const mappedVariant: EntityNode = {
         id: variantRes.node.id,
@@ -212,7 +212,7 @@ const VariantDetailsPage = () => {
 
   useEffect(() => {
     loadData();
-  }, [variantId]);
+  }, [variantSlug]);
 
   const handleEditClick = async (section: string, field: string) => {
     setEditingField({ section, field });
@@ -434,55 +434,6 @@ const VariantDetailsPage = () => {
     <div className="flex-1 p-12 min-h-screen">
       <div className="w-full space-y-12">
         
-        {/* Top Navigation & Title */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-slate-200 pb-12">
-          <div className="space-y-6">
-            <button 
-              onClick={() => router.back()}
-              className="flex items-center gap-3 text-slate-500 hover:text-slate-900 transition-colors group"
-            >
-              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Return to Model</span>
-            </button>
-            
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 overflow-hidden">
-                {brand && (
-                  <>
-                    <button 
-                      onClick={() => router.push('/console/brand')}
-                      className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900 transition-colors truncate"
-                    >
-                      {brandName}
-                    </button>
-                    <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
-                  </>
-                )}
-                {model && (
-                  <>
-                    <button 
-                      onClick={() => router.push(`/console/brand/model/${model?.slug}`)}
-                      className="text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900 transition-colors truncate"
-                    >
-                      {modelName}
-                    </button>
-                    <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
-                  </>
-                )}
-                {variant && (
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 truncate">
-                    {variantName}
-                  </span>
-                )}
-              </div>
-              <h1 className="text-2xl lg:text-4xl font-black text-slate-900 tracking-tighter leading-tight max-w-4xl uppercase">
-                {brandName} {modelName} <span className="text-slate-500">-</span> <span className="text-slate-500 font-normal ml-1">{variantName}</span>
-              </h1>
-            </div>
-          </div>
-
-
-        </div>
 
         {/* Details Grid */}
         <div className="space-y-8">
@@ -565,7 +516,7 @@ const VariantDetailsPage = () => {
                                   placeholder="Search nodes..."
                                   value={attributeSearchTerm}
                                   onChange={(e) => setAttributeSearchTerm(e.target.value)}
-                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-4 pr-10 text-xs text-slate-900 focus:ring-1 focus:ring-white/20 transition-all"
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-4 pr-10 text-xs text-slate-900 focus:ring-1 focus:ring-slate-300 transition-all"
                                 />
                                 <Search className="absolute right-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
                               </div>

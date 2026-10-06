@@ -119,34 +119,6 @@ export default function OBDCodeDetailPage({ params }: PageProps) {
     <div className="flex-1 p-12 min-h-screen">
       <div className="w-full space-y-8">
         
-        {/* Navigation & Header */}
-        <div className="space-y-6">
-          <button
-            onClick={() => router.push("/console/obd")}
-            className="group inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 uppercase tracking-widest transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-            Back to Registry
-          </button>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-8">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <span className="font-mono font-black text-slate-900 text-3xl tracking-wider bg-slate-50 border border-slate-200 px-4 py-2 rounded-2xl">
-                  {codeData.code}
-                </span>
-                <div className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border text-[10px] font-black uppercase tracking-widest ${sev.color}`}>
-                  <SevIcon className="w-3.5 h-3.5" />
-                  {sev.label} Severity
-                </div>
-              </div>
-              <h1 className="text-xl font-bold text-slate-900 leading-relaxed mt-2">
-                {codeData.title || "Unknown Trouble Code"}
-              </h1>
-            </div>
-          </div>
-        </div>
-
         {/* Details Grid */}
         <div className="space-y-6">
           <div className="flex items-center gap-2">
@@ -164,7 +136,7 @@ export default function OBDCodeDetailPage({ params }: PageProps) {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="bg-white border border-slate-200 hover:border-blue-200 hover:bg-slate-50 rounded-3xl p-6 space-y-3 shadow-sm hover:shadow-md transition-all duration-300"
+                    className="bg-white border border-slate-200 hover:border-blue-200 hover:bg-slate-50 rounded-3xl p-6 space-y-3 transition-all duration-300"
                   >
                     <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-slate-100 pb-1.5 block w-fit">
                       {detail.sectionType.replace(/_/g, " ")}

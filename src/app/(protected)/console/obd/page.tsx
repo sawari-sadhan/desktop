@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { obdClient } from "@lib/core";
 import type { ObdCode } from "@lib/gen/graph_obd_pb";
+import { theme } from "../theme";
+import { PageLayout, PageHeader, PageTitle, PageActions, PageContent } from "../components";
 
 const PAGE_SIZE = 20;
 
@@ -70,45 +72,15 @@ const OBDPage = () => {
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
-    <div className="flex-1 p-12 min-h-screen">
-      <div className="w-full space-y-8">
+    <PageLayout>
 
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 pb-8">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-              OBD-II <span className="text-slate-400 text-xl ml-2 font-bold tracking-widest uppercase">Codes</span>
-            </h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-              {total > 0 ? `${total.toLocaleString()} diagnostic trouble codes` : "Diagnostic Trouble Code Registry"}
-            </p>
-          </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search code or title..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white border border-slate-200 rounded-2xl py-3 pl-10 pr-6 text-xs text-slate-900 focus:ring-1 focus:ring-slate-300 transition-all w-72 shadow-sm hover:bg-slate-50 outline-none"
-              />
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-            </div>
-            <button
-              onClick={loadCodes}
-              className="p-3 bg-white border border-slate-200 shadow-sm rounded-2xl text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-all"
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-            </button>
-          </div>
-        </div>
-
+      <PageContent>
         {/* Full-width OBD list layout */}
-        <div className="w-full min-h-[60vh] space-y-4">
+        <div className={theme.layout.listWrapper}>
           
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-200">
+          <div className={theme.layout.tableHeader}>
             <div className="col-span-2">Code</div>
             <div className="col-span-6">Description</div>
             <div className="col-span-2 text-center">Severity</div>
@@ -116,7 +88,7 @@ const OBDPage = () => {
           </div>
 
           {/* List Content */}
-          <div className="space-y-3">
+          <div className={theme.layout.listContent}>
             <AnimatePresence mode="popLayout">
               {isLoading ? (
                 Array.from({ length: 8 }).map((_, i) => (
@@ -144,7 +116,7 @@ const OBDPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.97 }}
                         transition={{ delay: idx * 0.025 }}
-                        className="group grid grid-cols-12 gap-4 items-center p-5 rounded-2xl border bg-white border-slate-200 hover:bg-slate-50 hover:border-blue-200 transition-all shadow-sm hover:shadow-md"
+                        className={theme.components.listItem}
                       >
                         {/* Code badge */}
                         <div className="col-span-2 flex items-center">
@@ -190,8 +162,8 @@ const OBDPage = () => {
 
             {/* Pagination */}
             {!isLoading && totalPages > 1 && (
-              <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+              <div className={theme.components.paginationWrapper}>
+                <p className={theme.typography.subtitle}>
                   Page {page + 1} of {totalPages}
                 </p>
                 <div className="flex items-center gap-2">
@@ -214,8 +186,8 @@ const OBDPage = () => {
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </PageContent>
+    </PageLayout>
   );
 };
 

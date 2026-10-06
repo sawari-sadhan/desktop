@@ -22,7 +22,7 @@ import { getModelValue, formatValue, KEY_SPECS } from "./components/utils";
 
 export default function SpecificationPage() {
   const router = useRouter();
-  const { model, setModel, variants, isUpdating, setIsUpdating } = useModelContext();
+  const { model, setModel, variants, brand, isUpdating, setIsUpdating } = useModelContext();
 
   const [editingField, setEditingField] = useState<string | null>(null);
   const [availableNodes, setAvailableNodes] = useState<EntityNode[]>([]);
@@ -439,8 +439,8 @@ export default function SpecificationPage() {
                 <motion.div
                   key={variant.id}
                   whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,1)" }}
-                  onClick={() => router.push(`/console/brand/model/${model.slug}/variant?variantId=${variant.id}`)}
-                  className="group cursor-pointer bg-slate-50 border border-slate-200 hover:border-blue-200 p-6 rounded-[2rem] transition-all flex flex-col justify-between h-48 relative shadow-sm hover:shadow-md"
+                  onClick={() => router.push(brand ? `/console/brand/${brand.slug}/model/${model.slug}/variant/${variant.slug}` : `/console/brand/model/${model.slug}/variant/${variant.slug}`)}
+                  className="group cursor-pointer bg-slate-50 border border-slate-200 hover:border-blue-200 p-6 rounded-[2rem] transition-all flex flex-col justify-between h-48 relative"
                 >
                   <div className="space-y-3">
                     <div className="flex justify-between items-start">
