@@ -28,6 +28,12 @@ export const CONFIG = {
       ? "https://media.sawarisadhan.com"
       : "http://localhost:5051"),
   },
+  AGENT: {
+    NAME: "Agent Service",
+    API_URL: process.env.NEXT_PUBLIC_AGENT_API_URL || (IS_PRODUCTION
+      ? "https://agent.sawarisadhan.com"
+      : "http://localhost:5107"),
+  },
   APP: {
     NAME: "Sawari Sadhan Desktop",
     VERSION: "0.1.0-alpha",
@@ -40,3 +46,12 @@ const authTransport = createConnectTransport({
 
 export const authClient = createClient(AuthService, authTransport);
 export { AccountContext } from "../gen/auth_pb";
+
+// Setup Agent Transport (Connect-RPC to Python FastAPI)
+import { AgentService } from "../gen/agent_pb";
+
+const agentTransport = createConnectTransport({
+  baseUrl: CONFIG.AGENT.API_URL,
+});
+
+export const agentClient = createClient(AgentService, agentTransport);

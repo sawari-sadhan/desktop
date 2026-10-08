@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Sparkles, ArrowRight, Fuel, Settings } from "lucide-react";
 import Link from "next/link";
-import { DUMMY_AI_RESPONSE, DUMMY_REFERENCES } from "./dummy";
+import { DUMMY_REFERENCES } from "./dummy";
+import { agentClient } from "../../../../../lib";
 
 interface AskPanelProps {
   query: string;
@@ -12,8 +13,30 @@ interface AskPanelProps {
   isLoading?: boolean;
 }
 
-export function AskPanel({ query, isFocused, isSubmitted, isLoading }: AskPanelProps) {
+export function AskPanel({ query, isFocused, isSubmitted, isLoading: parentIsLoading }: AskPanelProps) {
+  const [aiResponse, setAiResponse] = useState("");
+  const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    if (isSubmitted && query) {
+      const fetchResponse = async () => {
+        setIsFetching(true);
+        try {
+          const res = await agentClient.ask({ query });
+          setAiResponse(res.reply);
+        } catch (error) {
+          setAiResponse("I'm sorry, I couldn't connect to the AI Agent. Make sure the backend is running.");
+        } finally {
+          setIsFetching(false);
+        }
+      };
+      fetchResponse();
+    }
+  }, [isSubmitted, query]);
+
   if (!isSubmitted || !query) return null;
+
+  const isLoading = parentIsLoading || isFetching;
 
   return (
     <section className="container mx-auto max-w-7xl px-4 sm:px-8 pt-8 pb-4">
@@ -34,36 +57,36 @@ export function AskPanel({ query, isFocused, isSubmitted, isLoading }: AskPanelP
       ) : (
         <>
           <div className="flex items-start gap-4 mb-10">
-            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-1">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
               <Sparkles className="w-5 h-5 text-emerald-600" />
             </div>
-            <div>
-              <p className="text-slate-600 leading-relaxed text-base">{DUMMY_AI_RESPONSE}</p>
+            <div className="pt-1.5">
+              <p className="text-slate-600 leading-relaxed text-base whitespace-pre-wrap">{aiResponse}</p>
             </div>
           </div>
 
           <div className="border-t border-slate-100 pt-8 mt-8">
             <div className="flex items-center justify-between mb-8">
-               <h3 className="text-2xl font-['Clash_Display'] font-bold text-[#050B20]">Related References</h3>
+              <h3 className="text-2xl font-['Clash_Display'] font-bold text-[#050B20]">Related References</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {DUMMY_REFERENCES.map((car) => (
                 <Link href={car.url} key={car.id} className="block group">
                   <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden transition-all h-full flex flex-col">
                     <div className="h-40 bg-slate-100 relative overflow-hidden shrink-0">
-                      <img 
-                        src={car.image} 
-                        alt={car.name} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      <img
+                        src={car.image}
+                        alt={car.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                     <div className="p-4 flex flex-col flex-1 justify-between">
                       <div>
                         <h3 className="font-['Clash_Display'] font-bold text-lg text-[#050B20] mb-2 line-clamp-1 group-hover:text-[#B40003] transition-colors">{car.name}</h3>
                         <div className="grid grid-cols-2 gap-2 text-xs text-gray-500 mb-4 pb-4 border-b border-gray-100">
-                          <div className="flex items-center gap-1"><Fuel className="w-3 h-3 text-gray-400"/> {car.fuel}</div>
-                          <div className="flex items-center gap-1"><Settings className="w-3 h-3 text-gray-400"/> {car.trans}</div>
+                          <div className="flex items-center gap-1"><Fuel className="w-3 h-3 text-gray-400" /> {car.fuel}</div>
+                          <div className="flex items-center gap-1"><Settings className="w-3 h-3 text-gray-400" /> {car.trans}</div>
                         </div>
                       </div>
                       <div className="flex items-center justify-between mt-auto">

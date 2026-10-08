@@ -1,5 +1,4 @@
 // 1. Auth Module
-export { authClient, AccountContext } from "./config";
 export {
   consoleLoginAction,
   consoleLogoutAction,
@@ -10,9 +9,7 @@ export {
 } from "./auth";
 
 // 2. Config Module
-export { CONFIG } from "./config";
+export { CONFIG, authClient, agentClient, AccountContext } from "./config";
 
 // 3. Navigation / Route Guard Module
-export { middleware as authMiddleware, config as middlewareConfig } from "./navigation/guard";
-
-
+export { middleware as authMiddleware } from "./navigation/guard";

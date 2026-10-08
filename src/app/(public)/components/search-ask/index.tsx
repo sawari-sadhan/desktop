@@ -5,6 +5,7 @@ import { Search as SearchIcon, Sparkles, ArrowRight, Loader2 } from "lucide-reac
 import { motion } from "framer-motion";
 import { SearchPanel } from "./search";
 import { AskPanel } from "./ask";
+import { classifyIntent } from "./intent/classifier";
 
 export default function SearchBar() {
   const [mode, setMode] = useState<"search" | "ask">("search");
@@ -34,12 +35,10 @@ export default function SearchBar() {
 
     // Auto-detect mode if user hasn't explicitly overridden it
     if (!isManualOverride) {
-      const isConversational = 
-        val.trim().split(/\s+/).length >= 4 || 
-        /^(what|how|why|where|best|list|under|above|show|tell|which|top|cheapest|most)\b/i.test(val.trim()) ||
-        val.includes("?");
+      const intentResult = classifyIntent(val);
+      setMode(intentResult.main);
       
-      setMode(isConversational ? "ask" : "search");
+      // We can also use intentResult.sub if we want to change UI styling or placeholders based on the subcategory!
     }
   };
 

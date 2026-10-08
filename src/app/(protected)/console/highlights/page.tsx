@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { focusClient, graphClient, Highlight, EntityNode } from "@lib/core";
-import { Star, Search, Trash2, Plus, ArrowRight, Settings, MapPin, Fuel, Calendar, Zap, LayoutTemplate, Image as ImageIcon } from "lucide-react";
+import { Star, Search, Trash2, Plus, ArrowRight, Settings, MapPin, Fuel, Calendar, Zap, LayoutTemplate, Image as ImageIcon, Database, Car, Bike } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CONFIG } from "@/lib/config";
 import { SmartImage } from "@/app/components";
+import { WheelOptionSwitcher } from "@/app/(public)/components/ui/switcher/wheel-option";
 
 const FOCUS_TYPES = [
   { id: "hero_slider", label: "Hero Sliders", icon: ImageIcon },
@@ -17,6 +18,8 @@ export default function HighlightsPage() {
   const [activeTab, setActiveTab] = useState(FOCUS_TYPES[0].id);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [isLoadingHighlights, setIsLoadingHighlights] = useState(false);
+  const [hasSelectedType, setHasSelectedType] = useState(false);
+  const [globalVehicleType, setGlobalVehicleType] = useState<"4w" | "2w">("4w");
 
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,14 +30,18 @@ export default function HighlightsPage() {
   const loadHighlights = useCallback(async () => {
     setIsLoadingHighlights(true);
     try {
-      const res = await focusClient.listHighlights({ type: activeTab, status: "" });
+      const res = await focusClient.listHighlights({ 
+        type: activeTab, 
+        status: "",
+        tags: [globalVehicleType] 
+      });
       setHighlights(res.highlights || []);
     } catch (err) {
       console.error("Failed to load highlights:", err);
     } finally {
       setIsLoadingHighlights(false);
     }
-  }, [activeTab]);
+  }, [activeTab, globalVehicleType]);
 
   useEffect(() => {
     loadHighlights();
@@ -54,7 +61,19 @@ export default function HighlightsPage() {
           types: ["model", "variant", "brand"], 
           limit: 10 
         });
-        setSearchResults((res.nodes as any[]) || []);
+        
+        // Filter search results locally by the active context (4w/2w)
+        const allNodes = (res.nodes as any[]) || [];
+        const filteredNodes = allNodes.filter(n => {
+          // If the node has tags, ensure it matches the current context
+          if (n.tags && Array.isArray(n.tags) && n.tags.length > 0) {
+            return n.tags.includes(globalVehicleType);
+          }
+          // Brands might not have vehicle-specific tags, so let them through
+          return n.type === 'brand';
+        });
+        
+        setSearchResults(filteredNodes);
       } catch (err) {
         console.error("Search failed:", err);
       } finally {
@@ -63,7 +82,7 @@ export default function HighlightsPage() {
     }, 400); // debounce
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, globalVehicleType]);
 
   const markAsHighlight = async (node: EntityNode) => {
     const title = node.name?.en || node.name?.np || "Unknown Vehicle";
@@ -82,6 +101,7 @@ export default function HighlightsPage() {
         title,
         subtitle,
         targetUrl,
+        tags: [globalVehicleType],
         media: media as any,
         metadata: { "node_id": node.id },
         status: "active",
@@ -115,11 +135,51 @@ export default function HighlightsPage() {
     return `${CONFIG.MEDIA.API_URL}/${firstImg.type?.stringValue || 'gallery'}/${firstImg.id?.stringValue}`;
   };
 
+  if (!hasSelectedType) {
+    return (
+      <div className="flex-1 h-full w-full bg-slate-50/80 relative overflow-hidden flex flex-col items-center justify-center p-4 font-sans selection:bg-teal-500/20">
+        <div className="w-full max-w-3xl relative z-10 flex flex-col items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+            <button
+              onClick={() => { setGlobalVehicleType("4w"); setHasSelectedType(true); }}
+              className="flex flex-col items-center justify-center p-12 sm:p-16 bg-white border border-slate-200/60 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all group"
+            >
+              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-slate-900 group-hover:text-white transition-colors duration-300 text-slate-600">
+                <Car className="w-8 h-8" />
+              </div>
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.25em]">4 Wheel</h2>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mt-3">Cars, SUVs, Vans</p>
+            </button>
+
+            <button
+              onClick={() => { setGlobalVehicleType("2w"); setHasSelectedType(true); }}
+              className="flex flex-col items-center justify-center p-12 sm:p-16 bg-white border border-slate-200/60 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all group"
+            >
+              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-teal-600 group-hover:text-white transition-colors duration-300 text-slate-600">
+                <Bike className="w-8 h-8" />
+              </div>
+              <h2 className="text-sm font-black text-slate-900 uppercase tracking-[0.25em]">2 Wheel</h2>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mt-3">Motorcycles, Scooters</p>
+            </button>
+          </div>
+          
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-col bg-white">
       
       {/* Header & Tabs */}
-      <div className="px-8 pt-8 border-b border-slate-100 sticky top-0 bg-white/80 backdrop-blur-xl z-20">
+      <div className="px-8 pt-8 border-b border-slate-100 sticky top-0 bg-white/80 backdrop-blur-xl z-20 flex flex-col gap-6">
+        <div className="w-full flex items-center justify-center">
+          <WheelOptionSwitcher 
+            value={globalVehicleType} 
+            onChange={setGlobalVehicleType} 
+            size="lg"
+          />
+        </div>
         <div className="flex gap-2">
           {FOCUS_TYPES.map(tab => (
             <button
