@@ -116,16 +116,16 @@ const IngestPage = () => {
       
       if (formData.type === "model" && formData.brandId) {
         await graphClient.addLink({
-          sourceId: newNode.id,
-          targetId: formData.brandId,
-          linkType: "MADE_BY",
+          sourceId: formData.brandId,
+          targetId: newNode.id,
+          linkType: "has_model",
           metadata: { context: "Manual_Ingest_Hierarchy" } as any
         });
       } else if (formData.type === "variant" && formData.modelId) {
         await graphClient.addLink({
-          sourceId: newNode.id,
-          targetId: formData.modelId,
-          linkType: "VARIANT_OF",
+          sourceId: formData.modelId,
+          targetId: newNode.id,
+          linkType: "has_variant",
           metadata: { context: "Manual_Ingest_Hierarchy" } as any
         });
       }
