@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Search, MapPin, ChevronRight, Fuel, Calendar, Settings, ArrowRight, ShieldCheck, Banknote, PenTool, CheckCircle, ChevronLeft } from "lucide-react";
 import { theme } from "./theme";
 
-import { SearchBar, HeroSlider, FeaturedVehicles } from "./components";
+import { SearchBar, HeroSlider, FeaturedVehicles, PremiumBrands } from "./components";
 import { SmartImage } from "@components";
 
 const DUMMY_LATEST = [
@@ -22,14 +22,7 @@ const DUMMY_BLOGS = [
   { id: 4, cat: "Guides", title: "A Beginner's Guide to Buying a Used Car", image: "/images/auto/mustang.jpg", date: "August 5, 2026" }
 ];
 
-const BRANDS = [
-  { name: "Audi", image: "/images/brands/audi.jpg" },
-  { name: "BMW", image: "/images/brands/bmw.jpg" },
-  { name: "Ferrari", image: "/images/brands/ferrari.jpg" },
-  { name: "Honda", image: "/images/brands/honda.jpg" },
-  { name: "Hyundai", image: "/images/brands/hyundai.jpg" },
-  { name: "Jaguar", image: "/images/brands/jaguar.jpg" }
-];
+
 
 export default function Home() {
 
@@ -133,20 +126,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Explore Our Premium Brands */}
-      <section className="container mx-auto max-w-7xl px-4 sm:px-8 py-16">
-        <h2 className="text-3xl font-['Clash_Display'] font-bold text-[#050B20] mb-12 text-center md:text-left">Explore Our Premium Brands</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {BRANDS.map((brand, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded-2xl h-32 flex flex-col items-center justify-center gap-3 hover:shadow-md hover:border-[#B40003] transition-all cursor-pointer group">
-              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden p-2 relative">
-                <SmartImage src={brand.image} alt={brand.name} variant="thumbnail" fill className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
-              </div>
-              <span className="font-bold text-sm text-[#050B20] group-hover:text-[#B40003] transition-colors">{brand.name}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* 6. Explore Our Premium Brands (from database via core/internal/graph/auto) */}
+      <PremiumBrands />
 
       {/* 7. CTA Cards */}
       <section className="container mx-auto max-w-7xl px-4 sm:px-8 py-16">

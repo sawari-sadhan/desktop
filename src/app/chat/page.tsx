@@ -1,10 +1,22 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { agentClient } from "../../lib/config";
+import Link from "next/link";
+import { agentClient, CONFIG } from "../../lib/config";
+
+interface VehicleRef {
+  slug: string;
+  name: string;
+  brand?: string;
+  price?: string;
+}
 
 export default function AgentChatPage() {
-  const [messages, setMessages] = useState<{role: 'user' | 'agent', text: string}[]>([]);
+  const [messages, setMessages] = useState<{
+    role: 'user' | 'agent';
+    text: string;
+    vehicles?: VehicleRef[];
+  }[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -26,10 +38,34 @@ export default function AgentChatPage() {
     setIsTyping(true);
 
     try {
-      // Magically call our Python FastAPI backend via Connect-RPC!
-      const response = await agentClient.ask({ query: userMsg });
+      let replyText = "";
+      let vehiclesList: VehicleRef[] = [];
+
+      try {
+        const res = await fetch(`${CONFIG.AGENT.API_URL}/AgentService/Ask`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: userMsg }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          replyText = data.reply || "";
+          vehiclesList = (data.vehicles || []).map((v: any) => ({
+            slug: v.slug,
+            name: v.name,
+            brand: v.brand,
+            price: v.price,
+          }));
+        } else {
+          const response = await agentClient.ask({ query: userMsg });
+          replyText = response.reply;
+        }
+      } catch {
+        const response = await agentClient.ask({ query: userMsg });
+        replyText = response.reply;
+      }
       
-      setMessages(prev => [...prev, { role: 'agent', text: response.reply }]);
+      setMessages(prev => [...prev, { role: 'agent', text: replyText, vehicles: vehiclesList }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'agent', text: "Error: Could not reach the AI Server." }]);
     } finally {
@@ -69,6 +105,22 @@ export default function AgentChatPage() {
                 : 'bg-gray-800 text-gray-200 rounded-tl-sm border border-gray-700'
             }`}>
               <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+
+              {msg.vehicles && msg.vehicles.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-gray-700/60 flex flex-wrap gap-2">
+                  <span className="text-[11px] text-gray-400 self-center">Related:</span>
+                  {msg.vehicles.map((v, i) => (
+                    <Link
+                      key={v.slug || i}
+                      href={`/${v.slug}`}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs bg-gray-900 hover:bg-indigo-600 text-gray-200 hover:text-white transition-colors border border-gray-700 hover:border-indigo-500"
+                    >
+                      <span>{v.name}</span>
+                      <span className="text-[10px] text-gray-400">→</span>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
