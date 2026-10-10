@@ -180,24 +180,27 @@ export default function HighlightsPage() {
             size="lg"
           />
         </div>
-        <div className="flex gap-2">
-          {FOCUS_TYPES.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setActiveTab(tab.id);
-                setSearchQuery("");
-              }}
-              className={`px-6 py-4 text-sm font-bold flex items-center gap-2 border-b-2 transition-all ${
-                activeTab === tab.id 
-                  ? "border-blue-600 text-blue-600 bg-blue-50/50" 
-                  : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-              }`}
-            >
-              <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? "text-blue-600" : "text-slate-400"}`} />
-              {tab.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 pb-4">
+          {FOCUS_TYPES.map(tab => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setSearchQuery("");
+                }}
+                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-3xl text-[11px] font-semibold uppercase tracking-wider transition-all duration-200 group relative ${
+                  isActive
+                    ? "bg-slate-50 text-slate-900 border border-slate-200 font-bold"
+                    : "text-slate-500 bg-transparent border border-transparent hover:bg-slate-50 hover:border-slate-200 hover:text-slate-900"
+                }`}
+              >
+                <tab.icon className={`w-4 h-4 transition-colors ${isActive ? "text-slate-900" : "text-slate-400 group-hover:text-slate-600"}`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

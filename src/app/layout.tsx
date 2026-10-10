@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Fira_Code, Josefin_Sans } from 'next/font/google';
+import { Fira_Code, Inter, Josefin_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Header from './components/layout/header';
 import Footer from './components/layout/footer';
@@ -47,6 +47,18 @@ const josefin = Josefin_Sans({
   display: 'swap',
 });
 
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 const firaCode = Fira_Code({
   subsets: ['latin'],
   variable: '--font-mono',
@@ -74,7 +86,7 @@ export default function RootLayout({
       <head />
       <body
         suppressHydrationWarning
-        className={`h-screen text-foreground bg-background font-sans antialiased flex flex-col ${josefin.variable} ${firaCode.variable}`}
+        className={`h-screen text-foreground bg-background font-sans antialiased flex flex-col ${josefin.variable} ${firaCode.variable} ${inter.variable} ${jetbrainsMono.variable}`}
       >
         <ImageProtection />
         <main className="flex-1 flex flex-col min-h-0 overflow-hidden">

@@ -10,7 +10,9 @@ import {
   Shield,
   Activity,
   Star,
-  Users
+  Users,
+  Palette,
+  Image as ImageIcon
 } from "lucide-react";
 
 /**
@@ -53,6 +55,12 @@ export const CONSOLE_NAV_ITEMS = [
     href: "/console/highlights",
     icon: Star,
     description: "Curate featured homepage content"
+  },
+  {
+    name: "Media",
+    href: "/console/media",
+    icon: ImageIcon,
+    description: "Central vehicle & asset media control center"
   },
   {
     name: "Access",

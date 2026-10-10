@@ -15,7 +15,7 @@ import type { JsonObject, Message } from "@bufbuild/protobuf";
  * Describes the file graph_auto.proto.
  */
 export const file_graph_auto: GenFile = /*@__PURE__*/
-  fileDesc("ChBncmFwaF9hdXRvLnByb3RvIrUCCgROb2RlEgoKAmlkGAEgASgJEgwKBHR5cGUYAiABKAkSDAoEc2x1ZxgDIAEoCRIlCgRuYW1lGAQgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIsCgtkZXNjcmlwdGlvbhgFIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSDAoEdGFncxgGIAMoCRIpCghtZXRhZGF0YRgHIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSJQoEZGF0YRgIIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSEQoJZW1iZWRkaW5nGAkgAygCEhIKCnVwZGF0ZWRfYXQYCiABKAkSKQoFbWVkaWEYCyABKAsyGi5nb29nbGUucHJvdG9idWYuTGlzdFZhbHVlImoKBExpbmsSEQoJc291cmNlX2lkGAEgASgJEhEKCXRhcmdldF9pZBgCIAEoCRIRCglsaW5rX3R5cGUYAyABKAkSKQoIbWV0YWRhdGEYBCABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0IukBCghOb2RlVHlwZRIMCgRjb2RlGAEgASgJEhMKC3BhcmVudF9jb2RlGAIgASgJEgwKBG5hbWUYAyABKAkSLAoLZGVzY3JpcHRpb24YBCABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EisKCmRhdGFfdHlwZXMYBSABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EikKCG1ldGFkYXRhGAYgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBISCgp1cGRhdGVkX2F0GAcgASgJEhIKCm5vZGVfY291bnQYCCABKAUiOwoITGlua1R5cGUSDAoEY29kZRgBIAEoCRIMCgRuYW1lGAIgASgJEhMKC2Rlc2NyaXB0aW9uGAMgASgJIioKDkdldE5vZGVSZXF1ZXN0EgoKAmlkGAEgASgJEgwKBHNsdWcYAiABKAkiJgoPR2V0Tm9kZVJlc3BvbnNlEhMKBG5vZGUYASABKAsyBS5Ob2RlIqICChFDcmVhdGVOb2RlUmVxdWVzdBIMCgR0eXBlGAEgASgJEgwKBHNsdWcYAiABKAkSJQoEbmFtZRgDIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSLAoLZGVzY3JpcHRpb24YBCABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EgwKBHRhZ3MYBSADKAkSKQoIbWV0YWRhdGEYBiABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EiUKBGRhdGEYByABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EhEKCWVtYmVkZGluZxgIIAMoAhIpCgVtZWRpYRgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5MaXN0VmFsdWUiKQoSQ3JlYXRlTm9kZVJlc3BvbnNlEhMKBG5vZGUYASABKAsyBS5Ob2RlIpICChFVcGRhdGVOb2RlUmVxdWVzdBIKCgJpZBgBIAEoCRIlCgRuYW1lGAIgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIsCgtkZXNjcmlwdGlvbhgDIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSDAoEdGFncxgEIAMoCRIpCghtZXRhZGF0YRgFIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSJQoEZGF0YRgGIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSEQoJZW1iZWRkaW5nGAcgAygCEikKBW1lZGlhGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLkxpc3RWYWx1ZSIpChJVcGRhdGVOb2RlUmVzcG9uc2USEwoEbm9kZRgBIAEoCzIFLk5vZGUiHwoRRGVsZXRlTm9kZVJlcXVlc3QSCgoCaWQYASABKAkiJQoSRGVsZXRlTm9kZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiIgoSR2V0Tm9kZVR5cGVSZXF1ZXN0EgwKBGNvZGUYASABKAkiMwoTR2V0Tm9kZVR5cGVSZXNwb25zZRIcCglub2RlX3R5cGUYASABKAsyCS5Ob2RlVHlwZSLOAQoVQ3JlYXRlTm9kZVR5cGVSZXF1ZXN0EgwKBGNvZGUYASABKAkSEwoLcGFyZW50X2NvZGUYAiABKAkSDAoEbmFtZRgDIAEoCRIsCgtkZXNjcmlwdGlvbhgEIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSKwoKZGF0YV90eXBlcxgFIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSKQoIbWV0YWRhdGEYBiABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0IjYKFkNyZWF0ZU5vZGVUeXBlUmVzcG9uc2USHAoJbm9kZV90eXBlGAEgASgLMgkuTm9kZVR5cGUidAoOQWRkTGlua1JlcXVlc3QSEQoJc291cmNlX2lkGAEgASgJEhEKCXRhcmdldF9pZBgCIAEoCRIRCglsaW5rX3R5cGUYAyABKAkSKQoIbWV0YWRhdGEYBCABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0IiYKD0FkZExpbmtSZXNwb25zZRITCgRsaW5rGAEgASgLMgUuTGluayJMChFSZW1vdmVMaW5rUmVxdWVzdBIRCglzb3VyY2VfaWQYASABKAkSEQoJdGFyZ2V0X2lkGAIgASgJEhEKCWxpbmtfdHlwZRgDIAEoCSIlChJSZW1vdmVMaW5rUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCI6ChNHZXROZWlnaGJvcnNSZXF1ZXN0Eg8KB25vZGVfaWQYASABKAkSEgoKbGlua190eXBlcxgCIAMoCSJCChRHZXROZWlnaGJvcnNSZXNwb25zZRIUCgVsaW5rcxgBIAMoCzIFLkxpbmsSFAoFbm9kZXMYAiADKAsyBS5Ob2RlIlEKElNlYXJjaE5vZGVzUmVxdWVzdBINCgVxdWVyeRgBIAEoCRINCgV0eXBlcxgCIAMoCRIOCgZ2ZWN0b3IYAyADKAISDQoFbGltaXQYBCABKAUiKwoTU2VhcmNoTm9kZXNSZXNwb25zZRIUCgVub2RlcxgBIAMoCzIFLk5vZGUiKwoUTGlzdE5vZGVUeXBlc1JlcXVlc3QSEwoLcGFyZW50X2NvZGUYASABKAkiNgoVTGlzdE5vZGVUeXBlc1Jlc3BvbnNlEh0KCm5vZGVfdHlwZXMYASADKAsyCS5Ob2RlVHlwZTL5BAoLQXV0b1NlcnZpY2USLAoHR2V0Tm9kZRIPLkdldE5vZGVSZXF1ZXN0GhAuR2V0Tm9kZVJlc3BvbnNlEjUKCkNyZWF0ZU5vZGUSEi5DcmVhdGVOb2RlUmVxdWVzdBoTLkNyZWF0ZU5vZGVSZXNwb25zZRI1CgpVcGRhdGVOb2RlEhIuVXBkYXRlTm9kZVJlcXVlc3QaEy5VcGRhdGVOb2RlUmVzcG9uc2USNQoKRGVsZXRlTm9kZRISLkRlbGV0ZU5vZGVSZXF1ZXN0GhMuRGVsZXRlTm9kZVJlc3BvbnNlEjgKC0dldE5vZGVUeXBlEhMuR2V0Tm9kZVR5cGVSZXF1ZXN0GhQuR2V0Tm9kZVR5cGVSZXNwb25zZRJBCg5DcmVhdGVOb2RlVHlwZRIWLkNyZWF0ZU5vZGVUeXBlUmVxdWVzdBoXLkNyZWF0ZU5vZGVUeXBlUmVzcG9uc2USLAoHQWRkTGluaxIPLkFkZExpbmtSZXF1ZXN0GhAuQWRkTGlua1Jlc3BvbnNlEjUKClJlbW92ZUxpbmsSEi5SZW1vdmVMaW5rUmVxdWVzdBoTLlJlbW92ZUxpbmtSZXNwb25zZRI7CgxHZXROZWlnaGJvcnMSFC5HZXROZWlnaGJvcnNSZXF1ZXN0GhUuR2V0TmVpZ2hib3JzUmVzcG9uc2USOAoLU2VhcmNoTm9kZXMSEy5TZWFyY2hOb2Rlc1JlcXVlc3QaFC5TZWFyY2hOb2Rlc1Jlc3BvbnNlEj4KDUxpc3ROb2RlVHlwZXMSFS5MaXN0Tm9kZVR5cGVzUmVxdWVzdBoWLkxpc3ROb2RlVHlwZXNSZXNwb25zZUInWiVnaXRodWIuY29tL3Nhd2FyaS1zYWRoYW4vY29yZS9nZW47Z2VuYgZwcm90bzM", [file_google_protobuf_struct]);
+  fileDesc("ChBncmFwaF9hdXRvLnByb3RvIrUCCgROb2RlEgoKAmlkGAEgASgJEgwKBHR5cGUYAiABKAkSDAoEc2x1ZxgDIAEoCRIlCgRuYW1lGAQgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIsCgtkZXNjcmlwdGlvbhgFIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSDAoEdGFncxgGIAMoCRIpCghtZXRhZGF0YRgHIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSJQoEZGF0YRgIIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSEQoJZW1iZWRkaW5nGAkgAygCEhIKCnVwZGF0ZWRfYXQYCiABKAkSKQoFbWVkaWEYCyABKAsyGi5nb29nbGUucHJvdG9idWYuTGlzdFZhbHVlIooBCgxCcmFuZFByb2ZpbGUSCgoCaWQYASABKAkSDAoEc2x1ZxgCIAEoCRIPCgduYW1lX2VuGAMgASgJEhYKDmRlc2NyaXB0aW9uX2VuGAQgASgJEgwKBHRhZ3MYBSADKAkSKQoFbWVkaWEYBiABKAsyGi5nb29nbGUucHJvdG9idWYuTGlzdFZhbHVlImoKBExpbmsSEQoJc291cmNlX2lkGAEgASgJEhEKCXRhcmdldF9pZBgCIAEoCRIRCglsaW5rX3R5cGUYAyABKAkSKQoIbWV0YWRhdGEYBCABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0IukBCghOb2RlVHlwZRIMCgRjb2RlGAEgASgJEhMKC3BhcmVudF9jb2RlGAIgASgJEgwKBG5hbWUYAyABKAkSLAoLZGVzY3JpcHRpb24YBCABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EisKCmRhdGFfdHlwZXMYBSABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EikKCG1ldGFkYXRhGAYgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBISCgp1cGRhdGVkX2F0GAcgASgJEhIKCm5vZGVfY291bnQYCCABKAUiOwoITGlua1R5cGUSDAoEY29kZRgBIAEoCRIMCgRuYW1lGAIgASgJEhMKC2Rlc2NyaXB0aW9uGAMgASgJIioKDkdldE5vZGVSZXF1ZXN0EgoKAmlkGAEgASgJEgwKBHNsdWcYAiABKAkiJgoPR2V0Tm9kZVJlc3BvbnNlEhMKBG5vZGUYASABKAsyBS5Ob2RlIqICChFDcmVhdGVOb2RlUmVxdWVzdBIMCgR0eXBlGAEgASgJEgwKBHNsdWcYAiABKAkSJQoEbmFtZRgDIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSLAoLZGVzY3JpcHRpb24YBCABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EgwKBHRhZ3MYBSADKAkSKQoIbWV0YWRhdGEYBiABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EiUKBGRhdGEYByABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0EhEKCWVtYmVkZGluZxgIIAMoAhIpCgVtZWRpYRgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5MaXN0VmFsdWUiKQoSQ3JlYXRlTm9kZVJlc3BvbnNlEhMKBG5vZGUYASABKAsyBS5Ob2RlIpICChFVcGRhdGVOb2RlUmVxdWVzdBIKCgJpZBgBIAEoCRIlCgRuYW1lGAIgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdBIsCgtkZXNjcmlwdGlvbhgDIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSDAoEdGFncxgEIAMoCRIpCghtZXRhZGF0YRgFIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSJQoEZGF0YRgGIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSEQoJZW1iZWRkaW5nGAcgAygCEikKBW1lZGlhGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLkxpc3RWYWx1ZSIpChJVcGRhdGVOb2RlUmVzcG9uc2USEwoEbm9kZRgBIAEoCzIFLk5vZGUiHwoRRGVsZXRlTm9kZVJlcXVlc3QSCgoCaWQYASABKAkiJQoSRGVsZXRlTm9kZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiIgoSR2V0Tm9kZVR5cGVSZXF1ZXN0EgwKBGNvZGUYASABKAkiMwoTR2V0Tm9kZVR5cGVSZXNwb25zZRIcCglub2RlX3R5cGUYASABKAsyCS5Ob2RlVHlwZSLOAQoVQ3JlYXRlTm9kZVR5cGVSZXF1ZXN0EgwKBGNvZGUYASABKAkSEwoLcGFyZW50X2NvZGUYAiABKAkSDAoEbmFtZRgDIAEoCRIsCgtkZXNjcmlwdGlvbhgEIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSKwoKZGF0YV90eXBlcxgFIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3QSKQoIbWV0YWRhdGEYBiABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0IjYKFkNyZWF0ZU5vZGVUeXBlUmVzcG9uc2USHAoJbm9kZV90eXBlGAEgASgLMgkuTm9kZVR5cGUidAoOQWRkTGlua1JlcXVlc3QSEQoJc291cmNlX2lkGAEgASgJEhEKCXRhcmdldF9pZBgCIAEoCRIRCglsaW5rX3R5cGUYAyABKAkSKQoIbWV0YWRhdGEYBCABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0IiYKD0FkZExpbmtSZXNwb25zZRITCgRsaW5rGAEgASgLMgUuTGluayJMChFSZW1vdmVMaW5rUmVxdWVzdBIRCglzb3VyY2VfaWQYASABKAkSEQoJdGFyZ2V0X2lkGAIgASgJEhEKCWxpbmtfdHlwZRgDIAEoCSIlChJSZW1vdmVMaW5rUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCI6ChNHZXROZWlnaGJvcnNSZXF1ZXN0Eg8KB25vZGVfaWQYASABKAkSEgoKbGlua190eXBlcxgCIAMoCSJCChRHZXROZWlnaGJvcnNSZXNwb25zZRIUCgVsaW5rcxgBIAMoCzIFLkxpbmsSFAoFbm9kZXMYAiADKAsyBS5Ob2RlIlEKElNlYXJjaE5vZGVzUmVxdWVzdBINCgVxdWVyeRgBIAEoCRINCgV0eXBlcxgCIAMoCRIOCgZ2ZWN0b3IYAyADKAISDQoFbGltaXQYBCABKAUiKwoTU2VhcmNoTm9kZXNSZXNwb25zZRIUCgVub2RlcxgBIAMoCzIFLk5vZGUiKwoUTGlzdE5vZGVUeXBlc1JlcXVlc3QSEwoLcGFyZW50X2NvZGUYASABKAkiNgoVTGlzdE5vZGVUeXBlc1Jlc3BvbnNlEh0KCm5vZGVfdHlwZXMYASADKAsyCS5Ob2RlVHlwZTL5BAoLQXV0b1NlcnZpY2USLAoHR2V0Tm9kZRIPLkdldE5vZGVSZXF1ZXN0GhAuR2V0Tm9kZVJlc3BvbnNlEjUKCkNyZWF0ZU5vZGUSEi5DcmVhdGVOb2RlUmVxdWVzdBoTLkNyZWF0ZU5vZGVSZXNwb25zZRI1CgpVcGRhdGVOb2RlEhIuVXBkYXRlTm9kZVJlcXVlc3QaEy5VcGRhdGVOb2RlUmVzcG9uc2USNQoKRGVsZXRlTm9kZRISLkRlbGV0ZU5vZGVSZXF1ZXN0GhMuRGVsZXRlTm9kZVJlc3BvbnNlEjgKC0dldE5vZGVUeXBlEhMuR2V0Tm9kZVR5cGVSZXF1ZXN0GhQuR2V0Tm9kZVR5cGVSZXNwb25zZRJBCg5DcmVhdGVOb2RlVHlwZRIWLkNyZWF0ZU5vZGVUeXBlUmVxdWVzdBoXLkNyZWF0ZU5vZGVUeXBlUmVzcG9uc2USLAoHQWRkTGluaxIPLkFkZExpbmtSZXF1ZXN0GhAuQWRkTGlua1Jlc3BvbnNlEjUKClJlbW92ZUxpbmsSEi5SZW1vdmVMaW5rUmVxdWVzdBoTLlJlbW92ZUxpbmtSZXNwb25zZRI7CgxHZXROZWlnaGJvcnMSFC5HZXROZWlnaGJvcnNSZXF1ZXN0GhUuR2V0TmVpZ2hib3JzUmVzcG9uc2USOAoLU2VhcmNoTm9kZXMSEy5TZWFyY2hOb2Rlc1JlcXVlc3QaFC5TZWFyY2hOb2Rlc1Jlc3BvbnNlEj4KDUxpc3ROb2RlVHlwZXMSFS5MaXN0Tm9kZVR5cGVzUmVxdWVzdBoWLkxpc3ROb2RlVHlwZXNSZXNwb25zZUInWiVnaXRodWIuY29tL3Nhd2FyaS1zYWRoYW4vY29yZS9nZW47Z2VuYgZwcm90bzM", [file_google_protobuf_struct]);
 
 /**
  * @generated from message Node
@@ -85,6 +85,50 @@ export const NodeSchema: GenMessage<Node> = /*@__PURE__*/
   messageDesc(file_graph_auto, 0);
 
 /**
+ * Minimal strongly-typed representation of an automotive brand in the knowledge graph.
+ *
+ * @generated from message BrandProfile
+ */
+export type BrandProfile = Message<"BrandProfile"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string slug = 2;
+   */
+  slug: string;
+
+  /**
+   * @generated from field: string name_en = 3;
+   */
+  nameEn: string;
+
+  /**
+   * @generated from field: string description_en = 4;
+   */
+  descriptionEn: string;
+
+  /**
+   * @generated from field: repeated string tags = 5;
+   */
+  tags: string[];
+
+  /**
+   * @generated from field: google.protobuf.ListValue media = 6;
+   */
+  media?: ListValue;
+};
+
+/**
+ * Describes the message BrandProfile.
+ * Use `create(BrandProfileSchema)` to create a new message.
+ */
+export const BrandProfileSchema: GenMessage<BrandProfile> = /*@__PURE__*/
+  messageDesc(file_graph_auto, 1);
+
+/**
  * @generated from message Link
  */
 export type Link = Message<"Link"> & {
@@ -114,7 +158,7 @@ export type Link = Message<"Link"> & {
  * Use `create(LinkSchema)` to create a new message.
  */
 export const LinkSchema: GenMessage<Link> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 1);
+  messageDesc(file_graph_auto, 2);
 
 /**
  * @generated from message NodeType
@@ -166,7 +210,7 @@ export type NodeType = Message<"NodeType"> & {
  * Use `create(NodeTypeSchema)` to create a new message.
  */
 export const NodeTypeSchema: GenMessage<NodeType> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 2);
+  messageDesc(file_graph_auto, 3);
 
 /**
  * @generated from message LinkType
@@ -193,7 +237,7 @@ export type LinkType = Message<"LinkType"> & {
  * Use `create(LinkTypeSchema)` to create a new message.
  */
 export const LinkTypeSchema: GenMessage<LinkType> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 3);
+  messageDesc(file_graph_auto, 4);
 
 /**
  * @generated from message GetNodeRequest
@@ -215,7 +259,7 @@ export type GetNodeRequest = Message<"GetNodeRequest"> & {
  * Use `create(GetNodeRequestSchema)` to create a new message.
  */
 export const GetNodeRequestSchema: GenMessage<GetNodeRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 4);
+  messageDesc(file_graph_auto, 5);
 
 /**
  * @generated from message GetNodeResponse
@@ -232,7 +276,7 @@ export type GetNodeResponse = Message<"GetNodeResponse"> & {
  * Use `create(GetNodeResponseSchema)` to create a new message.
  */
 export const GetNodeResponseSchema: GenMessage<GetNodeResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 5);
+  messageDesc(file_graph_auto, 6);
 
 /**
  * @generated from message CreateNodeRequest
@@ -289,7 +333,7 @@ export type CreateNodeRequest = Message<"CreateNodeRequest"> & {
  * Use `create(CreateNodeRequestSchema)` to create a new message.
  */
 export const CreateNodeRequestSchema: GenMessage<CreateNodeRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 6);
+  messageDesc(file_graph_auto, 7);
 
 /**
  * @generated from message CreateNodeResponse
@@ -306,7 +350,7 @@ export type CreateNodeResponse = Message<"CreateNodeResponse"> & {
  * Use `create(CreateNodeResponseSchema)` to create a new message.
  */
 export const CreateNodeResponseSchema: GenMessage<CreateNodeResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 7);
+  messageDesc(file_graph_auto, 8);
 
 /**
  * @generated from message UpdateNodeRequest
@@ -358,7 +402,7 @@ export type UpdateNodeRequest = Message<"UpdateNodeRequest"> & {
  * Use `create(UpdateNodeRequestSchema)` to create a new message.
  */
 export const UpdateNodeRequestSchema: GenMessage<UpdateNodeRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 8);
+  messageDesc(file_graph_auto, 9);
 
 /**
  * @generated from message UpdateNodeResponse
@@ -375,7 +419,7 @@ export type UpdateNodeResponse = Message<"UpdateNodeResponse"> & {
  * Use `create(UpdateNodeResponseSchema)` to create a new message.
  */
 export const UpdateNodeResponseSchema: GenMessage<UpdateNodeResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 9);
+  messageDesc(file_graph_auto, 10);
 
 /**
  * @generated from message DeleteNodeRequest
@@ -392,7 +436,7 @@ export type DeleteNodeRequest = Message<"DeleteNodeRequest"> & {
  * Use `create(DeleteNodeRequestSchema)` to create a new message.
  */
 export const DeleteNodeRequestSchema: GenMessage<DeleteNodeRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 10);
+  messageDesc(file_graph_auto, 11);
 
 /**
  * @generated from message DeleteNodeResponse
@@ -409,7 +453,7 @@ export type DeleteNodeResponse = Message<"DeleteNodeResponse"> & {
  * Use `create(DeleteNodeResponseSchema)` to create a new message.
  */
 export const DeleteNodeResponseSchema: GenMessage<DeleteNodeResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 11);
+  messageDesc(file_graph_auto, 12);
 
 /**
  * @generated from message GetNodeTypeRequest
@@ -426,7 +470,7 @@ export type GetNodeTypeRequest = Message<"GetNodeTypeRequest"> & {
  * Use `create(GetNodeTypeRequestSchema)` to create a new message.
  */
 export const GetNodeTypeRequestSchema: GenMessage<GetNodeTypeRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 12);
+  messageDesc(file_graph_auto, 13);
 
 /**
  * @generated from message GetNodeTypeResponse
@@ -443,7 +487,7 @@ export type GetNodeTypeResponse = Message<"GetNodeTypeResponse"> & {
  * Use `create(GetNodeTypeResponseSchema)` to create a new message.
  */
 export const GetNodeTypeResponseSchema: GenMessage<GetNodeTypeResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 13);
+  messageDesc(file_graph_auto, 14);
 
 /**
  * @generated from message CreateNodeTypeRequest
@@ -485,7 +529,7 @@ export type CreateNodeTypeRequest = Message<"CreateNodeTypeRequest"> & {
  * Use `create(CreateNodeTypeRequestSchema)` to create a new message.
  */
 export const CreateNodeTypeRequestSchema: GenMessage<CreateNodeTypeRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 14);
+  messageDesc(file_graph_auto, 15);
 
 /**
  * @generated from message CreateNodeTypeResponse
@@ -502,7 +546,7 @@ export type CreateNodeTypeResponse = Message<"CreateNodeTypeResponse"> & {
  * Use `create(CreateNodeTypeResponseSchema)` to create a new message.
  */
 export const CreateNodeTypeResponseSchema: GenMessage<CreateNodeTypeResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 15);
+  messageDesc(file_graph_auto, 16);
 
 /**
  * @generated from message AddLinkRequest
@@ -534,7 +578,7 @@ export type AddLinkRequest = Message<"AddLinkRequest"> & {
  * Use `create(AddLinkRequestSchema)` to create a new message.
  */
 export const AddLinkRequestSchema: GenMessage<AddLinkRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 16);
+  messageDesc(file_graph_auto, 17);
 
 /**
  * @generated from message AddLinkResponse
@@ -551,7 +595,7 @@ export type AddLinkResponse = Message<"AddLinkResponse"> & {
  * Use `create(AddLinkResponseSchema)` to create a new message.
  */
 export const AddLinkResponseSchema: GenMessage<AddLinkResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 17);
+  messageDesc(file_graph_auto, 18);
 
 /**
  * @generated from message RemoveLinkRequest
@@ -578,7 +622,7 @@ export type RemoveLinkRequest = Message<"RemoveLinkRequest"> & {
  * Use `create(RemoveLinkRequestSchema)` to create a new message.
  */
 export const RemoveLinkRequestSchema: GenMessage<RemoveLinkRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 18);
+  messageDesc(file_graph_auto, 19);
 
 /**
  * @generated from message RemoveLinkResponse
@@ -595,7 +639,7 @@ export type RemoveLinkResponse = Message<"RemoveLinkResponse"> & {
  * Use `create(RemoveLinkResponseSchema)` to create a new message.
  */
 export const RemoveLinkResponseSchema: GenMessage<RemoveLinkResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 19);
+  messageDesc(file_graph_auto, 20);
 
 /**
  * @generated from message GetNeighborsRequest
@@ -617,7 +661,7 @@ export type GetNeighborsRequest = Message<"GetNeighborsRequest"> & {
  * Use `create(GetNeighborsRequestSchema)` to create a new message.
  */
 export const GetNeighborsRequestSchema: GenMessage<GetNeighborsRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 20);
+  messageDesc(file_graph_auto, 21);
 
 /**
  * @generated from message GetNeighborsResponse
@@ -639,7 +683,7 @@ export type GetNeighborsResponse = Message<"GetNeighborsResponse"> & {
  * Use `create(GetNeighborsResponseSchema)` to create a new message.
  */
 export const GetNeighborsResponseSchema: GenMessage<GetNeighborsResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 21);
+  messageDesc(file_graph_auto, 22);
 
 /**
  * @generated from message SearchNodesRequest
@@ -671,7 +715,7 @@ export type SearchNodesRequest = Message<"SearchNodesRequest"> & {
  * Use `create(SearchNodesRequestSchema)` to create a new message.
  */
 export const SearchNodesRequestSchema: GenMessage<SearchNodesRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 22);
+  messageDesc(file_graph_auto, 23);
 
 /**
  * @generated from message SearchNodesResponse
@@ -688,7 +732,7 @@ export type SearchNodesResponse = Message<"SearchNodesResponse"> & {
  * Use `create(SearchNodesResponseSchema)` to create a new message.
  */
 export const SearchNodesResponseSchema: GenMessage<SearchNodesResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 23);
+  messageDesc(file_graph_auto, 24);
 
 /**
  * @generated from message ListNodeTypesRequest
@@ -705,7 +749,7 @@ export type ListNodeTypesRequest = Message<"ListNodeTypesRequest"> & {
  * Use `create(ListNodeTypesRequestSchema)` to create a new message.
  */
 export const ListNodeTypesRequestSchema: GenMessage<ListNodeTypesRequest> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 24);
+  messageDesc(file_graph_auto, 25);
 
 /**
  * @generated from message ListNodeTypesResponse
@@ -722,7 +766,7 @@ export type ListNodeTypesResponse = Message<"ListNodeTypesResponse"> & {
  * Use `create(ListNodeTypesResponseSchema)` to create a new message.
  */
 export const ListNodeTypesResponseSchema: GenMessage<ListNodeTypesResponse> = /*@__PURE__*/
-  messageDesc(file_graph_auto, 25);
+  messageDesc(file_graph_auto, 26);
 
 /**
  * Service defining knowledge graph management endpoints via Connect RPC

@@ -15,7 +15,7 @@ export function MediaUploader({
   onUpload, 
   maxFiles = 5, 
   maxSizeMB = 10, 
-  acceptedTypes = ["image/jpeg", "image/png", "image/webp"] 
+  acceptedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"] 
 }: MediaUploaderProps) {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -42,8 +42,23 @@ export function MediaUploader({
       hasError = true;
     }
 
+    const isFileTypeAccepted = (file: File): boolean => {
+      if (acceptedTypes.length === 0) return true;
+      if (file.type && acceptedTypes.includes(file.type)) return true;
+      const ext = file.name.split(".").pop()?.toLowerCase();
+      if (ext) {
+        if (ext === "avif" && (acceptedTypes.includes("image/avif") || acceptedTypes.includes(".avif"))) return true;
+        if ((ext === "jpg" || ext === "jpeg") && (acceptedTypes.includes("image/jpeg") || acceptedTypes.includes(".jpg") || acceptedTypes.includes(".jpeg"))) return true;
+        if (ext === "png" && (acceptedTypes.includes("image/png") || acceptedTypes.includes(".png"))) return true;
+        if (ext === "webp" && (acceptedTypes.includes("image/webp") || acceptedTypes.includes(".webp"))) return true;
+        if (ext === "gif" && (acceptedTypes.includes("image/gif") || acceptedTypes.includes(".gif"))) return true;
+        if (ext === "svg" && (acceptedTypes.includes("image/svg+xml") || acceptedTypes.includes(".svg"))) return true;
+      }
+      return false;
+    };
+
     for (const file of newFiles) {
-      if (!acceptedTypes.includes(file.type) && acceptedTypes.length > 0) {
+      if (!isFileTypeAccepted(file)) {
         setError(`Invalid file type: ${file.name}. Accepted types: ${acceptedTypes.join(", ")}`);
         hasError = true;
         continue;
@@ -123,12 +138,12 @@ export function MediaUploader({
           ref={inputRef}
           type="file" 
           multiple
-          accept={acceptedTypes.join(",")}
+          accept={[...acceptedTypes, ".avif"].join(",")}
           className="hidden" 
           onChange={handleChange} 
         />
         
-        <div className="w-16 h-16 mb-4 rounded-full bg-white shadow-sm flex items-center justify-center border border-slate-200">
+        <div className="w-16 h-16 mb-4 rounded-full bg-white flex items-center justify-center border border-slate-200">
           <UploadCloud className={`w-8 h-8 ${dragActive ? 'text-blue-500' : 'text-slate-400'}`} />
         </div>
         
@@ -192,7 +207,7 @@ export function MediaUploader({
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="group relative flex items-center gap-4 p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-200 transition-all"
+                    className="group relative flex items-center gap-4 p-3 bg-white border border-slate-200 rounded-2xl hover:border-blue-200 transition-all"
                   >
                     <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
                       {objectUrl ? (
@@ -223,7 +238,7 @@ export function MediaUploader({
             <div className="pt-4">
               <button 
                 onClick={handleUpload}
-                className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 shadow-sm"
+                className="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
               >
                 <UploadCloud className="w-4 h-4" />
                 Upload {files.length} {files.length === 1 ? 'File' : 'Files'}

@@ -16,7 +16,8 @@ export const AttributeEditor = ({ attribute }: AttributeEditorProps) => {
   const type = Array.isArray(rawType)
     ? (rawType.includes("string") ? "string" : (rawType[0] || "string"))
     : rawType;
-  const unit = (attribute.dataTypes as any)?.units || (attribute.dataTypes as any)?.unit;
+  const rawUnit = (attribute.dataTypes as any)?.unit || (attribute.dataTypes as any)?.units;
+  const unit = Array.isArray(rawUnit) ? rawUnit[0] || "" : (typeof rawUnit === "string" ? rawUnit : "");
 
   const renderEditor = () => {
     switch (type) {

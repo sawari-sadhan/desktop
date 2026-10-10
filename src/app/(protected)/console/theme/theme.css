@@ -1,0 +1,33 @@
+/* =========================================================================
+   SawariSadhan Console Theme Standards & CSS Variables
+   ========================================================================= */
+
+:root {
+  --console-bg: #f8fafc;
+  --console-border: #e2e8f0;
+  --console-card: #ffffff;
+  --console-text-primary: #0f172a;
+  --console-text-muted: #64748b;
+  --console-primary: #0f172a;
+  --console-primary-hover: #1e293b;
+  --console-accent: #3b82f6;
+  --console-success: #10b981;
+  --console-warning: #f59e0b;
+  --console-danger: #ef4444;
+}
+
+/* Custom Scrollbar for dense data tables and sidebars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

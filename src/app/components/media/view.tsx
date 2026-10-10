@@ -135,13 +135,13 @@ export function MediaPreview({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ delay: idx * 0.05 }}
-              className={`group relative aspect-square rounded-2xl overflow-hidden border shadow-sm transition-all ${
-                item.isCover ? "border-blue-500 ring-4 ring-blue-500/20" : "border-slate-200 hover:border-slate-300"
+              className={`group relative aspect-square rounded-2xl overflow-hidden border transition-all ${
+                item.isCover ? "border-blue-500 ring-4 ring-blue-500/20 bg-slate-50" : "border-slate-200 bg-slate-50 hover:bg-slate-100"
               }`}
             >
               {/* Media Image */}
               <div 
-                className="w-full h-full bg-slate-100 cursor-pointer"
+                className={`w-full h-full ${(item.url?.toLowerCase().includes(".png") || item.name?.toLowerCase().includes(".png")) ? "bg-transparency-grid-sm p-1.5" : "bg-slate-100"} cursor-pointer`}
                 onClick={() => setSelectedItem(item)}
               >
                 <SmartImage 
@@ -149,13 +149,13 @@ export function MediaPreview({
                   alt={item.name || "Media item"} 
                   variant="thumbnail"
                   fill
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className={`w-full h-full ${(item.url?.toLowerCase().includes(".png") || item.name?.toLowerCase().includes(".png")) ? "object-contain" : "object-cover"} transition-transform duration-500 group-hover:scale-105`}
                 />
               </div>
 
               {/* Cover Badge */}
               {item.isCover && (
-                <div className="absolute top-3 left-3 px-2.5 py-1 bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-md flex items-center gap-1.5">
+                <div className="absolute top-3 left-3 px-2.5 py-1 bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg flex items-center gap-1.5">
                   <Star className="w-3 h-3 fill-white" />
                   Cover
                 </div>
@@ -201,7 +201,7 @@ export function MediaPreview({
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="relative w-full max-w-5xl max-h-full bg-slate-950 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+              className="relative w-full max-w-5xl max-h-full bg-slate-950 rounded-3xl overflow-hidden flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
@@ -221,7 +221,7 @@ export function MediaPreview({
                 </button>
               </div>
 
-              <div className="flex-1 min-h-0 bg-black flex items-center justify-center p-8">
+              <div className={`flex-1 min-h-0 ${(selectedItem.url?.toLowerCase().includes(".png") || selectedItem.name?.toLowerCase().includes(".png")) ? "bg-transparency-grid" : "bg-black"} flex items-center justify-center p-8`}>
                 <div className="relative w-full h-[70vh]">
                   <SmartImage 
                     src={selectedItem.url} 

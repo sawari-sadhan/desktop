@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @SawariSadhan-Oracle-Audit
  * Source of Truth: [oracle/config/services.yml]
  * Service: Core
@@ -69,6 +69,7 @@ export type {
   NodeType,
   Node,
   Link,
+  BrandProfile,
 } from "../gen/graph_auto_pb";
 
 export type {
